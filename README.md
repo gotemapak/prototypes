@@ -1,2 +1,2 @@
-# mircity-prototypes
-MirCity product prototypes
+# prototypes
+prototypes
