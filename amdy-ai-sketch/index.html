@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Amdy — AI Sketch из фото</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+
+    body {
+      min-height: 100vh;
+      background: #EEECEA;
+      font-family: -apple-system, 'SF Pro Text', BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px 60px;
+      color: #1A1A1A;
+    }
+
+    h1 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+    .subtitle {
+      font-size: 13px;
+      color: #7A7875;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .legend {
+      font-size: 12px;
+      color: #9A9793;
+      margin-bottom: 32px;
+      text-align: center;
+      max-width: 480px;
+      line-height: 1.5;
+    }
+
+    /* ── Сетка экранов ── */
+    .screens {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 32px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .screen-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .screen-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #7A7875;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .screen-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1A1A1A;
+      text-align: center;
+    }
+
+    /* ── Телефон-фрейм ── */
+    .phone {
+      width: 375px;
+      min-height: 812px;
+      background: #F9F8F6;
+      border-radius: 44px;
+      overflow: hidden;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.08),
+        0 4px 6px rgba(0,0,0,0.04),
+        0 20px 40px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* ── Status bar ── */
+    .status-bar {
+      height: 44px;
+      padding: 14px 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .status-time { font-size: 15px; font-weight: 600; color: #1A1A1A; }
+    .status-icons { display: flex; gap: 6px; align-items: center; }
+    .status-icons svg { opacity: 0.8; }
+
+    /* ── Nav bar ── */
+    .nav-bar {
+      height: 52px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 17px;
+      color: #1A1A1A;
+    }
+    .nav-title {
+      font-size: 17px;
+      font-weight: 600;
+      color: #1A1A1A;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .nav-placeholder { width: 40px; }
+
+    /* ── Контент ── */
+    .screen-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 0 20px 32px;
+      overflow: hidden;
+    }
+
+    /* ═══════════════════════════════════════════════
+       ЭКРАН 1: ЗАГРУЗКА ФОТО (существующий)
+    ═══════════════════════════════════════════════ */
+    .upload-zone {
+      flex: 1;
+      border: 2px dashed #D4D2CE;
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin: 8px 0 24px;
+      background: #FFFFFF;
+    }
+    .upload-icon {
+      width: 56px;
+      height: 56px;
+      background: #F0EFEC;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .upload-zone h3 { font-size: 17px; font-weight: 600; color: #1A1A1A; }
+    .upload-zone p { font-size: 13px; color: #7A7875; text-align: center; max-width: 220px; line-height: 1.4; }
+
+    .upload-options {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .upload-option {
+      flex: 1;
+      height: 52px;
+      background: #FFFFFF;
+      border: 1.5px solid #E0DED9;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #1A1A1A;
+    }
+
+    /* ═══════════════════════════════════════════════
+       ЭКРАН 2: ОБРАБОТКА
+    ═══════════════════════════════════════════════ */
+    .processing-center {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding-bottom: 60px;
+    }
+
+    .photo-preview {
+      width: 220px;
+      height: 220px;
+      border-radius: 24px;
+      background: #E8E6E0;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .photo-preview-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .photo-grid {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+    .photo-grid-cell { background: #C8C4BC; }
+    .photo-grid-cell:nth-child(1) { background: #B8B4AC; }
+    .photo-grid-cell:nth-child(2) { background: #CAC6BE; }
+    .photo-grid-cell:nth-child(3) { background: #D0CCC4; }
+    .photo-grid-cell:nth-child(4) { background: #BEB9B0; }
+
+    /* Animated scan line */
+    .scan-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        rgba(99, 102, 241, 0.25) 48%,
+        rgba(99, 102, 241, 0.5) 50%,
+        rgba(99, 102, 241, 0.25) 52%,
+        transparent 100%
+      );
+      animation: scan 2s ease-in-out infinite;
+    }
+    @keyframes scan {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100%); }
+    }
+
+    .corner-tl, .corner-tr, .corner-bl, .corner-br {
+      position: absolute;
+      width: 20px; height: 20px;
+      border-color: #6366F1;
+      border-style: solid;
+    }
+    .corner-tl { top: 10px; left: 10px; border-width: 2.5px 0 0 2.5px; border-radius: 4px 0 0 0; }
+    .corner-tr { top: 10px; right: 10px; border-width: 2.5px 2.5px 0 0; border-radius: 0 4px 0 0; }
+    .corner-bl { bottom: 10px; left: 10px; border-width: 0 0 2.5px 2.5px; border-radius: 0 0 0 4px; }
+    .corner-br { bottom: 10px; right: 10px; border-width: 0 2.5px 2.5px 0; border-radius: 0 0 4px 0; }
+
+    .processing-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1A1A1A;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+    .processing-subtitle {
+      font-size: 14px;
+      color: #7A7875;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .progress-steps {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: transparent;
+    }
+    .step.done { background: #F0F0FF; }
+    .step.active { background: #F0F0FF; }
+    .step-icon {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      font-size: 13px;
+    }
+    .step.done .step-icon { background: #6366F1; color: #fff; }
+    .step.active .step-icon {
+      background: transparent;
+      border: 2px solid #6366F1;
+    }
+    .step.pending .step-icon { background: #E8E6E0; color: #A8A5A0; }
+    .step-spinner {
+      width: 12px; height: 12px;
+      border: 2px solid #6366F1;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .step-text { font-size: 14px; font-weight: 500; color: #1A1A1A; }
+    .step.pending .step-text { color: #A8A5A0; }
+
+    .progress-bar-wrap {
+      width: 100%;
+      height: 4px;
+      background: #E0DED9;
+      border-radius: 2px;
+      margin: 20px 0 0;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      width: 55%;
+      background: linear-gradient(to right, #6366F1, #818CF8);
+      border-radius: 2px;
+    }
+
+    /* ═══════════════════════════════════════════════
+       ЭКРАН 3: РЕЗУЛЬТАТЫ
+    ═══════════════════════════════════════════════ */
+    .results-header {
+      text-align: center;
+      padding: 8px 0 16px;
+    }
+    .results-header h2 { font-size: 20px; font-weight: 700; color: #1A1A1A; margin-bottom: 4px; }
+    .results-header p { font-size: 13px; color: #7A7875; }
+
+    .sketch-carousel {
+      display: flex;
+      gap: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 4px 0 12px;
+      margin: 0 -20px;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    .sketch-carousel::-webkit-scrollbar { display: none; }
+
+    .sketch-card {
+      flex-shrink: 0;
+      width: 240px;
+      height: 300px;
+      border-radius: 20px;
+      background: #FFFFFF;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      overflow: hidden;
+      position: relative;
+      border: 2px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .sketch-card.selected { border-color: #6366F1; }
+    .sketch-card-inner {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* SVG sketch placeholders */
+    .sketch-svg { width: 100%; height: 100%; padding: 16px; }
+
+    .sketch-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #6366F1;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 99px;
+    }
+    .sketch-check {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 24px; height: 24px;
+      background: #6366F1;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin: 4px 0 16px;
+    }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #D4D2CE;
+    }
+    .dot.active { width: 18px; border-radius: 3px; background: #6366F1; }
+
+    .regen-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .regen-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 99px;
+      border: 1.5px solid #D4D2CE;
+      background: #FFFFFF;
+      font-size: 13px;
+      font-weight: 500;
+      color: #1A1A1A;
+    }
+    .regen-counter {
+      font-size: 12px;
+      color: #7A7875;
+    }
+
+    /* ═══════════════════════════════════════════════
+       ЭКРАН 4: ПОПАП ОЦЕНКИ
+    ═══════════════════════════════════════════════ */
+    .drawing-bg {
+      flex: 1;
+      background: #F0EFEC;
+      margin: 0 -20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .canvas-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .rating-sheet {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: #FFFFFF;
+      border-radius: 24px 24px 0 0;
+      padding: 16px 24px 40px;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.12);
+    }
+    .sheet-handle {
+      width: 36px; height: 4px;
+      background: #D4D2CE;
+      border-radius: 2px;
+      margin: 0 auto 16px;
+    }
+    .sheet-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .sheet-title { font-size: 17px; font-weight: 700; color: #1A1A1A; }
+    .sheet-close {
+      width: 28px; height: 28px;
+      background: #F0EFEC;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: #7A7875;
+      font-size: 16px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .sheet-subtitle {
+      font-size: 13px;
+      color: #7A7875;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    .stars {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .star {
+      font-size: 36px;
+      line-height: 1;
+      filter: grayscale(1) opacity(0.3);
+    }
+    .star.filled {
+      filter: none;
+    }
+
+    .feedback-box {
+      background: #F9F8F6;
+      border: 1.5px solid #E0DED9;
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+    .feedback-box p { font-size: 14px; color: #A8A5A0; line-height: 1.5; }
+    .feedback-counter { font-size: 11px; color: #C0BDB8; text-align: right; margin-top: 6px; }
+
+    /* ── Общие кнопки ── */
+    .btn-primary {
+      width: 100%;
+      height: 52px;
+      background: #1A1A1A;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+    }
+    .btn-secondary {
+      width: 100%;
+      height: 52px;
+      background: transparent;
+      color: #1A1A1A;
+      border: 1.5px solid #D4D2CE;
+      border-radius: 16px;
+      font-size: 15px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .btn-indigo {
+      width: 100%;
+      height: 52px;
+      background: #6366F1;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 16px;
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0;
+      cursor: pointer;
+    }
+
+    /* ── Home indicator ── */
+    .home-indicator {
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .home-bar {
+      width: 134px; height: 5px;
+      background: #1A1A1A;
+      border-radius: 3px;
+      opacity: 0.18;
+    }
+
+    /* ── Existing badge ── */
+    .existing-badge {
+      display: inline-block;
+      background: #FEF3C7;
+      color: #92400E;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    /* Sketch SVG illustrations */
+    .sketch-face {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Amdy — AI Sketch из фото</h1>
+  <p class="subtitle">Флоу: загрузка фото → обработка в AI → выбор скетча → оценка</p>
+  <p class="legend">Компонент 0 (существующий) · Компонент 1 · Компонент 4 · Компонент 5</p>
+
+  <div class="screens">
+
+    <!-- ═══════════════════════════════════════════
+         ЭКРАН 1 — Загрузка фото (К0, существует)
+    ═══════════════════════════════════════════ -->
+    <div class="screen-wrap">
+      <span class="screen-label">Компонент 0</span>
+      <span class="screen-title">Загрузка фото</span>
+      <div class="phone">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#1A1A1A"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#1A1A1A"/><rect x="9" y="0" width="3" height="12" rx="1" fill="#1A1A1A"/><rect x="13.5" y="1" width="2.5" height="10" rx="1" fill="#1A1A1A" opacity="0.3"/></svg>
+            <svg width="16" height="12" viewBox="0 0 24 12" fill="#1A1A1A"><path d="M1 4a11 11 0 0 1 22 0" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M4.5 7.5a7.5 7.5 0 0 1 15 0" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M8 11a4 4 0 0 1 8 0" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="12" cy="12" r="1.5" fill="#1A1A1A"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#1A1A1A" stroke-opacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#1A1A1A"/><path d="M23 4.5v3a1.5 1.5 0 0 0 0-3z" fill="#1A1A1A" opacity="0.4"/></svg>
+          </div>
+        </div>
+
+        <div class="nav-bar" style="position:relative;">
+          <div class="nav-back">
+            <svg width="10" height="17" viewBox="0 0 10 17" fill="none"><path d="M8.5 1.5L1.5 8.5L8.5 15.5" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <span class="nav-title">Загрузи фото</span>
+          <div class="nav-placeholder"></div>
+        </div>
+
+        <div class="screen-content" style="padding-top: 8px;">
+          <span class="existing-badge">✓ Компонент существует — не меняется</span>
+
+          <div class="upload-zone">
+            <div class="upload-icon">
+              <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                <rect width="28" height="28" rx="8" fill="#E0DED9"/>
+                <path d="M14 8v8M10 12l4-4 4 4" stroke="#7A7875" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 20h12" stroke="#7A7875" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h3>Выбери фото</h3>
+            <p>Загрузи фото или сделай снимок — мы превратим его в скетч</p>
+          </div>
+
+          <div class="upload-options">
+            <div class="upload-option">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="5" width="20" height="15" rx="3" stroke="#1A1A1A" stroke-width="1.8"/><circle cx="12" cy="12" r="4" stroke="#1A1A1A" stroke-width="1.8"/><path d="M9 5l1.5-2h3L15 5" stroke="#1A1A1A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Камера
+            </div>
+            <div class="upload-option">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="2" stroke="#1A1A1A" stroke-width="1.8"/><rect x="13" y="3" width="8" height="8" rx="2" stroke="#1A1A1A" stroke-width="1.8"/><rect x="3" y="13" width="8" height="8" rx="2" stroke="#1A1A1A" stroke-width="1.8"/><rect x="13" y="13" width="8" height="8" rx="2" stroke="#1A1A1A" stroke-width="1.8"/></svg>
+              Галерея
+            </div>
+          </div>
+
+          <div class="btn-primary" style="background:#6366F1; margin-top: auto;">
+            Отправить
+          </div>
+        </div>
+
+        <div class="home-indicator"><div class="home-bar"></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         ЭКРАН 2 — Обработка (К1)
+    ═══════════════════════════════════════════ -->
+    <div class="screen-wrap">
+      <span class="screen-label">Компонент 1</span>
+      <span class="screen-title">Обработка в AI</span>
+      <div class="phone">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#1A1A1A"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#1A1A1A"/><rect x="9" y="0" width="3" height="12" rx="1" fill="#1A1A1A"/><rect x="13.5" y="1" width="2.5" height="10" rx="1" fill="#1A1A1A" opacity="0.3"/></svg>
+            <svg width="16" height="12" viewBox="0 0 24 12" fill="#1A1A1A"><path d="M1 4a11 11 0 0 1 22 0" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M4.5 7.5a7.5 7.5 0 0 1 15 0" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M8 11a4 4 0 0 1 8 0" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="12" cy="12" r="1.5" fill="#1A1A1A"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#1A1A1A" stroke-opacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#1A1A1A"/><path d="M23 4.5v3a1.5 1.5 0 0 0 0-3z" fill="#1A1A1A" opacity="0.4"/></svg>
+          </div>
+        </div>
+
+        <div class="screen-content" style="padding-top: 16px;">
+          <div class="processing-center">
+            <div class="photo-preview">
+              <div class="photo-grid">
+                <div class="photo-grid-cell"></div>
+                <div class="photo-grid-cell"></div>
+                <div class="photo-grid-cell"></div>
+                <div class="photo-grid-cell"></div>
+              </div>
+              <div class="scan-overlay"></div>
+              <div class="corner-tl"></div>
+              <div class="corner-tr"></div>
+              <div class="corner-bl"></div>
+              <div class="corner-br"></div>
+            </div>
+
+            <div class="processing-title">Делаем скетч</div>
+            <div class="processing-subtitle">Это займёт несколько секунд</div>
+
+            <div class="progress-steps" style="width: 100%;">
+              <div class="step done">
+                <div class="step-icon">✓</div>
+                <span class="step-text">Получили фотографию</span>
+              </div>
+              <div class="step active">
+                <div class="step-icon"><div class="step-spinner"></div></div>
+                <span class="step-text">Делаем скетч</span>
+              </div>
+              <div class="step pending">
+                <div class="step-icon" style="font-size:14px; color:#C0BDB8;">3</div>
+                <span class="step-text">Скетч готов. Можно творить!</span>
+              </div>
+            </div>
+
+            <div class="progress-bar-wrap" style="margin-top: 24px;">
+              <div class="progress-bar-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="home-indicator"><div class="home-bar"></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         ЭКРАН 3 — Результаты (К4)
+    ═══════════════════════════════════════════ -->
+    <div class="screen-wrap">
+      <span class="screen-label">Компонент 4</span>
+      <span class="screen-title">Экран результатов</span>
+      <div class="phone">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#1A1A1A"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#1A1A1A"/><rect x="9" y="0" width="3" height="12" rx="1" fill="#1A1A1A"/><rect x="13.5" y="1" width="2.5" height="10" rx="1" fill="#1A1A1A" opacity="0.3"/></svg>
+            <svg width="16" height="12" viewBox="0 0 24 12" fill="#1A1A1A"><path d="M1 4a11 11 0 0 1 22 0" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M4.5 7.5a7.5 7.5 0 0 1 15 0" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M8 11a4 4 0 0 1 8 0" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="12" cy="12" r="1.5" fill="#1A1A1A"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#1A1A1A" stroke-opacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#1A1A1A"/><path d="M23 4.5v3a1.5 1.5 0 0 0 0-3z" fill="#1A1A1A" opacity="0.4"/></svg>
+          </div>
+        </div>
+
+        <div class="screen-content" style="padding-top: 8px;">
+          <div class="results-header">
+            <h2>Скетч готов!</h2>
+            <p>Выбери понравившийся и начинай рисовать</p>
+          </div>
+
+          <div class="sketch-carousel">
+            <!-- Sketch 1 — selected -->
+            <div class="sketch-card selected">
+              <div class="sketch-card-inner">
+                <svg viewBox="0 0 200 260" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;padding:12px;">
+                  <!-- Portrait sketch -->
+                  <ellipse cx="100" cy="90" rx="45" ry="55" stroke="#2D2D2D" stroke-width="1.5"/>
+                  <path d="M70 110 Q100 145 130 110" stroke="#2D2D2D" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                  <circle cx="85" cy="82" r="6" stroke="#2D2D2D" stroke-width="1.5"/>
+                  <circle cx="115" cy="82" r="6" stroke="#2D2D2D" stroke-width="1.5"/>
+                  <path d="M90 70 Q100 66 110 70" stroke="#2D2D2D" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+                  <path d="M95 100 L105 100" stroke="#2D2D2D" stroke-width="1.2" stroke-linecap="round"/>
+                  <path d="M75 145 Q65 165 60 190 Q80 200 100 202 Q120 200 140 190 Q135 165 125 145" stroke="#2D2D2D" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                  <path d="M60 190 L50 240" stroke="#2D2D2D" stroke-width="1.2" stroke-linecap="round"/>
+                  <path d="M140 190 L150 240" stroke="#2D2D2D" stroke-width="1.2" stroke-linecap="round"/>
+                  <path d="M55 35 Q100 10 145 35 Q155 55 145 45 Q100 20 55 45 Q45 55 55 35Z" stroke="#2D2D2D" stroke-width="1.2" fill="none"/>
+                </svg>
+              </div>
+              <span class="sketch-badge">Скетч 1</span>
+              <div class="sketch-check">
+                <svg width="12" height="10" viewBox="0 0 12 10" fill="none"><path d="M1 5l3.5 3.5L11 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+            </div>
+
+            <!-- Sketch 2 -->
+            <div class="sketch-card">
+              <div class="sketch-card-inner">
+                <svg viewBox="0 0 200 260" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;padding:12px;">
+                  <!-- Different style sketch - more geometric -->
+                  <ellipse cx="100" cy="88" rx="42" ry="52" stroke="#2D2D2D" stroke-width="1.8" stroke-dasharray="4 2"/>
+                  <path d="M72 108 Q100 140 128 108" stroke="#2D2D2D" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+                  <ellipse cx="85" cy="80" rx="7" ry="5" stroke="#2D2D2D" stroke-width="1.5"/>
+                  <ellipse cx="115" cy="80" rx="7" ry="5" stroke="#2D2D2D" stroke-width="1.5"/>
+                  <path d="M88 68 Q100 63 112 68" stroke="#2D2D2D" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                  <path d="M78 142 Q68 162 62 188 Q82 198 100 200 Q118 198 138 188 Q132 162 122 142" stroke="#2D2D2D" stroke-width="1.8" fill="none"/>
+                  <path d="M62 188 L52 242" stroke="#2D2D2D" stroke-width="1.4" stroke-linecap="round"/>
+                  <path d="M138 188 L148 242" stroke="#2D2D2D" stroke-width="1.4" stroke-linecap="round"/>
+                  <path d="M60 38 Q100 15 140 38" stroke="#2D2D2D" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                  <path d="M58 40 Q100 62 142 40" stroke="#2D2D2D" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <span class="sketch-badge" style="background:#A8A5A0;">Скетч 2</span>
+            </div>
+
+            <!-- Sketch 3 — кнопка добавить -->
+            <div class="sketch-card" style="border: 2px dashed #D4D2CE; background: #F9F8F6; justify-content:center; align-items:center; display:flex; flex-direction:column; gap:10px;">
+              <div style="width:44px;height:44px;border-radius:50%;background:#F0EFEC;display:flex;align-items:center;justify-content:center;">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="#6366F1" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+              <div style="text-align:center;">
+                <div style="font-size:13px;font-weight:600;color:#1A1A1A;">Новый скетч</div>
+                <div style="font-size:11px;color:#7A7875;margin-top:2px;">Ещё 2 попытки</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="carousel-dots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot" style="background:#E8E6E0;width:10px;height:10px;opacity:0.5;"></div>
+          </div>
+
+          <div style="flex:1;"></div>
+
+          <div class="btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M2 12l7 7L22 5" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Начать рисовать
+          </div>
+          <div class="btn-secondary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 0 1 8-8" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"/><path d="M12 4l-3 3 3 3" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Сделать новый скетч
+            <span style="font-size:12px;color:#7A7875;">· ещё 2</span>
+          </div>
+        </div>
+
+        <div class="home-indicator"><div class="home-bar"></div></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         ЭКРАН 4 — Попап оценки (К5)
+    ═══════════════════════════════════════════ -->
+    <div class="screen-wrap">
+      <span class="screen-label">Компонент 5</span>
+      <span class="screen-title">Оценка скетча</span>
+      <div class="phone">
+        <div class="status-bar">
+          <span class="status-time">9:41</span>
+          <div class="status-icons">
+            <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><rect x="0" y="3" width="3" height="9" rx="1" fill="#1A1A1A"/><rect x="4.5" y="2" width="3" height="10" rx="1" fill="#1A1A1A"/><rect x="9" y="0" width="3" height="12" rx="1" fill="#1A1A1A"/><rect x="13.5" y="1" width="2.5" height="10" rx="1" fill="#1A1A1A" opacity="0.3"/></svg>
+            <svg width="16" height="12" viewBox="0 0 24 12" fill="#1A1A1A"><path d="M1 4a11 11 0 0 1 22 0" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M4.5 7.5a7.5 7.5 0 0 1 15 0" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M8 11a4 4 0 0 1 8 0" stroke="#1A1A1A" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="12" cy="12" r="1.5" fill="#1A1A1A"/></svg>
+            <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x="0.5" y="0.5" width="21" height="11" rx="3.5" stroke="#1A1A1A" stroke-opacity="0.35"/><rect x="2" y="2" width="16" height="8" rx="2" fill="#1A1A1A"/><path d="M23 4.5v3a1.5 1.5 0 0 0 0-3z" fill="#1A1A1A" opacity="0.4"/></svg>
+          </div>
+        </div>
+
+        <div class="nav-bar" style="position:relative;">
+          <div style="width:40px;height:40px;"></div>
+          <span class="nav-title">Рисование</span>
+          <div style="width:40px;height:40px;background:#F0EFEC;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" fill="#7A7875"/><circle cx="5" cy="12" r="3" fill="#7A7875"/><circle cx="19" cy="12" r="3" fill="#7A7875"/></svg>
+          </div>
+        </div>
+
+        <!-- Холст с скетчем -->
+        <div class="drawing-bg" style="flex:1; margin: 0 -20px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+          <svg viewBox="0 0 280 360" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:240px;opacity:0.15;">
+            <ellipse cx="140" cy="120" rx="60" ry="75" stroke="#2D2D2D" stroke-width="2"/>
+            <path d="M95 150 Q140 195 185 150" stroke="#2D2D2D" stroke-width="2" fill="none" stroke-linecap="round"/>
+            <circle cx="118" cy="108" r="9" stroke="#2D2D2D" stroke-width="2"/>
+            <circle cx="162" cy="108" r="9" stroke="#2D2D2D" stroke-width="2"/>
+            <path d="M110 195 Q90 225 84 260 Q112 272 140 275 Q168 272 196 260 Q190 225 170 195" stroke="#2D2D2D" stroke-width="2" fill="none"/>
+          </svg>
+
+          <!-- Rating sheet -->
+          <div class="rating-sheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+              <div>
+                <div class="sheet-title">Как получился скетч?</div>
+              </div>
+              <div class="sheet-close">✕</div>
+            </div>
+            <div class="sheet-subtitle">Оцени качество скетча, по которому только что рисовал</div>
+
+            <div class="stars">
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+              <span class="star filled">★</span>
+              <span class="star">★</span>
+            </div>
+
+            <div class="feedback-box">
+              <p>Что можно было бы улучшить?</p>
+              <div class="feedback-counter">0 / 400</div>
+            </div>
+
+            <div class="btn-indigo">Отправить</div>
+          </div>
+        </div>
+
+        <div class="home-indicator"><div class="home-bar"></div></div>
+      </div>
+    </div>
+
+  </div><!-- end .screens -->
+
+</body>
+</html>
