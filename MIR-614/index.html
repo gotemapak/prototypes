@@ -411,17 +411,10 @@
       <div style="font-size:11px; color:var(--muted); margin-top:6px;">CTR: <span style="color:var(--yellow);">не измерить*</span></div>
     </div>
 
-    <div style="background:rgba(52,201,123,0.08); border:1px solid rgba(52,201,123,0.2); border-radius:10px; padding:14px 18px; min-width:200px; flex:1;">
-      <div style="font-size:11px; color:var(--muted); margin-bottom:2px;">Открытий приложения → раздел «Карты»</div>
-      <div style="font-size:10px; color:var(--muted); margin-bottom:8px;"><code style="font-size:10px;">push_app_opened</code> link=/cards</div>
-      <div style="font-size:26px; font-weight:800; color:var(--green);">19</div>
-      <div style="font-size:12px; color:var(--muted);">польз. с 1 июня (не только геймиф. пуши)</div>
-      <div style="font-size:11px; color:var(--muted); margin-top:6px;">8 из 19 потом сделали скан</div>
-    </div>
   </div>
 
-  <div style="background:var(--card2); border-radius:8px; padding:12px 14px; font-size:12px; color:var(--muted); line-height:1.7;">
-    <strong style="color:var(--yellow);">* Почему CTR не посчитать:</strong> в <code>push_delivered</code> для П1 прописан <code>screen: "main"</code>, а не <code>link: "/cards"</code>. Событие <code>push_app_opened</code> не связывает открытие с конкретным именем пуша — нельзя отделить открытия П1 от других пушей. Чтобы считать CTR точно, нужно добавить в оба события единый идентификатор рассылки (например, <code>campaign_id</code> или <code>push_name</code>).
+  <div style="background:rgba(245,200,66,0.07); border:1px solid rgba(245,200,66,0.2); border-radius:8px; padding:12px 14px; font-size:12px; color:var(--muted); line-height:1.7;">
+    ⚠️ <strong style="color:var(--yellow);">CTR не измерить.</strong> <code>push_delivered</code> и <code>push_app_opened</code> не связаны общим идентификатором рассылки. Определить, сколько из 9 получателей П1 открыли пуш, — невозможно. Для решения: добавить <code>campaign_id</code> или <code>push_name</code> в событие <code>push_app_opened</code>.
   </div>
 
   <div style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">
