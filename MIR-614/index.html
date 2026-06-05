@@ -275,6 +275,62 @@
   </div>
 </div>
 
+<!-- ── Version rollout ── -->
+<div class="section-title">Рулаут версий приложения (раздел «Карты», с 1 июня)</div>
+<div class="card">
+  <h3>Версии — суммарно за 5 дней</h3>
+  <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:18px;">
+    <div style="background:rgba(52,201,123,0.12); border:1px solid rgba(52,201,123,0.3); border-radius:10px; padding:14px 18px; min-width:160px;">
+      <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">🆕 v1.89.0 — новая (с геймификацией)</div>
+      <div style="font-size:28px; font-weight:800; color:var(--green);">2 086</div>
+      <div style="font-size:12px; color:var(--muted);">польз. · 41.7% от всех</div>
+    </div>
+    <div style="background:rgba(74,127,255,0.1); border:1px solid rgba(74,127,255,0.25); border-radius:10px; padding:14px 18px; min-width:160px;">
+      <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">v1.88.0 — предыдущая</div>
+      <div style="font-size:28px; font-weight:800; color:var(--accent);">2 082</div>
+      <div style="font-size:12px; color:var(--muted);">польз. · 41.6% от всех</div>
+    </div>
+    <div style="background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:14px 18px; min-width:160px;">
+      <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">Старые версии (≤1.87)</div>
+      <div style="font-size:28px; font-weight:800; color:var(--muted);">835</div>
+      <div style="font-size:12px; color:var(--muted);">польз. · 16.7% от всех</div>
+    </div>
+    <div style="background:rgba(52,201,123,0.08); border:1px solid rgba(52,201,123,0.2); border-radius:10px; padding:14px 18px; min-width:160px;">
+      <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">📅 4 июня — доля новой</div>
+      <div style="font-size:28px; font-weight:800; color:var(--green);">67.8%</div>
+      <div style="font-size:12px; color:var(--muted);">суточных польз. на v1.89.0</div>
+    </div>
+  </div>
+
+  <h3 style="margin-bottom:14px;">Динамика рулаута по дням</h3>
+  <div class="chart-wrap" style="height:210px;">
+    <canvas id="versionChart"></canvas>
+  </div>
+
+  <div style="margin-top:14px;">
+    <div class="insight green">
+      <strong>Рулаут идёт быстро:</strong> 1 июня — лишь 4% на новой версии; к 4 июня — уже 68% суточных пользователей. v1.88.0 падает: 1 399 → 201 польз./день.
+    </div>
+    <div class="insight yellow">
+      <strong>Потенциал геймификации:</strong> из ежедневных ~1 600 польз. раздела «Карты» по мере 100% рулаута в геймификацию войдут значительно больше. Сейчас за 5 дней уже 652 уникальных польз. получили скан 1.
+    </div>
+  </div>
+
+  <div style="margin-top:16px;">
+    <table class="ev-table">
+      <thead><tr><th>Версия</th><th>Польз. (с 1 июня)</th><th>Доля</th><th>Геймификация</th></tr></thead>
+      <tbody>
+        <tr><td><strong style="color:var(--green);">1.89.0</strong> 🆕</td><td>2 086</td><td>41.7%</td><td style="color:var(--green);">✅ есть (все 693 геймиф. польз.)</td></tr>
+        <tr><td>1.88.0</td><td>2 082</td><td>41.6%</td><td style="color:var(--muted);">—</td></tr>
+        <tr><td>1.82.0</td><td>333</td><td>6.7%</td><td style="color:var(--muted);">—</td></tr>
+        <tr><td>1.87.0</td><td>246</td><td>4.9%</td><td style="color:var(--muted);">—</td></tr>
+        <tr><td>1.86.0</td><td>104</td><td>2.1%</td><td style="color:var(--muted);">—</td></tr>
+        <tr><td style="color:var(--muted);">≤1.85.0 (прочие)</td><td style="color:var(--muted);">152</td><td style="color:var(--muted);">3.0%</td><td style="color:var(--muted);">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 <!-- ── Charts ── -->
 <div class="section-title">Динамика по дням</div>
 <div class="two-col">
@@ -398,6 +454,31 @@
 
 <script>
 const DAYS = ['1 июн', '2 июн', '3 июн', '4 июн'];
+
+new Chart(document.getElementById('versionChart').getContext('2d'), {
+  type: 'bar',
+  data: {
+    labels: ['1 июн', '2 июн', '3 июн', '4 июн'],
+    datasets: [
+      { label: 'v1.89.0 (с геймификацией)', data: [71, 614, 1032, 1092], backgroundColor: 'rgba(52,201,123,0.85)', borderRadius: 4, stack: 'a' },
+      { label: 'v1.88.0',                   data: [1399, 834, 373, 201],  backgroundColor: 'rgba(74,127,255,0.7)',  borderRadius: 4, stack: 'a' },
+      { label: 'v1.82.0',                   data: [149, 137, 138, 121],   backgroundColor: 'rgba(245,200,66,0.6)',  borderRadius: 4, stack: 'a' },
+      { label: 'v1.87.0',                   data: [116, 113, 98, 91],     backgroundColor: 'rgba(245,146,78,0.6)',  borderRadius: 4, stack: 'a' },
+      { label: '≤v1.86.0 (прочие)',         data: [110, 105, 80, 105],    backgroundColor: 'rgba(122,127,154,0.4)', borderRadius: 4, stack: 'a' },
+    ],
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: '#7a7f9a', font: { size: 10 }, boxWidth: 12 } },
+      tooltip: { backgroundColor: '#22263a', titleColor: '#e8eaf0', bodyColor: '#7a7f9a', borderColor: '#2a2f45', borderWidth: 1 },
+    },
+    scales: {
+      x: { stacked: true, ticks: { color: '#7a7f9a', font: { size: 11 } }, grid: { color: '#2a2f45' } },
+      y: { stacked: true, ticks: { color: '#7a7f9a', font: { size: 11 } }, grid: { color: '#2a2f45' } },
+    },
+  },
+});
 
 new Chart(document.getElementById('scanChart').getContext('2d'), {
   type: 'bar',
