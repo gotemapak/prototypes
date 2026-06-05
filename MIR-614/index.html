@@ -389,6 +389,51 @@
   </div>
 </div>
 
+<!-- ── Push chain ── -->
+<div class="section-title">Push-цепочка (Компонент 2)</div>
+<div class="card">
+  <h3>Доставленные геймификационные пуши</h3>
+  <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:18px;">
+
+    <div style="background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:14px 18px; min-width:200px; flex:1;">
+      <div style="font-size:11px; color:var(--muted); margin-bottom:2px;">П1 — «Промокод совсем рядом»</div>
+      <div style="font-size:10px; color:var(--muted); margin-bottom:8px;">Триггер: 2 скана, следующий разблокировался (+24ч)</div>
+      <div style="font-size:26px; font-weight:800; color:var(--green);">9</div>
+      <div style="font-size:12px; color:var(--muted);">доставлено · 4 июня, 12:00</div>
+      <div style="font-size:11px; color:var(--muted); margin-top:6px;">CTR: <span style="color:var(--yellow);">не измерить*</span></div>
+    </div>
+
+    <div style="background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:14px 18px; min-width:200px; flex:1;">
+      <div style="font-size:11px; color:var(--muted); margin-bottom:2px;">П2а/П2б — «Стрик сгорает завтра»</div>
+      <div style="font-size:10px; color:var(--muted); margin-bottom:8px;">Триггер: 4 дня без скана при активном стрике</div>
+      <div style="font-size:26px; font-weight:800; color:var(--accent);">1</div>
+      <div style="font-size:12px; color:var(--muted);">доставлено · 2 июня, 12:00</div>
+      <div style="font-size:11px; color:var(--muted); margin-top:6px;">CTR: <span style="color:var(--yellow);">не измерить*</span></div>
+    </div>
+
+    <div style="background:rgba(52,201,123,0.08); border:1px solid rgba(52,201,123,0.2); border-radius:10px; padding:14px 18px; min-width:200px; flex:1;">
+      <div style="font-size:11px; color:var(--muted); margin-bottom:2px;">Открытий приложения → раздел «Карты»</div>
+      <div style="font-size:10px; color:var(--muted); margin-bottom:8px;"><code style="font-size:10px;">push_app_opened</code> link=/cards</div>
+      <div style="font-size:26px; font-weight:800; color:var(--green);">19</div>
+      <div style="font-size:12px; color:var(--muted);">польз. с 1 июня (не только геймиф. пуши)</div>
+      <div style="font-size:11px; color:var(--muted); margin-top:6px;">8 из 19 потом сделали скан</div>
+    </div>
+  </div>
+
+  <div style="background:var(--card2); border-radius:8px; padding:12px 14px; font-size:12px; color:var(--muted); line-height:1.7;">
+    <strong style="color:var(--yellow);">* Почему CTR не посчитать:</strong> в <code>push_delivered</code> для П1 прописан <code>screen: "main"</code>, а не <code>link: "/cards"</code>. Событие <code>push_app_opened</code> не связывает открытие с конкретным именем пуша — нельзя отделить открытия П1 от других пушей. Чтобы считать CTR точно, нужно добавить в оба события единый идентификатор рассылки (например, <code>campaign_id</code> или <code>push_name</code>).
+  </div>
+
+  <div style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">
+    <div class="insight yellow">
+      <strong>П1 отправлен правильно:</strong> 9 пользователей с 2 сканами получили пуш 4 июня в 12:00. Ожидаемо — первые пользователи с 2 сканами появились 3 июня (34 польз.), следующий день +24ч = 4 июня.
+    </div>
+    <div class="insight yellow">
+      <strong>П2 — только 1 получатель:</strong> пуш сработал 2 июня для пользователя из тестового запуска 29 мая (4 дня без скана = 2 июня). Массовые П2 ожидаются с 5–6 июня, когда у июньских пользователей пройдёт 4 дня без скана.
+    </div>
+  </div>
+</div>
+
 <!-- ── Event status ── -->
 <div class="section-title">Статус событий аналитики MIR-614</div>
 <div class="card">
