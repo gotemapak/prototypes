@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIR-614 — Дашборд геймификации</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f1117;
+      --card: #1a1d27;
+      --card2: #22263a;
+      --border: #2a2f45;
+      --text: #e8eaf0;
+      --muted: #7a7f9a;
+      --accent: #4a7fff;
+      --green: #34c97b;
+      --yellow: #f5c842;
+      --red: #e05252;
+      --orange: #f5924e;
+      --radius: 14px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px 20px 60px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .header-left h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .header-left p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .badge {
+      display: inline-block;
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .badge span { color: var(--text); font-weight: 600; }
+
+    /* ── Section title ── */
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin: 28px 0 12px;
+    }
+
+    /* ── KPI grid ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .kpi {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+    }
+    .kpi .label { font-size: 12px; color: var(--muted); margin-bottom: 8px; line-height: 1.4; }
+    .kpi .value { font-size: 28px; font-weight: 700; line-height: 1; }
+    .kpi .sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .kpi.green .value { color: var(--green); }
+    .kpi.yellow .value { color: var(--yellow); }
+    .kpi.blue .value { color: var(--accent); }
+    .kpi.red .value { color: var(--red); }
+    .kpi.orange .value { color: var(--orange); }
+
+    /* ── Two-column layout ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* ── Card ── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .card h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+
+    /* ── Funnel ── */
+    .funnel { display: flex; flex-direction: column; gap: 8px; }
+    .funnel-step {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .funnel-bar-wrap {
+      flex: 1;
+      height: 38px;
+      background: var(--card2);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+    .funnel-bar {
+      height: 100%;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      padding-left: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+      transition: width 0.6s ease;
+    }
+    .funnel-meta {
+      min-width: 90px;
+      text-align: right;
+    }
+    .funnel-meta .n { font-size: 16px; font-weight: 700; }
+    .funnel-meta .pct { font-size: 12px; color: var(--muted); }
+    .drop-label {
+      font-size: 11px;
+      color: var(--red);
+      text-align: center;
+      margin-top: -4px;
+      margin-bottom: 2px;
+      padding-left: calc(100% - 90px);
+    }
+    .funnel-step-name {
+      font-size: 12px;
+      color: var(--muted);
+      min-width: 180px;
+    }
+
+    /* ── Chart wrapper ── */
+    .chart-wrap { position: relative; height: 200px; }
+
+    /* ── Event status table ── */
+    .event-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .event-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      padding: 6px 10px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .event-table td {
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .event-table tr:last-child td { border-bottom: none; }
+    .event-table tr:hover td { background: var(--card2); }
+    .event-name { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; color: var(--accent); }
+    .pill {
+      display: inline-block;
+      border-radius: 5px;
+      padding: 2px 8px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .pill.ok { background: rgba(52,201,123,0.15); color: var(--green); }
+    .pill.no { background: rgba(224,82,82,0.15); color: var(--red); }
+    .pill.partial { background: rgba(245,200,66,0.15); color: var(--yellow); }
+
+    /* ── Insight block ── */
+    .insight {
+      background: var(--card2);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.6;
+      margin-top: 8px;
+    }
+    .insight + .insight { margin-top: 8px; border-left-color: var(--yellow); }
+    .insight + .insight + .insight { border-left-color: var(--red); }
+
+    /* ── Full-width card ── */
+    .card-full {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+    .card-full h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h1>MIR-614 — Геймификация карт</h1>
+      <p>Стрик + промокоды + онбординг-сторис. Данные с момента запуска.</p>
+    </div>
+    <div class="header-right">
+      <div class="badge">Запуск <span>29 мая 2026</span></div>
+      <div class="badge">Данные по <span>4 июня 2026</span></div>
+      <div class="badge">7 дней с запуска</div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="section-title">Ключевые метрики</div>
+  <div class="kpi-grid">
+    <div class="kpi blue">
+      <div class="label">Открыли раздел «Карты» с запуска</div>
+      <div class="value">4 840</div>
+      <div class="sub">уникальных пользователей</div>
+    </div>
+    <div class="kpi blue">
+      <div class="label">Активировали карту</div>
+      <div class="value">4 536</div>
+      <div class="sub">94% от открывших раздел</div>
+    </div>
+    <div class="kpi yellow">
+      <div class="label">Получили 1-й скан в геймификации</div>
+      <div class="value">652</div>
+      <div class="sub">13.5% от открывших карты</div>
+    </div>
+    <div class="kpi orange">
+      <div class="label">Дошли до 2-го скана</div>
+      <div class="value">97</div>
+      <div class="sub">14.9% от получивших скан 1</div>
+    </div>
+    <div class="kpi green">
+      <div class="label">Получили промокод (3 скана)</div>
+      <div class="value">6</div>
+      <div class="sub">6.2% от скана 2 · 0.9% от старта</div>
+    </div>
+    <div class="kpi red">
+      <div class="label">Промокод применён к заказу</div>
+      <div class="value">0</div>
+      <div class="sub">gamification_promo_used не реализован</div>
+    </div>
+    <div class="kpi blue">
+      <div class="label">Онбординг показан</div>
+      <div class="value">2 087</div>
+      <div class="sub">43% от открывших карты</div>
+    </div>
+    <div class="kpi green">
+      <div class="label">Онбординг завершён</div>
+      <div class="value">954</div>
+      <div class="sub">45.7% completion rate</div>
+    </div>
+  </div>
+
+  <!-- Two columns: Funnel + Trend -->
+  <div class="section-title">Воронка и динамика</div>
+  <div class="two-col">
+
+    <!-- Funnel -->
+    <div class="card">
+      <h3>Воронка геймификации (с запуска)</h3>
+      <div class="funnel">
+
+        <div class="funnel-step">
+          <div class="funnel-step-name">Открыли раздел «Карты»</div>
+          <div class="funnel-bar-wrap">
+            <div class="funnel-bar" style="width:100%; background:linear-gradient(90deg,#2a4a8a,#1e3a6a);">
+              100%
+            </div>
+          </div>
+          <div class="funnel-meta">
+            <div class="n">4 840</div>
+            <div class="pct">—</div>
+          </div>
+        </div>
+
+        <div class="drop-label">▼ −6% (не активировали карту)</div>
+
+        <div class="funnel-step">
+          <div class="funnel-step-name">Активировали карту</div>
+          <div class="funnel-bar-wrap">
+            <div class="funnel-bar" style="width:93.7%; background:linear-gradient(90deg,#3a5aaa,#2a4a8a);">
+              93.7%
+            </div>
+          </div>
+          <div class="funnel-meta">
+            <div class="n">4 536</div>
+            <div class="pct">−6%</div>
+          </div>
+        </div>
+
+        <div class="drop-label">▼ −86.5% (геймификация не видна / не включена)</div>
+
+        <div class="funnel-step">
+          <div class="funnel-step-name">Скан 1 засчитан</div>
+          <div class="funnel-bar-wrap">
+            <div class="funnel-bar" style="width:13.5%; background:linear-gradient(90deg,#c8a020,#a07818);">
+              13.5%
+            </div>
+          </div>
+          <div class="funnel-meta">
+            <div class="n">652</div>
+            <div class="pct">−86.5%</div>
+          </div>
+        </div>
+
+        <div class="drop-label">▼ −85.1% дропнулись после 1-го скана</div>
+
+        <div class="funnel-step">
+          <div class="funnel-step-name">Скан 2 засчитан</div>
+          <div class="funnel-bar-wrap">
+            <div class="funnel-bar" style="width:2.0%; background:linear-gradient(90deg,#e07820,#b05810);">
+              2%
+            </div>
+          </div>
+          <div class="funnel-meta">
+            <div class="n">97</div>
+            <div class="pct">−85.1%</div>
+          </div>
+        </div>
+
+        <div class="drop-label">▼ −93.8% после 2-го скана</div>
+
+        <div class="funnel-step">
+          <div class="funnel-step-name">Промокод получен (скан 3)</div>
+          <div class="funnel-bar-wrap">
+            <div class="funnel-bar" style="width:0.12%; background:linear-gradient(90deg,#34c97b,#20a060);">
+              &lt;1%
+            </div>
+          </div>
+          <div class="funnel-meta">
+            <div class="n">6</div>
+            <div class="pct">−93.8%</div>
+          </div>
+        </div>
+
+      </div>
+
+      <div style="margin-top:16px;">
+        <div class="insight">
+          <strong>Главный дроп:</strong> только 13.5% от открывших карты получают первый засчитанный скан. Вероятно, геймификация включена не для всех пользователей (только для «viewer» — без заказов доставки).
+        </div>
+        <div class="insight">
+          <strong>Ретеншн цикла:</strong> скан 1 → скан 2 = 14.9%. Скан 2 → промокод = 6.2%. Данные ранние (7 дней), скан 2 и 3 требуют 2–3 разных дня.
+        </div>
+        <div class="insight">
+          <strong>Промокод не используется:</strong> 6 пользователей получили промокод, но событие применения не реализовано. Конверсию промо → заказ пока отследить нельзя.
+        </div>
+      </div>
+    </div>
+
+    <!-- Daily trend chart -->
+    <div class="card">
+      <h3>Динамика сканирований по дням</h3>
+      <div class="chart-wrap">
+        <canvas id="trendChart"></canvas>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <h3>Онбординг — воронка</h3>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="flex:1; height:32px; background: var(--card2); border-radius:6px; overflow:hidden;">
+              <div style="width:100%; height:100%; background:linear-gradient(90deg,#3a5aaa,#2a4a8a); display:flex; align-items:center; padding-left:10px; font-size:12px; font-weight:600;">100%</div>
+            </div>
+            <div style="min-width:120px; text-align:right; font-size:13px;"><strong>2 087</strong> <span style="color:var(--muted); font-size:11px;">показан попап</span></div>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <div style="flex:1; height:32px; background: var(--card2); border-radius:6px; overflow:hidden;">
+              <div style="width:45.7%; height:100%; background:linear-gradient(90deg,#34c97b,#20a060); display:flex; align-items:center; padding-left:10px; font-size:12px; font-weight:600;">45.7%</div>
+            </div>
+            <div style="min-width:120px; text-align:right; font-size:13px;"><strong>954</strong> <span style="color:var(--muted); font-size:11px;">завершили онбординг</span></div>
+          </div>
+        </div>
+        <div style="margin-top:10px; font-size:12px; color:var(--muted);">
+          ⚠️ Показаны данные старого онбординг-попапа (<code style="font-size:11px; color:var(--accent);">onboarding_cards_popup_shown/completed</code>). События для новых сторис (<code style="font-size:11px; color:var(--red);">onboarding_cards_story_*</code>) ещё не реализованы.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event status -->
+  <div class="section-title">Статус событий аналитики</div>
+  <div class="card-full">
+    <h3>Карта событий MIR-614</h3>
+    <table class="event-table">
+      <thead>
+        <tr>
+          <th>Событие</th>
+          <th>Компонент</th>
+          <th>Статус</th>
+          <th>Данные</th>
+          <th>Примечание</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="event-name">gamification_progress_shown</span></td>
+          <td>К1 — Стрик</td>
+          <td><span class="pill ok">Работает</span></td>
+          <td>749 событий · 693 польз.</td>
+          <td>Скан 1: 652 · Скан 2: 97. Параметры <code>scan_count</code>, <code>scans_to_promo</code> передаются корректно.</td>
+        </tr>
+        <tr>
+          <td><span class="event-name">gamification_promo_earned</span></td>
+          <td>К1 — Стрик</td>
+          <td><span class="pill ok">Работает</span></td>
+          <td>6 событий · 6 польз.</td>
+          <td>Все 6 — первый цикл (total_scans_lifetime=3). Первый промокод выдан 4 июня.</td>
+        </tr>
+        <tr>
+          <td><span class="event-name">gamification_description_opened</span></td>
+          <td>К1 — Стрик</td>
+          <td><span class="pill no">Нет данных</span></td>
+          <td>—</td>
+          <td>Событие не реализовано. Нельзя отследить интерес к условиям акции.</td>
+        </tr>
+        <tr>
+          <td><span class="event-name">gamification_promo_used</span></td>
+          <td>К1 — Стрик</td>
+          <td><span class="pill no">Нет данных</span></td>
+          <td>—</td>
+          <td>Критичное событие: без него невозможно измерить конверсию промокода в заказ.</td>
+        </tr>
+        <tr>
+          <td><span class="event-name">gamification_streak_reset</span></td>
+          <td>К1 — Стрик</td>
+          <td><span class="pill no">Нет данных</span></td>
+          <td>—</td>
+          <td>Не реализовано. Пока неизвестно, сколько пользователей потеряли стрик.</td>
+        </tr>
+        <tr>
+          <td><span class="event-name">onboarding_cards_story_shown</span></td>
+          <td>К3 — Онбординг</td>
+          <td><span class="pill no">Нет данных</span></td>
+          <td>—</td>
+          <td>Новые story-события не реализованы. Вместо них работает старый <code>onboarding_cards_popup_shown</code>.</td>
+        </tr>
+        <tr>
+          <td><span class="event-name">onboarding_cards_story_skipped</span></td>
+          <td>К3 — Онбординг</td>
+          <td><span class="pill no">Нет данных</span></td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><span class="event-name">onboarding_cards_story_completed</span></td>
+          <td>К3 — Онбординг</td>
+          <td><span class="pill no">Нет данных</span></td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><span class="event-name">promo_carousel_shown</span></td>
+          <td>К1/К4 — Промо</td>
+          <td><span class="pill no">Нет данных</span></td>
+          <td>—</td>
+          <td>Карусель промокодов — события не реализованы.</td>
+        </tr>
+        <tr>
+          <td><span class="event-name">promo_card_clicked</span></td>
+          <td>К1/К4 — Промо</td>
+          <td><span class="pill no">Нет данных</span></td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><span class="event-name">promo_details_viewed</span></td>
+          <td>К4 — Страница подборки</td>
+          <td><span class="pill no">Нет данных</span></td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><span class="event-name">promo_use_now_clicked</span></td>
+          <td>К4 — Страница подборки</td>
+          <td><span class="pill no">Нет данных</span></td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><span class="event-name">promo_apply_clicked</span></td>
+          <td>К1/К4 — Промо</td>
+          <td><span class="pill no">Нет данных</span></td>
+          <td>—</td>
+          <td>—</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:16px; padding:12px 14px; background:var(--card2); border-radius:8px; font-size:13px; color:var(--muted);">
+      ✅ Работают: 2 из 13 событий &nbsp;·&nbsp; ❌ Не реализованы: 11 из 13
+    </div>
+  </div>
+
+  <!-- Raw data note -->
+  <div class="section-title">Примечания</div>
+  <div class="card-full">
+    <h3>Контекст данных</h3>
+    <div style="display:flex; flex-direction:column; gap:8px; margin-top:4px;">
+      <div class="insight">
+        <strong>Почему геймификацию видят только 13.5% открывших карты?</strong> По задаче, механика не показывается пользователям с 1+ заказом доставки. Основная аудитория раздела «Карты» (~4 800 польз.) — регулярные посетители ресторанов, которые могут уже иметь заказы. Цифра 652 — это аудитория без опыта доставки.
+      </div>
+      <div class="insight">
+        <strong>Скан 2 появился только с 3 июня</strong> — это ожидаемо: для 2-го скана нужен минимум 1 день после первого. Данные июня 3–4 показывают 34–63 таких пользователей в день — динамика растёт.
+      </div>
+      <div class="insight">
+        <strong>Промокод не используется в заказах.</strong> Либо событие <code>gamification_promo_used</code> не реализовано и мы не видим применения, либо из 6 получивших промокод (все 4 июня, срок действия 5 дней) ещё никто не оформил заказ — первые получены сегодня.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['29 мая', '1 июн', '2 июн', '3 июн', '4 июн'],
+        datasets: [
+          {
+            label: 'Скан 1',
+            data: [1, 22, 180, 257, 192],
+            backgroundColor: 'rgba(200, 160, 32, 0.8)',
+            borderRadius: 4,
+            stack: 'stack',
+          },
+          {
+            label: 'Скан 2',
+            data: [0, 0, 0, 34, 63],
+            backgroundColor: 'rgba(240, 120, 32, 0.9)',
+            borderRadius: 4,
+            stack: 'stack',
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            labels: { color: '#7a7f9a', font: { size: 12 } },
+          },
+          tooltip: {
+            backgroundColor: '#22263a',
+            titleColor: '#e8eaf0',
+            bodyColor: '#7a7f9a',
+            borderColor: '#2a2f45',
+            borderWidth: 1,
+          },
+        },
+        scales: {
+          x: {
+            stacked: true,
+            ticks: { color: '#7a7f9a', font: { size: 11 } },
+            grid: { color: '#2a2f45' },
+          },
+          y: {
+            stacked: true,
+            ticks: { color: '#7a7f9a', font: { size: 11 } },
+            grid: { color: '#2a2f45' },
+          },
+        },
+      },
+    });
+  </script>
+</body>
+</html>
