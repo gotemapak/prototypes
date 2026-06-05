@@ -237,12 +237,12 @@
   <div class="header">
     <div class="header-left">
       <h1>MIR-614 — Геймификация карт</h1>
-      <p>Стрик + промокоды + онбординг-сторис. Данные с момента запуска.</p>
+      <p>Стрик + промокоды + онбординг. Данные с запуска (1 июня). 29 мая — 1 тестовое событие, не учитывается.</p>
     </div>
     <div class="header-right">
-      <div class="badge">Запуск <span>29 мая 2026</span></div>
-      <div class="badge">Данные по <span>4 июня 2026</span></div>
-      <div class="badge">7 дней с запуска</div>
+      <div class="badge">Запуск <span>1 июня 2026</span></div>
+      <div class="badge">Данные по <span>5 июня 2026</span></div>
+      <div class="badge">5 дней с запуска</div>
     </div>
   </div>
 
@@ -396,23 +396,24 @@
       </div>
 
       <div style="margin-top: 20px;">
-        <h3>Онбординг — воронка</h3>
+        <h3>Онбординг (с запуска)</h3>
         <div style="display:flex; flex-direction:column; gap:8px; margin-top:12px;">
           <div style="display:flex; align-items:center; gap:10px;">
             <div style="flex:1; height:32px; background: var(--card2); border-radius:6px; overflow:hidden;">
               <div style="width:100%; height:100%; background:linear-gradient(90deg,#3a5aaa,#2a4a8a); display:flex; align-items:center; padding-left:10px; font-size:12px; font-weight:600;">100%</div>
             </div>
-            <div style="min-width:120px; text-align:right; font-size:13px;"><strong>2 087</strong> <span style="color:var(--muted); font-size:11px;">показан попап</span></div>
+            <div style="min-width:130px; text-align:right; font-size:13px;"><strong>2 087</strong> <span style="color:var(--muted); font-size:11px;">открыли онбординг</span></div>
           </div>
           <div style="display:flex; align-items:center; gap:10px;">
             <div style="flex:1; height:32px; background: var(--card2); border-radius:6px; overflow:hidden;">
               <div style="width:45.7%; height:100%; background:linear-gradient(90deg,#34c97b,#20a060); display:flex; align-items:center; padding-left:10px; font-size:12px; font-weight:600;">45.7%</div>
             </div>
-            <div style="min-width:120px; text-align:right; font-size:13px;"><strong>954</strong> <span style="color:var(--muted); font-size:11px;">завершили онбординг</span></div>
+            <div style="min-width:130px; text-align:right; font-size:13px;"><strong>954</strong> <span style="color:var(--muted); font-size:11px;">завершили онбординг</span></div>
           </div>
         </div>
-        <div style="margin-top:10px; font-size:12px; color:var(--muted);">
-          ⚠️ Показаны данные старого онбординг-попапа (<code style="font-size:11px; color:var(--accent);">onboarding_cards_popup_shown/completed</code>). События для новых сторис (<code style="font-size:11px; color:var(--red);">onboarding_cards_story_*</code>) ещё не реализованы.
+        <div style="margin-top:12px; padding:10px 12px; background:rgba(52,201,123,0.07); border:1px solid rgba(52,201,123,0.2); border-radius:8px; font-size:12px; color:var(--muted); line-height:1.6;">
+          Попап показывается один раз при первом входе. <code>story_index=0</code> — ожидаемое значение для единственного попапа.<br>
+          ⚠️ 109 пользователей видели попап 2+ раз — стоит проверить, не срабатывает ли условие повторного показа.
         </div>
       </div>
     </div>
@@ -469,25 +470,18 @@
           <td>Не реализовано. Пока неизвестно, сколько пользователей потеряли стрик.</td>
         </tr>
         <tr>
-          <td><span class="event-name">onboarding_cards_story_shown</span></td>
+          <td><span class="event-name">onboarding_cards_popup_shown</span></td>
           <td>К3 — Онбординг</td>
-          <td><span class="pill no">Нет данных</span></td>
-          <td>—</td>
-          <td>Новые story-события не реализованы. Вместо них работает старый <code>onboarding_cards_popup_shown</code>.</td>
+          <td><span class="pill ok">Работает</span></td>
+          <td>2 370 событий · 2 087 польз.</td>
+          <td>Попап появляется единожды при первом входе в раздел «Карты». <code>story_index=0</code> — ожидаемо. 109 польз. видели попап 2+ раз — стоит проверить условие повторного показа.</td>
         </tr>
         <tr>
-          <td><span class="event-name">onboarding_cards_story_skipped</span></td>
+          <td><span class="event-name">onboarding_cards_popup_completed</span></td>
           <td>К3 — Онбординг</td>
-          <td><span class="pill no">Нет данных</span></td>
-          <td>—</td>
-          <td>—</td>
-        </tr>
-        <tr>
-          <td><span class="event-name">onboarding_cards_story_completed</span></td>
-          <td>К3 — Онбординг</td>
-          <td><span class="pill no">Нет данных</span></td>
-          <td>—</td>
-          <td>—</td>
+          <td><span class="pill ok">Работает</span></td>
+          <td>954 события · 954 польз.</td>
+          <td>Нет параметров (data = {}). 45.7% от открывших онбординг завершили его.</td>
         </tr>
         <tr>
           <td><span class="event-name">promo_carousel_shown</span></td>
@@ -528,7 +522,7 @@
     </table>
 
     <div style="margin-top:16px; padding:12px 14px; background:var(--card2); border-radius:8px; font-size:13px; color:var(--muted);">
-      ✅ Работают: 2 из 13 событий &nbsp;·&nbsp; ❌ Не реализованы: 11 из 13
+      ✅ Работают: 4 из 13 &nbsp;·&nbsp; ❌ Нет данных: 9 из 13
     </div>
   </div>
 
