@@ -97,42 +97,42 @@
   <div class="kpi blue">
     <div class="label">Открыли онбординг</div>
     <div class="value">2 085</div>
-    <div class="sub">уникальных польз. с 1 июня</div>
+    <div class="sub">уникальных польз. с 1 июня · <code>onboarding_cards_popup_shown</code></div>
   </div>
   <div class="kpi blue">
     <div class="label">Завершили онбординг</div>
     <div class="value">953</div>
-    <div class="sub">45.7% completion rate</div>
+    <div class="sub">45.7% completion rate · <code>onboarding_cards_popup_completed</code></div>
   </div>
   <div class="kpi yellow">
     <div class="label">Скан 1 засчитан</div>
     <div class="value">652</div>
-    <div class="sub">уникальных польз.</div>
+    <div class="sub">уникальных польз. · <code>gamification_progress_shown</code> scan_count=1</div>
   </div>
   <div class="kpi orange">
     <div class="label">Скан 2 засчитан</div>
     <div class="value">97</div>
-    <div class="sub">14.9% от скана 1</div>
+    <div class="sub">14.9% от скана 1 · <code>gamification_progress_shown</code> scan_count=2</div>
   </div>
   <div class="kpi green">
     <div class="label">Промокод получен</div>
     <div class="value">6</div>
-    <div class="sub">6.2% от скана 2</div>
+    <div class="sub">6.2% от скана 2 · <code>gamification_promo_earned</code></div>
   </div>
   <div class="kpi green">
     <div class="label">Открыли страницу партнёров</div>
     <div class="value">4</div>
-    <div class="sub">из 6 получивших промокод (67%)</div>
+    <div class="sub">из 6 получивших промокод (67%) · <code>gamification_partners_page</code></div>
   </div>
-  <div class="kpi red">
+  <div class="kpi" style="border-color:var(--border);">
     <div class="label">Промокод применён к заказу</div>
-    <div class="value">0</div>
-    <div class="sub">gamification_promo_used не реализован</div>
+    <div class="value" style="color:var(--muted);">0</div>
+    <div class="sub">пока срабатываний нет · <code>gamification_promo_used</code></div>
   </div>
-  <div class="kpi red">
+  <div class="kpi" style="border-color:var(--border);">
     <div class="label">Стрик сброшен</div>
-    <div class="value">0</div>
-    <div class="sub">событие не реализовано (или ещё рано)</div>
+    <div class="value" style="color:var(--muted);">0</div>
+    <div class="sub">пока срабатываний нет · <code>gamification_streak_reset</code></div>
   </div>
 </div>
 
@@ -146,7 +146,7 @@
     <div class="funnel">
 
       <div class="f-row">
-        <div class="f-label">Скан 1 засчитан</div>
+        <div class="f-label">Скан 1 засчитан <span style="color:var(--accent);font-size:10px;display:block;font-family:monospace;">gamification_progress_shown scan_count=1</span></div>
         <div class="f-bar-wrap"><div class="f-bar" style="width:100%;background:linear-gradient(90deg,#c8a020,#a07818);">100%</div></div>
         <div class="f-num"><div class="n">652</div><div class="p">—</div></div>
       </div>
@@ -154,7 +154,7 @@
       <div class="f-drop">▼ −85.1%</div>
 
       <div class="f-row">
-        <div class="f-label">Скан 2 засчитан</div>
+        <div class="f-label">Скан 2 засчитан <span style="color:var(--accent);font-size:10px;display:block;font-family:monospace;">gamification_progress_shown scan_count=2</span></div>
         <div class="f-bar-wrap"><div class="f-bar" style="width:14.9%;background:linear-gradient(90deg,#e07820,#b05810);">14.9%</div></div>
         <div class="f-num"><div class="n">97</div><div class="p">−85.1%</div></div>
       </div>
@@ -162,7 +162,7 @@
       <div class="f-drop">▼ −93.8%</div>
 
       <div class="f-row">
-        <div class="f-label">Промокод получен</div>
+        <div class="f-label">Промокод получен <span style="color:var(--accent);font-size:10px;display:block;font-family:monospace;">gamification_promo_earned</span></div>
         <div class="f-bar-wrap"><div class="f-bar" style="width:0.92%;background:linear-gradient(90deg,#34c97b,#20a060);">&nbsp;</div></div>
         <div class="f-num"><div class="n">6</div><div class="p">−93.8%</div></div>
       </div>
@@ -170,15 +170,15 @@
       <div class="f-drop">▼ −33.3%</div>
 
       <div class="f-row">
-        <div class="f-label">Страница партнёров</div>
+        <div class="f-label">Страница партнёров <span style="color:var(--accent);font-size:10px;display:block;font-family:monospace;">gamification_partners_page</span></div>
         <div class="f-bar-wrap"><div class="f-bar" style="width:0.61%;background:linear-gradient(90deg,#4a7fff,#2a5fdf);">&nbsp;</div></div>
         <div class="f-num"><div class="n">4</div><div class="p">−33.3%</div></div>
       </div>
 
       <div class="f-row" style="margin-top:4px;">
-        <div class="f-label">Промокод применён</div>
-        <div class="f-bar-wrap"><div class="f-bar" style="width:0%;background:var(--card2);color:var(--muted);font-weight:400;font-size:11px;">не реализовано</div></div>
-        <div class="f-num"><div class="n" style="color:var(--red);">0</div><div class="p">—</div></div>
+        <div class="f-label">Промокод применён <span style="color:var(--muted);font-size:10px;display:block;font-family:monospace;">gamification_promo_used</span></div>
+        <div class="f-bar-wrap"><div class="f-bar" style="width:0%;background:var(--card2);color:var(--muted);font-weight:400;font-size:11px;padding-left:8px;">пока срабатываний нет</div></div>
+        <div class="f-num"><div class="n" style="color:var(--muted);">0</div><div class="p">—</div></div>
       </div>
     </div>
 
@@ -190,7 +190,7 @@
         <strong>Страница партнёров:</strong> 4 из 6 открыли (67%). 1 пользователь заходил 5 раз — высокая вовлечённость. Source: 3 carousel + 1 gamification_popup.
       </div>
       <div class="insight red">
-        <strong>Конверсия промо → заказ не измеряется:</strong> <code>gamification_promo_used</code> не реализован. У 6 пользователей промокоды активны — нужно добавить событие до истечения 5-дневного срока.
+        <strong>Конверсия промо → заказ:</strong> <code>gamification_promo_used</code> пока не срабатывал. Возможно, никто ещё не применил промокод — все 6 выданы 4 июня, срок 5 дней.
       </div>
     </div>
   </div>
@@ -203,13 +203,13 @@
       <h3>Онбординг (с 1 июня)</h3>
       <div class="funnel">
         <div class="f-row">
-          <div class="f-label">Попап открыт</div>
+          <div class="f-label">Попап открыт <span style="color:var(--accent);font-size:10px;display:block;font-family:monospace;">onboarding_cards_popup_shown</span></div>
           <div class="f-bar-wrap"><div class="f-bar" style="width:100%;background:linear-gradient(90deg,#3a5aaa,#2a4a8a);">100%</div></div>
           <div class="f-num"><div class="n">2 085</div><div class="p">—</div></div>
         </div>
         <div class="f-drop">▼ −54.3%</div>
         <div class="f-row">
-          <div class="f-label">Нажали «Понятно»</div>
+          <div class="f-label">Нажали «Понятно» <span style="color:var(--accent);font-size:10px;display:block;font-family:monospace;">onboarding_cards_popup_completed</span></div>
           <div class="f-bar-wrap"><div class="f-bar" style="width:45.7%;background:linear-gradient(90deg,#34c97b,#20a060);">45.7%</div></div>
           <div class="f-num"><div class="n">953</div><div class="p">−54.3%</div></div>
         </div>
@@ -286,19 +286,19 @@
         <td><span class="ev-name">gamification_promo_used</span></td>
         <td><span class="pill no">Нет данных</span></td>
         <td>—</td>
-        <td>Не реализован. Конверсию промокода в заказ измерить невозможно. Промокоды у 6 пользователей истекают через 5 дней с 4 июня.</td>
+        <td>Пока срабатываний нет. Возможно, никто ещё не применил — промокоды выданы 4 июня, срок 5 дней.</td>
       </tr>
       <tr>
         <td><span class="ev-name">gamification_streak_reset</span></td>
         <td><span class="pill no">Нет данных</span></td>
         <td>—</td>
-        <td>Стрик сбрасывается после 5 дней без скана. Фиче ровно 5 дней — первые сбросы могут появиться сегодня-завтра.</td>
+        <td>Пока срабатываний нет. Стрик сбрасывается после 5 дней без скана — фиче ровно 5 дней, первые сбросы могут появиться сегодня-завтра.</td>
       </tr>
     </tbody>
   </table>
   <div style="margin-top:14px; padding:11px 14px; background:var(--card2); border-radius:8px; font-size:13px; color:var(--muted);">
     ✅ Работают: <strong style="color:var(--green);">5 из 7</strong> &nbsp;·&nbsp;
-    ❌ Нет данных: <strong style="color:var(--red);">2 из 7</strong>
+    ⬜ Пока 0 событий: <strong style="color:var(--muted);">2 из 7</strong> (gamification_promo_used, gamification_streak_reset)
   </div>
 </div>
 
@@ -309,8 +309,8 @@ new Chart(document.getElementById('scanChart').getContext('2d'), {
   data: {
     labels: ['1 июн', '2 июн', '3 июн', '4 июн'],
     datasets: [
-      { label: 'Скан 1', data: [22, 180, 257, 192], backgroundColor: 'rgba(200,160,32,0.85)', borderRadius: 4, stack: 'a' },
-      { label: 'Скан 2', data: [0, 0, 34, 63],      backgroundColor: 'rgba(240,120,32,0.9)',  borderRadius: 4, stack: 'a' },
+      { label: 'Скан 1 (gamification_progress_shown scan_count=1)', data: [22, 180, 257, 192], backgroundColor: 'rgba(200,160,32,0.85)', borderRadius: 4, stack: 'a' },
+      { label: 'Скан 2 (gamification_progress_shown scan_count=2)', data: [0, 0, 34, 63],      backgroundColor: 'rgba(240,120,32,0.9)',  borderRadius: 4, stack: 'a' },
     ],
   },
   options: {
@@ -330,8 +330,8 @@ new Chart(document.getElementById('onbChart').getContext('2d'), {
   data: {
     labels: ['1 июн', '2 июн', '3 июн', '4 июн'],
     datasets: [
-      { label: 'Попап открыт',  data: [70, 586, 817, 619],  backgroundColor: 'rgba(74,127,255,0.6)',  borderRadius: 4 },
-      { label: 'Завершён',      data: [42, 261, 378, 272],  backgroundColor: 'rgba(52,201,123,0.8)', borderRadius: 4 },
+      { label: 'Попап открыт (onboarding_cards_popup_shown)',    data: [70, 586, 817, 619], backgroundColor: 'rgba(74,127,255,0.6)',  borderRadius: 4 },
+      { label: 'Завершён (onboarding_cards_popup_completed)', data: [42, 261, 378, 272], backgroundColor: 'rgba(52,201,123,0.8)', borderRadius: 4 },
     ],
   },
   options: {
