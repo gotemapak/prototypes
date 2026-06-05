@@ -214,8 +214,8 @@
           <div class="f-num"><div class="n">953</div><div class="p">−54.3%</div></div>
         </div>
       </div>
-      <div style="margin-top:10px; padding:9px 12px; background:rgba(245,200,66,0.08); border:1px solid rgba(245,200,66,0.2); border-radius:7px; font-size:12px; color:var(--muted); line-height:1.6;">
-        ⚠️ <strong style="color:var(--yellow);">story_index всегда = 0</strong> — событие стреляет только при открытии первого экрана. Экраны 1 и 2 не фиксируются. Дропаут по шагам неизвестен.
+      <div style="margin-top:10px; padding:9px 12px; background:rgba(52,201,123,0.07); border:1px solid rgba(52,201,123,0.15); border-radius:7px; font-size:12px; color:var(--muted); line-height:1.6;">
+        story_index = 0 — корректно. Попап показывается один раз при первом входе в раздел «Карты».
       </div>
     </div>
 
@@ -254,9 +254,9 @@
     <tbody>
       <tr>
         <td><span class="ev-name">onboarding_cards_popup_shown</span></td>
-        <td><span class="pill warn">Частично</span></td>
+        <td><span class="pill ok">Работает</span></td>
         <td>2 370 событий · 2 087 польз.</td>
-        <td><strong style="color:var(--yellow);">story_index всегда = 0.</strong> Экраны 1 и 2 событие не отправляют. Нельзя измерить дропаут по шагам.</td>
+        <td>story_index = 0 — ожидаемо. Попап появляется единожды при первом входе.</td>
       </tr>
       <tr>
         <td><span class="ev-name">onboarding_cards_popup_completed</span></td>
@@ -297,8 +297,7 @@
     </tbody>
   </table>
   <div style="margin-top:14px; padding:11px 14px; background:var(--card2); border-radius:8px; font-size:13px; color:var(--muted);">
-    ✅ Работают: <strong style="color:var(--green);">4 из 7</strong> &nbsp;·&nbsp;
-    ⚠️ Частично: <strong style="color:var(--yellow);">1 из 7</strong> (onboarding story_index только = 0) &nbsp;·&nbsp;
+    ✅ Работают: <strong style="color:var(--green);">5 из 7</strong> &nbsp;·&nbsp;
     ❌ Нет данных: <strong style="color:var(--red);">2 из 7</strong>
   </div>
 </div>
