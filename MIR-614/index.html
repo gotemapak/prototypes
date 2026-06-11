@@ -27,13 +27,12 @@
     .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
     .card h3 { font-size: 14px; font-weight: 600; margin-bottom: 16px; }
 
-    /* ── Horizontal funnel ── */
     .hfunnel { display: flex; align-items: flex-start; gap: 0; overflow-x: auto; padding-bottom: 8px; }
     .hf-step { display: flex; align-items: center; flex-shrink: 0; }
     .hf-box {
       display: flex; flex-direction: column; align-items: center; text-align: center;
       width: 120px; padding: 14px 8px 12px;
-      background: var(--card2); border: 1px solid var(--border); border-radius: 10px; position: relative;
+      background: var(--card2); border: 1px solid var(--border); border-radius: 10px;
     }
     .hf-box.dim { opacity: 0.5; }
     .hf-icon { font-size: 18px; margin-bottom: 4px; }
@@ -46,7 +45,6 @@
     .hf-arrow .drop { font-size: 10px; color: var(--red); white-space: nowrap; }
     .hf-arrow .ok-drop { color: var(--green); }
 
-    /* ── Scan breakdown ── */
     .scan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
     .scan-card { background: var(--card2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
     .scan-card .sc-num { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
@@ -59,7 +57,6 @@
 
     .chart-wrap { position: relative; height: 200px; }
 
-    /* ── Event table ── */
     .ev-table { width: 100%; border-collapse: collapse; font-size: 13px; }
     .ev-table th { text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); padding: 6px 10px 10px; border-bottom: 1px solid var(--border); }
     .ev-table td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
@@ -69,6 +66,7 @@
     .pill { display: inline-block; border-radius: 5px; padding: 2px 8px; font-size: 11px; font-weight: 600; }
     .pill.ok   { background: rgba(52,201,123,0.15); color: var(--green); }
     .pill.no   { background: rgba(42,47,69,0.8); color: var(--muted); border: 1px solid var(--border); }
+    .pill.warn { background: rgba(245,200,66,0.12); color: var(--yellow); border: 1px solid rgba(245,200,66,0.3); }
 
     .insight { background: var(--card2); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 10px 13px; font-size: 13px; line-height: 1.6; margin-top: 8px; }
     .insight.yellow { border-left-color: var(--yellow); }
@@ -87,8 +85,8 @@
   </div>
   <div class="badges">
     <div class="badge">Запуск <span>1 июня 2026</span></div>
-    <div class="badge">Данные по <span>9 июня 2026</span></div>
-    <div class="badge"><span>9 дней</span> с запуска</div>
+    <div class="badge">Данные по <span>10 июня 2026</span></div>
+    <div class="badge"><span>10 дней</span> с запуска</div>
   </div>
 </div>
 
@@ -100,61 +98,61 @@
     <div class="hf-step">
       <div class="hf-box">
         <div class="hf-icon">🗂️</div>
-        <div class="hf-n" style="color:var(--accent);">5 702</div>
+        <div class="hf-n" style="color:var(--accent);">6 063</div>
         <div class="hf-label">Открыли раздел «Карты»</div>
         <div class="hf-ev">cards_section_opened</div>
       </div>
     </div>
 
-    <div class="hf-arrow">›<div class="drop ok-drop">−4.4%</div></div>
+    <div class="hf-arrow">›<div class="drop ok-drop">−4.3%</div></div>
 
     <div class="hf-step">
       <div class="hf-box">
         <div class="hf-icon">👁️</div>
-        <div class="hf-n" style="color:var(--accent);">5 450</div>
+        <div class="hf-n" style="color:var(--accent);">5 805</div>
         <div class="hf-label">Посмотрели карту</div>
         <div class="hf-ev">card_viewed</div>
-        <div class="hf-pct ok">−4.4%</div>
+        <div class="hf-pct ok">−4.3%</div>
       </div>
     </div>
 
-    <div class="hf-arrow">›<div class="drop ok-drop">−2.4%</div></div>
+    <div class="hf-arrow">›<div class="drop ok-drop">−2.2%</div></div>
 
     <div class="hf-step">
       <div class="hf-box">
         <div class="hf-icon">📲</div>
-        <div class="hf-n" style="color:var(--accent);">5 319</div>
+        <div class="hf-n" style="color:var(--accent);">5 677</div>
         <div class="hf-label">Активировали карту</div>
         <div class="hf-ev">card_activated</div>
-        <div class="hf-pct ok">−2.4%</div>
+        <div class="hf-pct ok">−2.2%</div>
       </div>
     </div>
 
-    <div class="hf-arrow">›<div class="drop" style="color:var(--red);font-weight:700;">−78.7%</div></div>
+    <div class="hf-arrow">›<div class="drop" style="color:var(--red);font-weight:700;">−77.6%</div></div>
 
     <div class="hf-step">
       <div class="hf-box">
         <div class="hf-icon">🔥</div>
-        <div class="hf-n" style="color:var(--yellow);">1 131</div>
+        <div class="hf-n" style="color:var(--yellow);">1 272</div>
         <div class="hf-label">Скан 1 засчитан</div>
         <div class="hf-ev">gamification_progress_shown<br>scan_count=1</div>
-        <div class="hf-pct">−78.7%</div>
+        <div class="hf-pct">−77.6%</div>
       </div>
     </div>
 
-    <div class="hf-arrow">›<div class="drop">−74.1%</div></div>
+    <div class="hf-arrow">›<div class="drop">−71.7%</div></div>
 
     <div class="hf-step">
       <div class="hf-box">
         <div class="hf-icon">🔥🔥</div>
-        <div class="hf-n" style="color:var(--orange);">293</div>
+        <div class="hf-n" style="color:var(--orange);">360</div>
         <div class="hf-label">Скан 2 засчитан</div>
         <div class="hf-ev">gamification_progress_shown<br>scan_count=2</div>
-        <div class="hf-pct">−74.1%</div>
+        <div class="hf-pct">−71.7%</div>
       </div>
     </div>
 
-    <div class="hf-arrow">›<div class="drop">−89.8%</div></div>
+    <div class="hf-arrow">›<div class="drop">−91.7%</div></div>
 
     <div class="hf-step">
       <div class="hf-box">
@@ -162,7 +160,7 @@
         <div class="hf-n" style="color:var(--green);">30</div>
         <div class="hf-label">Скан 3 / промокод</div>
         <div class="hf-ev">gamification_promo_earned</div>
-        <div class="hf-pct">−89.8%</div>
+        <div class="hf-pct">−91.7%</div>
       </div>
     </div>
 
@@ -194,13 +192,13 @@
 
   <div style="margin-top:16px; display:flex; flex-direction:column; gap:8px;">
     <div class="insight yellow">
-      <strong>Главный дроп: card_activated → скан 1 (−78.7%)</strong> — 5 319 активировали карту, только 1 131 получили засчитанный скан. Причина: рулаут v1.89.0 ещё не завершён (~74% на 9 июня). Конверсия будет расти по мере обновления.
+      <strong>Главный дроп: card_activated → скан 1 (−77.6%)</strong> — рулаут v1.89.0 ещё не завершён (~76% на 10 июня). Конверсия будет расти по мере обновления.
     </div>
-    <div class="insight yellow">
-      <strong>Скан 2 → скан 3 (−89.8%) — данные не устоялись:</strong> 293 пользователя на скане 2, но большинство из них прошли скан 2 8–9 июня и ещё не возвращались за сканом 3. Реальная конверсия будет ясна через 1–2 дня.
+    <div class="insight red">
+      <strong>promo_earned завис на 30 с 5 июня.</strong> 360 пользователей прошли скан 2, но новых промокодов нет 5 дней. Вероятная причина: большинство получили <code>gamification_streak_reset</code> до того, как вернулись за сканом 3 — выходные (Jun 6–7) обнулили прогресс у первой волны.
     </div>
     <div class="insight green">
-      <strong>Партнёры: 27 из 30 (90%) открыли страницу</strong> после получения промокода. Срок промокодов истекает 9–10 июня — смотрим на promo_used.
+      <strong>Партнёры: 27 из 30 (90%) открыли страницу</strong> после получения промокода. Ждём следующую волну promo_earned после полного рулаута.
     </div>
   </div>
 </div>
@@ -210,50 +208,77 @@
 <div class="scan-grid">
   <div class="scan-card">
     <div class="sc-num">Скан 1</div>
-    <div class="sc-val" style="color:var(--yellow);">1 131</div>
+    <div class="sc-val" style="color:var(--yellow);">1 272</div>
     <div class="sc-sub">уникальных пользователей</div>
-    <div class="sc-sub" style="margin-top:3px;">21.3% от активировавших карту</div>
+    <div class="sc-sub" style="margin-top:3px;">22.4% от активировавших карту</div>
     <div class="sc-ev">gamification_progress_shown<br>scan_count = 1, scans_to_promo = 2</div>
   </div>
   <div class="scan-card">
     <div class="sc-num">Скан 2</div>
-    <div class="sc-val" style="color:var(--orange);">293</div>
+    <div class="sc-val" style="color:var(--orange);">360</div>
     <div class="sc-sub">уникальных пользователей</div>
-    <div class="sc-sub" style="margin-top:3px;">25.9% от скана 1</div>
+    <div class="sc-sub" style="margin-top:3px;">28.3% от скана 1</div>
     <div class="sc-ev">gamification_progress_shown<br>scan_count = 2, scans_to_promo = 1</div>
   </div>
   <div class="scan-card">
     <div class="sc-num">Скан 3 — промокод</div>
     <div class="sc-val" style="color:var(--green);">30</div>
     <div class="sc-sub">уникальных пользователей</div>
-    <div class="sc-sub" style="margin-top:3px;">10.2% от скана 2 (данные растут)</div>
+    <div class="sc-sub" style="margin-top:3px; color:var(--red);">не растёт с 5 июня ⚠️</div>
     <div class="sc-ev">gamification_promo_earned<br>promo_code + total_scans_lifetime</div>
+  </div>
+</div>
+
+<!-- ── Streak reset ── -->
+<div class="section-title">Сгорание стриков</div>
+<div class="card">
+  <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start;">
+    <div style="background:rgba(224,82,82,0.1); border:1px solid rgba(224,82,82,0.3); border-radius:10px; padding:14px 18px; min-width:180px;">
+      <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">gamification_streak_reset</div>
+      <div style="font-size:32px; font-weight:800; color:var(--red);">514</div>
+      <div style="font-size:12px; color:var(--muted);">польз. потеряли стрик</div>
+      <div style="font-size:11px; color:var(--muted); margin-top:4px;">98 Jun8 · 162 Jun9 · 254 Jun10</div>
+    </div>
+    <div style="flex:1; min-width:280px; display:flex; flex-direction:column; gap:8px;">
+      <div class="insight red" style="margin-top:0;">
+        <strong>254 стрика сгорело 10 июня</strong> — пользователи, сделавшие скан 1 в первые дни (5 июня: 138 польз.) и не вернувшиеся в течение 5 дней. Именно они не дошли до скана 3 и заморозили promo_earned.
+      </div>
+      <div class="insight yellow" style="margin-top:0;">
+        <strong>Гипотеза о механике:</strong> пользователи делают скан 1, пропускают выходные, стрик сгорает на 6-й день. Стоит рассмотреть более длинный grace period или push-напоминание раньше чем за 1 день.
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:14px;">
+    <h3 style="margin-bottom:12px;">Сканирования и сгорания по дням</h3>
+    <div class="chart-wrap" style="height:180px;">
+      <canvas id="scanChart"></canvas>
+    </div>
   </div>
 </div>
 
 <!-- ── Version rollout ── -->
 <div class="section-title">Рулаут версий приложения (раздел «Карты», с 1 июня)</div>
 <div class="card">
-  <h3>Версии — уникальных пользователей за 9 дней</h3>
+  <h3>Версии — уникальных пользователей за 10 дней</h3>
   <div style="display:flex; gap:16px; flex-wrap:wrap; margin-bottom:18px;">
     <div style="background:rgba(52,201,123,0.12); border:1px solid rgba(52,201,123,0.3); border-radius:10px; padding:14px 18px; min-width:160px;">
       <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">🆕 v1.89.0 — новая (с геймификацией)</div>
-      <div style="font-size:28px; font-weight:800; color:var(--green);">3 632</div>
-      <div style="font-size:12px; color:var(--muted);">польз. · 63.7% от всех</div>
+      <div style="font-size:28px; font-weight:800; color:var(--green);">4 005</div>
+      <div style="font-size:12px; color:var(--muted);">польз. · 66.1% от всех</div>
     </div>
     <div style="background:rgba(74,127,255,0.1); border:1px solid rgba(74,127,255,0.25); border-radius:10px; padding:14px 18px; min-width:160px;">
       <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">v1.88.0 — предыдущая</div>
-      <div style="font-size:28px; font-weight:800; color:var(--accent);">2 196</div>
-      <div style="font-size:12px; color:var(--muted);">польз. · 38.5% от всех</div>
+      <div style="font-size:28px; font-weight:800; color:var(--accent);">2 218</div>
+      <div style="font-size:12px; color:var(--muted);">польз. · 36.6% от всех</div>
     </div>
     <div style="background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:14px 18px; min-width:160px;">
       <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">Старые версии (≤1.87)</div>
-      <div style="font-size:28px; font-weight:800; color:var(--muted);">1 110</div>
-      <div style="font-size:12px; color:var(--muted);">польз. · 19.5% от всех</div>
+      <div style="font-size:28px; font-weight:800; color:var(--muted);">1 149</div>
+      <div style="font-size:12px; color:var(--muted);">польз. · 19.0% от всех</div>
     </div>
     <div style="background:rgba(52,201,123,0.08); border:1px solid rgba(52,201,123,0.2); border-radius:10px; padding:14px 18px; min-width:160px;">
-      <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">📅 9 июня — доля новой</div>
-      <div style="font-size:28px; font-weight:800; color:var(--green);">74.4%</div>
+      <div style="font-size:11px; color:var(--muted); margin-bottom:4px;">📅 10 июня — доля новой</div>
+      <div style="font-size:28px; font-weight:800; color:var(--green);">75.8%</div>
       <div style="font-size:12px; color:var(--muted);">суточных польз. на v1.89.0</div>
     </div>
   </div>
@@ -265,7 +290,7 @@
 
   <div style="margin-top:14px;">
     <div class="insight green">
-      <strong>Рулаут ускорился:</strong> к 9 июня 74% суточных пользователей уже на v1.89.0. v1.88.0 упал до 87 польз./день (было 1 399 в день запуска). По будням (8–9 июня) активность вернулась к уровню первой недели.
+      <strong>Рулаут продолжается:</strong> к 10 июня 75.8% суточных пользователей на v1.89.0. v1.88.0 стабилизировался на ~87 польз./день — это хвост пользователей, которые не обновляются.
     </div>
   </div>
 
@@ -273,73 +298,64 @@
     <table class="ev-table">
       <thead><tr><th>Версия</th><th>Польз. (с 1 июня)</th><th>Доля</th><th>Геймификация</th></tr></thead>
       <tbody>
-        <tr><td><strong style="color:var(--green);">1.89.0</strong> 🆕</td><td>3 632</td><td>63.7%</td><td style="color:var(--green);">✅ есть</td></tr>
-        <tr><td>1.88.0</td><td>2 196</td><td>38.5%</td><td style="color:var(--muted);">—</td></tr>
-        <tr><td>1.82.0</td><td>444</td><td>7.8%</td><td style="color:var(--muted);">—</td></tr>
-        <tr><td>1.87.0</td><td>320</td><td>5.6%</td><td style="color:var(--muted);">—</td></tr>
-        <tr><td>1.86.0</td><td>147</td><td>2.6%</td><td style="color:var(--muted);">—</td></tr>
-        <tr><td>1.84.0</td><td>85</td><td>1.5%</td><td style="color:var(--muted);">—</td></tr>
-        <tr><td style="color:var(--muted);">≤1.85.0 (прочие)</td><td style="color:var(--muted);">114</td><td style="color:var(--muted);">2.0%</td><td style="color:var(--muted);">—</td></tr>
+        <tr><td><strong style="color:var(--green);">1.89.0</strong> 🆕</td><td>4 005</td><td>66.1%</td><td style="color:var(--green);">✅ есть</td></tr>
+        <tr><td>1.88.0</td><td>2 218</td><td>36.6%</td><td style="color:var(--muted);">—</td></tr>
+        <tr><td>1.82.0</td><td>473</td><td>7.8%</td><td style="color:var(--muted);">—</td></tr>
+        <tr><td>1.87.0</td><td>334</td><td>5.5%</td><td style="color:var(--muted);">—</td></tr>
+        <tr><td>1.86.0</td><td>154</td><td>2.5%</td><td style="color:var(--muted);">—</td></tr>
+        <tr><td>1.84.0</td><td>87</td><td>1.4%</td><td style="color:var(--muted);">—</td></tr>
+        <tr><td style="color:var(--muted);">≤1.85.0 (прочие)</td><td style="color:var(--muted);">101</td><td style="color:var(--muted);">1.7%</td><td style="color:var(--muted);">—</td></tr>
       </tbody>
     </table>
-    <div style="margin-top:8px; font-size:11px; color:var(--muted);">* Польз. per version — уникальные за период, сумма > 5 702 т.к. часть польз. обновлялась в этот период.</div>
+    <div style="margin-top:8px; font-size:11px; color:var(--muted);">* Сумма > 6 063 т.к. часть польз. обновлялась в этот период.</div>
   </div>
 </div>
 
 <!-- ── Charts ── -->
-<div class="section-title">Динамика по дням</div>
+<div class="section-title">Динамика по дням — раздел карт и онбординг</div>
 <div class="two-col">
-  <div class="card">
-    <h3>Сканирования (уник. польз./день)</h3>
-    <div class="chart-wrap">
-      <canvas id="scanChart"></canvas>
-    </div>
-  </div>
   <div class="card">
     <h3>Раздел карт (уник. польз./день)</h3>
     <div class="chart-wrap">
       <canvas id="cardsChart"></canvas>
     </div>
   </div>
+  <div class="card">
+    <h3>Онбординг по дням</h3>
+    <div class="chart-wrap">
+      <canvas id="onbChart"></canvas>
+    </div>
+  </div>
 </div>
 
-<!-- ── Onboarding ── -->
+<!-- ── Onboarding funnel ── -->
 <div class="section-title">Онбординг</div>
 <div class="card">
   <h3>Воронка онбординга (с 1 июня)</h3>
   <div style="display:flex; gap:0; align-items:flex-start; flex-wrap:wrap;">
-
     <div style="display:flex; align-items:center; gap:0;">
       <div class="hf-box" style="width:160px;">
         <div class="hf-icon">📖</div>
-        <div class="hf-n" style="color:var(--accent);">3 627</div>
+        <div class="hf-n" style="color:var(--accent);">4 001</div>
         <div class="hf-label">Попап открыт</div>
         <div class="hf-ev">onboarding_cards_popup_shown<br>story_index = 0</div>
       </div>
-      <div class="hf-arrow">›<div class="drop">−53.4%</div></div>
+      <div class="hf-arrow">›<div class="drop">−53.2%</div></div>
       <div class="hf-box" style="width:160px;">
         <div class="hf-icon">✔️</div>
-        <div class="hf-n" style="color:var(--green);">1 691</div>
+        <div class="hf-n" style="color:var(--green);">1 871</div>
         <div class="hf-label">Нажали «Понятно»</div>
         <div class="hf-ev">onboarding_cards_popup_completed</div>
-        <div class="hf-pct">−53.4%</div>
+        <div class="hf-pct">−53.2%</div>
       </div>
     </div>
-
     <div style="margin-left:20px; flex:1; min-width:260px; display:flex; flex-direction:column; gap:8px; align-self:center;">
       <div class="insight" style="margin-top:0;">
-        <strong>46.6%</strong> завершили онбординг нажав «Понятно». 53.4% закрыли попап крестиком или свайпом.
+        <strong>46.8%</strong> завершили онбординг нажав «Понятно». Показатель стабилен ~47% все 10 дней.
       </div>
       <div class="insight yellow" style="margin-top:0;">
-        Переходы между экранами внутри попапа не фиксируются — <code>story_index</code> всегда = 0 (один попап, одно событие при открытии).
+        <code>story_index</code> всегда = 0 — один попап, одно событие при открытии. Переходы внутри не фиксируются.
       </div>
-    </div>
-  </div>
-
-  <div style="margin-top:14px;">
-    <h3 style="margin-bottom:12px;">Онбординг по дням</h3>
-    <div class="chart-wrap" style="height:150px;">
-      <canvas id="onbChart"></canvas>
     </div>
   </div>
 </div>
@@ -353,16 +369,16 @@
     <div style="background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:14px 18px; min-width:200px; flex:1;">
       <div style="font-size:11px; color:var(--muted); margin-bottom:2px;">П1 — «Промокод совсем рядом»</div>
       <div style="font-size:10px; color:var(--muted); margin-bottom:8px;">Триггер: 2 скана, следующий разблокировался (+24ч)</div>
-      <div style="font-size:26px; font-weight:800; color:var(--green);">146</div>
-      <div style="font-size:12px; color:var(--muted);">доставлено · 4–9 июня (9+24+1+88+24)</div>
+      <div style="font-size:26px; font-weight:800; color:var(--green);">196</div>
+      <div style="font-size:12px; color:var(--muted);">доставлено · 4–10 июня (9+24+1+88+24+50)</div>
       <div style="font-size:11px; color:var(--muted); margin-top:6px;">CTR: <span style="color:var(--yellow);">не измерить*</span></div>
     </div>
 
     <div style="background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:14px 18px; min-width:200px; flex:1;">
       <div style="font-size:11px; color:var(--muted); margin-bottom:2px;">П2а/П2б — «Стрик сгорает завтра»</div>
       <div style="font-size:10px; color:var(--muted); margin-bottom:8px;">Триггер: 4 дня без скана при активном стрике</div>
-      <div style="font-size:26px; font-weight:800; color:var(--accent);">223</div>
-      <div style="font-size:12px; color:var(--muted);">доставлено · 2, 8–9 июня (1+109+113)</div>
+      <div style="font-size:26px; font-weight:800; color:var(--accent);">270</div>
+      <div style="font-size:12px; color:var(--muted);">доставлено · 2, 8–10 июня (1+109+113+47)</div>
       <div style="font-size:11px; color:var(--muted); margin-top:6px;">CTR: <span style="color:var(--yellow);">не измерить*</span></div>
     </div>
 
@@ -373,11 +389,8 @@
   </div>
 
   <div style="margin-top:12px; display:flex; flex-direction:column; gap:8px;">
-    <div class="insight green">
-      <strong>П2 взорвался 8–9 июня:</strong> 222 пользователя получили напоминание о сгорании стрика (109 + 113). Это первая волна июньских пользователей, которые не заходили в раздел «Карты» в выходные (4 дня без скана = воскресенье–понедельник).
-    </div>
-    <div class="insight green">
-      <strong>П1 нарастает:</strong> 88 доставлено 8 июня + 24 девятого. Итого 146 пользователей с 2 сканами получили пуш — ждём, когда они вернутся за сканом 3.
+    <div class="insight yellow">
+      <strong>П2 нарастает, но эффективность неизвестна:</strong> 270 пользователей получили напоминание о сгорании стрика, но 514 стриков всё равно сгорело. Без CTR-данных неясно, помогает ли пуш или пользователи всё равно не возвращаются.
     </div>
   </div>
 </div>
@@ -387,77 +400,73 @@
 <div class="card">
   <table class="ev-table">
     <thead>
-      <tr>
-        <th>Событие</th>
-        <th>Статус</th>
-        <th>Данные (с 1 июня)</th>
-        <th>Примечание</th>
-      </tr>
+      <tr><th>Событие</th><th>Статус</th><th>Данные (с 1 июня)</th><th>Примечание</th></tr>
     </thead>
     <tbody>
       <tr>
         <td><span class="ev-name">onboarding_cards_popup_shown</span></td>
         <td><span class="pill ok">Работает</span></td>
-        <td>4 179 событий · 3 627 польз.</td>
-        <td>Попап при первом входе в раздел «Карты». story_index=0 — ожидаемо.</td>
+        <td>4 618 событий · 4 001 польз.</td>
+        <td>Попап при первом входе. story_index=0 — ожидаемо.</td>
       </tr>
       <tr>
         <td><span class="ev-name">onboarding_cards_popup_completed</span></td>
         <td><span class="pill ok">Работает</span></td>
-        <td>1 693 события · 1 691 польз.</td>
-        <td>Нажали «Понятно». 46.6% completion rate.</td>
+        <td>1 873 события · 1 871 польз.</td>
+        <td>Нажали «Понятно». 46.8% completion rate.</td>
       </tr>
       <tr>
         <td><span class="ev-name">gamification_progress_shown</span></td>
         <td><span class="pill ok">Работает</span></td>
-        <td>1 471 событий · 1 264 польз.</td>
-        <td>scan_count=1: 1 131 польз. · scan_count=2: 293 польз. Параметры передаются корректно.</td>
+        <td>1 714 событий · 1 436 польз.</td>
+        <td>scan_count=1: 1 272 польз. · scan_count=2: 360 польз.</td>
       </tr>
       <tr>
         <td><span class="ev-name">gamification_promo_earned</span></td>
-        <td><span class="pill ok">Работает</span></td>
+        <td><span class="pill warn">Не растёт</span></td>
         <td>30 событий · 30 польз.</td>
-        <td>6 промокодов 4 июня, 24 — 5 июня. Следующая волна ожидается 9–10 июня (scan2 с 8 июня).</td>
+        <td>Последнее событие 5 июня. 360 польз. на скане 2 — вероятно, стрики сгорают до скана 3.</td>
       </tr>
       <tr>
         <td><span class="ev-name">gamification_partners_page</span></td>
         <td><span class="pill ok">Работает</span></td>
-        <td>49 событий · 27 польз.</td>
+        <td>50 событий · 27 польз.</td>
         <td>27 из 30 получивших промокод (90%) открыли страницу партнёров.</td>
       </tr>
       <tr>
         <td><span class="ev-name">gamification_streak_reset</span></td>
         <td><span class="pill ok">Работает</span></td>
-        <td>261 событий · 261 польз.</td>
-        <td>Заработал 8–9 июня (98+162 польз.): пользователи не заходили в выходные — стрик сгорел.</td>
+        <td>514 событий · 514 польз.</td>
+        <td>98 Jun8 + 162 Jun9 + 254 Jun10. Коррелирует с выходными — пользователи не заходили Jun 6–7.</td>
       </tr>
       <tr>
         <td><span class="ev-name">gamification_promo_used</span></td>
         <td><span class="pill no">0 событий</span></td>
         <td>—</td>
-        <td>Пока срабатываний нет. Срок промокодов истекает 9–10 июня.</td>
+        <td>Пока срабатываний нет. Ждём следующего цикла promo_earned.</td>
       </tr>
     </tbody>
   </table>
   <div style="margin-top:12px; padding:10px 14px; background:var(--card2); border-radius:8px; font-size:13px; color:var(--muted);">
     ✅ Работают: <strong style="color:var(--green);">6 из 7</strong> &nbsp;·&nbsp;
-    ⬜ Пока 0 событий: <strong style="color:var(--muted);">1 из 7</strong>
+    ⚠️ Аномалия: <strong style="color:var(--yellow);">1</strong> (promo_earned не растёт) &nbsp;·&nbsp;
+    ⬜ Пока 0: <strong style="color:var(--muted);">1</strong> (promo_used)
   </div>
 </div>
 
 <script>
-const DAYS = ['1 июн', '2 июн', '3 июн', '4 июн', '5 июн', '6 июн', '7 июн', '8 июн', '9 июн'];
+const DAYS = ['1 июн','2 июн','3 июн','4 июн','5 июн','6 июн','7 июн','8 июн','9 июн','10 июн'];
 
 new Chart(document.getElementById('versionChart').getContext('2d'), {
   type: 'bar',
   data: {
     labels: DAYS,
     datasets: [
-      { label: 'v1.89.0 (с геймификацией)', data: [71, 614, 1032, 1092, 1055, 63, 55, 1299, 1200], backgroundColor: 'rgba(52,201,123,0.85)', borderRadius: 4, stack: 'a' },
-      { label: 'v1.88.0',                   data: [1399, 834, 373, 201, 150, 7, 3, 109, 87],        backgroundColor: 'rgba(74,127,255,0.7)',  borderRadius: 4, stack: 'a' },
-      { label: 'v1.82.0',                   data: [149, 137, 138, 121, 120, 6, 4, 149, 144],        backgroundColor: 'rgba(245,200,66,0.6)',  borderRadius: 4, stack: 'a' },
-      { label: 'v1.87.0',                   data: [116, 113, 98, 91, 90, 6, 2, 91, 77],             backgroundColor: 'rgba(245,146,78,0.6)',  borderRadius: 4, stack: 'a' },
-      { label: '≤v1.86.0 (прочие)',         data: [103, 94, 77, 105, 86, 6, 4, 122, 104],           backgroundColor: 'rgba(122,127,154,0.4)', borderRadius: 4, stack: 'a' },
+      { label: 'v1.89.0 (с геймификацией)', data: [71,614,1032,1092,1055,63,55,1299,1200,1276], backgroundColor: 'rgba(52,201,123,0.85)', borderRadius: 4, stack: 'a' },
+      { label: 'v1.88.0',                   data: [1399,834,373,201,150,7,3,109,87,87],          backgroundColor: 'rgba(74,127,255,0.7)',  borderRadius: 4, stack: 'a' },
+      { label: 'v1.82.0',                   data: [149,137,138,121,120,6,4,149,144,149],          backgroundColor: 'rgba(245,200,66,0.6)',  borderRadius: 4, stack: 'a' },
+      { label: 'v1.87.0',                   data: [116,113,98,91,90,6,2,91,77,78],                backgroundColor: 'rgba(245,146,78,0.6)',  borderRadius: 4, stack: 'a' },
+      { label: '≤v1.86.0 (прочие)',         data: [103,94,77,105,86,6,4,122,104,93],              backgroundColor: 'rgba(122,127,154,0.4)', borderRadius: 4, stack: 'a' },
     ],
   },
   options: {
@@ -478,9 +487,10 @@ new Chart(document.getElementById('scanChart').getContext('2d'), {
   data: {
     labels: DAYS,
     datasets: [
-      { label: 'Скан 1 (scan_count=1)', data: [22, 180, 257, 192, 138, 11, 10, 188, 178], backgroundColor: 'rgba(200,160,32,0.85)', borderRadius: 4, stack: 'a' },
-      { label: 'Скан 2 (scan_count=2)', data: [0, 0, 34, 63, 74, 5, 4, 62, 53],           backgroundColor: 'rgba(240,120,32,0.9)',  borderRadius: 4, stack: 'a' },
-      { label: 'Скан 3 (promo_earned)', data: [0, 0, 0, 6, 24, 0, 0, 0, 0],               backgroundColor: 'rgba(52,201,123,0.9)',  borderRadius: 4, stack: 'a' },
+      { label: 'Скан 1 (scan_count=1)', data: [22,180,257,192,138,11,10,188,178,172], backgroundColor: 'rgba(200,160,32,0.85)', borderRadius: 4, stack: 'a' },
+      { label: 'Скан 2 (scan_count=2)', data: [0,0,34,63,74,5,4,62,53,71],            backgroundColor: 'rgba(240,120,32,0.9)',  borderRadius: 4, stack: 'a' },
+      { label: 'Скан 3 (promo_earned)', data: [0,0,0,6,24,0,0,0,0,0],                 backgroundColor: 'rgba(52,201,123,0.9)',  borderRadius: 4, stack: 'a' },
+      { label: 'Стрик сгорел (streak_reset)', data: [0,0,0,0,0,0,0,98,162,254],       backgroundColor: 'rgba(224,82,82,0.75)',  borderRadius: 4, stack: 'b' },
     ],
   },
   options: {
@@ -501,9 +511,9 @@ new Chart(document.getElementById('cardsChart').getContext('2d'), {
   data: {
     labels: DAYS,
     datasets: [
-      { label: 'cards_section_opened', data: [1838, 1793, 1718, 1610, 1501, 88, 68, 1770, 1612], backgroundColor: 'rgba(74,127,255,0.5)', borderRadius: 4 },
-      { label: 'card_viewed',          data: [1827, 1658, 1563, 1480, 1403, 81, 57, 1597, 1488], backgroundColor: 'rgba(74,127,255,0.7)', borderRadius: 4 },
-      { label: 'card_activated',       data: [1719, 1656, 1613, 1519, 1401, 70, 51, 1663, 1510], backgroundColor: 'rgba(74,127,255,0.9)', borderRadius: 4 },
+      { label: 'cards_section_opened', data: [1838,1793,1718,1610,1501,88,68,1770,1612,1683], backgroundColor: 'rgba(74,127,255,0.5)', borderRadius: 4 },
+      { label: 'card_viewed',          data: [1827,1658,1563,1480,1403,81,57,1597,1488,1564], backgroundColor: 'rgba(74,127,255,0.7)', borderRadius: 4 },
+      { label: 'card_activated',       data: [1719,1656,1613,1519,1401,70,51,1663,1510,1608], backgroundColor: 'rgba(74,127,255,0.9)', borderRadius: 4 },
     ],
   },
   options: {
@@ -524,8 +534,8 @@ new Chart(document.getElementById('onbChart').getContext('2d'), {
   data: {
     labels: DAYS,
     datasets: [
-      { label: 'onboarding_cards_popup_shown',     data: [70, 586, 817, 619, 493, 35, 30, 590, 399], backgroundColor: 'rgba(74,127,255,0.6)',  borderRadius: 4 },
-      { label: 'onboarding_cards_popup_completed', data: [42, 261, 378, 272, 225, 15, 16, 278, 204], backgroundColor: 'rgba(52,201,123,0.8)', borderRadius: 4 },
+      { label: 'onboarding_cards_popup_shown',     data: [70,586,817,619,493,35,30,590,399,376], backgroundColor: 'rgba(74,127,255,0.6)',  borderRadius: 4 },
+      { label: 'onboarding_cards_popup_completed', data: [42,261,378,272,225,15,16,278,204,180], backgroundColor: 'rgba(52,201,123,0.8)', borderRadius: 4 },
     ],
   },
   options: {
