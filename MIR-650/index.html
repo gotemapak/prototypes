@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MIR-650 — Фильтры клиентов: И/ИЛИ + дата последнего захода</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f4f6f9;
+      color: #232321;
+      min-height: 100vh;
+      padding: 32px 24px;
+    }
+
+    /* ── Page header ── */
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .page-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #1a2d4a;
+    }
+    .badge-new {
+      font-size: 11px;
+      font-weight: 600;
+      background: #e8f0ff;
+      color: #1F3A60;
+      border: 1px solid #c0d3f0;
+      border-radius: 4px;
+      padding: 2px 8px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Filter card ── */
+    .filter-card {
+      background: #fff;
+      border: 1px solid #e2e6ea;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    /* ── Section header ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-bottom: 1px solid #e2e6ea;
+      background: #fff;
+    }
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a2d4a;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+    }
+
+    /* ── И / ИЛИ toggle ── */
+    .logic-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .logic-toggle-label {
+      font-size: 12px;
+      color: #777;
+      font-weight: 500;
+    }
+    .toggle-btn-group {
+      display: flex;
+      border: 1px solid #d0d7e2;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .toggle-btn {
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'Roboto', sans-serif;
+      cursor: pointer;
+      border: none;
+      background: #fff;
+      color: #888;
+      transition: background 0.15s, color 0.15s;
+      letter-spacing: 0.3px;
+    }
+    .toggle-btn:first-child {
+      border-right: 1px solid #d0d7e2;
+    }
+    .toggle-btn.active {
+      background: #1F3A60;
+      color: #fff;
+    }
+    .toggle-btn:hover:not(.active) {
+      background: #f0f4f8;
+    }
+
+    /* ── Filter rows ── */
+    .filter-row {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      border-bottom: 1px solid #e8eaed;
+      min-height: 52px;
+      align-items: stretch;
+    }
+    .filter-row:last-child {
+      border-bottom: none;
+    }
+    .filter-row.multi-right {
+      align-items: stretch;
+    }
+
+    .filter-label {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      font-size: 13px;
+      color: #3a4a5c;
+      border-right: 1px solid #e8eaed;
+      line-height: 1.4;
+    }
+
+    .filter-input-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Fake inputs / selects */
+    .fake-input {
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      height: 52px;
+      font-size: 13px;
+      color: #bbb;
+      border-bottom: 1px solid #e8eaed;
+      gap: 8px;
+    }
+    .fake-input:last-child {
+      border-bottom: none;
+    }
+    .fake-input.date-range {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      padding: 0;
+      height: 52px;
+    }
+    .date-field {
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      font-size: 13px;
+      color: #bbb;
+      height: 100%;
+    }
+    .date-field:first-child {
+      border-right: 1px solid #e8eaed;
+    }
+
+    .select-arrow {
+      margin-left: auto;
+      color: #bbb;
+      font-size: 11px;
+    }
+
+    /* ── New filter highlight ── */
+    .filter-row.new-filter .filter-label {
+      background: #f6f9ff;
+    }
+    .filter-row.new-filter .fake-input {
+      background: #f6f9ff;
+    }
+    .new-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      background: #FF7E8A;
+      color: #fff;
+      border-radius: 3px;
+      padding: 1px 5px;
+      margin-left: 8px;
+      vertical-align: middle;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Logic hint bar ── */
+    .logic-hint {
+      padding: 8px 20px;
+      font-size: 12px;
+      color: #6b7fa3;
+      background: #f8fafd;
+      border-top: 1px solid #e2e6ea;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .logic-hint b {
+      color: #1F3A60;
+    }
+    .logic-hint-icon {
+      font-size: 14px;
+    }
+
+    /* ── Mode: OR state colours ── */
+    body.or-mode .filter-row .filter-label {
+      color: #1F3A60;
+    }
+    body.or-mode .section-header {
+      background: #f6f9ff;
+    }
+
+    /* ── Action bar ── */
+    .action-bar {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .btn {
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Roboto', sans-serif;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-primary {
+      background: #1F3A60;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #16304f; }
+    .btn-ghost {
+      background: #fff;
+      color: #555;
+      border: 1px solid #d0d7e2;
+    }
+    .btn-ghost:hover { background: #f4f6f9; }
+
+    /* ── Annotation ── */
+    .annotation {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 28px;
+      padding: 16px 20px;
+      background: #fff8e7;
+      border: 1px solid #f0d080;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #6b5a20;
+    }
+    .annotation strong {
+      font-size: 13px;
+      color: #4a3a10;
+      margin-bottom: 2px;
+    }
+    .annotation ul {
+      padding-left: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <div class="page-title">Фильтры клиентов — Формирование сегмента</div>
+    <span class="badge-new">MIR-650 · Прототип</span>
+  </div>
+
+  <!-- ── Блок 1: Фильтры по данным о пользователе ── -->
+  <div class="filter-card">
+    <div class="section-header">
+      <span class="section-title">Фильтры по данным о пользователе</span>
+    </div>
+
+    <div class="filter-row">
+      <div class="filter-label">Период регистрации</div>
+      <div class="filter-input-wrap">
+        <div class="fake-input date-range">
+          <div class="date-field">от</div>
+          <div class="date-field">до</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-row new-filter">
+      <div class="filter-label">
+        Дата последнего захода в приложение
+        <span class="new-tag">NEW</span>
+      </div>
+      <div class="filter-input-wrap">
+        <div class="fake-input date-range">
+          <div class="date-field">от</div>
+          <div class="date-field">до</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <div class="filter-label">Активность</div>
+      <div class="filter-input-wrap">
+        <div class="fake-input">
+          все пользователи
+          <span class="select-arrow">▾</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Блок 2: Фильтры по заказам пользователя ── -->
+  <div class="filter-card">
+    <div class="section-header">
+      <span class="section-title">Фильтры по заказам пользователя</span>
+
+      <!-- И / ИЛИ toggle — NEW -->
+      <div class="logic-toggle">
+        <span class="logic-toggle-label">Логика между фильтрами:</span>
+        <div class="toggle-btn-group">
+          <button class="toggle-btn active" id="btn-and" onclick="setLogic('and')">И</button>
+          <button class="toggle-btn" id="btn-or" onclick="setLogic('or')">ИЛИ</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <div class="filter-label">Период совершения заказов</div>
+      <div class="filter-input-wrap">
+        <div class="fake-input date-range">
+          <div class="date-field">от</div>
+          <div class="date-field">до</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <div class="filter-label">Пользователь заказывал</div>
+      <div class="filter-input-wrap">
+        <div class="fake-input">
+          из сервиса
+          <span class="select-arrow">▾</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <div class="filter-label">Пользователь заказывал в башню</div>
+      <div class="filter-input-wrap">
+        <div class="fake-input">
+          выберите башню
+          <span class="select-arrow">▾</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-row multi-right">
+      <div class="filter-label">Пользователь заказывал из всех перечисленных</div>
+      <div class="filter-input-wrap">
+        <div class="fake-input">
+          ресторанов
+          <span class="select-arrow">▾</span>
+        </div>
+        <div class="fake-input">
+          магазинов
+          <span class="select-arrow">▾</span>
+        </div>
+        <div class="fake-input">
+          сервисов
+          <span class="select-arrow">▾</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <div class="filter-label">Пользователь заказывал кухни</div>
+      <div class="filter-input-wrap">
+        <div class="fake-input">
+          Выберите типы кухни
+          <span class="select-arrow">▾</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <div class="filter-label">Выбор поручения</div>
+      <div class="filter-input-wrap">
+        <div class="fake-input">
+          Выберите типы поручений
+          <span class="select-arrow">▾</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="logic-hint" id="logic-hint">
+      <span class="logic-hint-icon">ℹ️</span>
+      Режим <b id="logic-hint-text">И</b>: в сегмент попадут пользователи, подходящие <b>под все</b> выбранные условия одновременно
+    </div>
+  </div>
+
+  <div class="action-bar">
+    <button class="btn btn-primary">Применить фильтры</button>
+    <button class="btn btn-ghost">Сбросить</button>
+  </div>
+
+  <div class="annotation">
+    <strong>Что изменилось (MIR-650)</strong>
+    <ul>
+      <li><b>Переключатель И / ИЛИ</b> — в шапке блока «Фильтры по заказам пользователя». По умолчанию «И» — поведение как раньше, сохранённые сегменты не ломаются.</li>
+      <li><b>Дата последнего захода в приложение</b> — новый фильтр в блоке «Фильтры по данным о пользователе», диапазон «от / до», аналогично «Периоду регистрации».</li>
+    </ul>
+  </div>
+
+  <script>
+    function setLogic(mode) {
+      const btnAnd = document.getElementById('btn-and');
+      const btnOr  = document.getElementById('btn-or');
+      const hint   = document.getElementById('logic-hint-text');
+
+      if (mode === 'and') {
+        btnAnd.classList.add('active');
+        btnOr.classList.remove('active');
+        hint.textContent = 'И';
+        hint.parentElement.querySelector('b:last-child') && (hint.parentElement.innerHTML =
+          '&#x2139;&#xFE0F; Режим <b>И</b>: в сегмент попадут пользователи, подходящие <b>под все</b> выбранные условия одновременно');
+        document.body.classList.remove('or-mode');
+      } else {
+        btnOr.classList.add('active');
+        btnAnd.classList.remove('active');
+        document.getElementById('logic-hint').innerHTML =
+          '&#x2139;&#xFE0F; Режим <b>ИЛИ</b>: в сегмент попадут пользователи, подходящие <b>хотя бы под одно</b> из выбранных условий';
+        document.body.classList.add('or-mode');
+      }
+    }
+  </script>
+</body>
+</html>
