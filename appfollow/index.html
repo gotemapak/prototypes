@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to AppFollow</title>
+<style>
+  :root {
+    --bg: #0a0e17;
+    --panel: #131926;
+    --panel-2: #1a2233;
+    --border: #26304a;
+    --accent: #3e6bff;
+    --accent-soft: rgba(62, 107, 255, 0.14);
+    --text: #e8ecf4;
+    --muted: #8a93a6;
+    --right-bg: #232c44;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    overflow: hidden;
+  }
+  .layout { display: flex; height: 100vh; }
+
+  /* Left: question area */
+  .left {
+    flex: 1 1 52%;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 64px;
+    min-width: 0;
+  }
+  .top-bar { height: 40px; display: flex; align-items: center; }
+  .logo {
+    font-weight: 800; font-size: 20px; letter-spacing: 0.5px;
+    color: var(--text);
+  }
+  .logo small { display: block; font-size: 8px; letter-spacing: 2.5px; color: var(--muted); font-weight: 600; }
+  .back-btn {
+    background: none; border: none; color: var(--text); font-size: 22px;
+    cursor: pointer; padding: 4px 10px; border-radius: 8px; margin-left: 18px;
+    visibility: hidden;
+  }
+  .back-btn.visible { visibility: visible; }
+  .back-btn:hover { background: var(--panel-2); }
+
+  .question-area { flex: 1; display: flex; flex-direction: column; justify-content: center; max-width: 640px; }
+  h1 { font-size: 42px; font-weight: 700; line-height: 1.15; margin-bottom: 18px; }
+  .subtitle { color: var(--muted); font-size: 17px; margin-bottom: 40px; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 14px; }
+  .chip {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 17px; font-weight: 500;
+    padding: 18px 26px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, color .15s;
+  }
+  .chip:hover { border-color: #3a4666; background: var(--panel-2); }
+  .chip.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    color: #9db4ff;
+  }
+  .other-input {
+    display: none;
+    margin-top: 22px;
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    color: var(--text);
+    font-size: 17px;
+    padding: 16px 20px;
+    outline: none;
+  }
+  .other-input.visible { display: block; }
+  .other-input::placeholder { color: var(--muted); }
+
+  /* Summary screen */
+  .summary-list { display: flex; flex-direction: column; gap: 26px; margin-top: 6px; }
+  .summary-item .q { color: var(--muted); font-size: 14px; margin-bottom: 6px; }
+  .summary-item .a {
+    display: inline-block;
+    font-size: 17px; font-weight: 600;
+    background: var(--accent-soft);
+    border: 1px solid var(--accent);
+    color: #9db4ff;
+    padding: 10px 18px; border-radius: 10px;
+  }
+
+  .bottom-bar {
+    height: 64px; display: flex; align-items: center; justify-content: space-between;
+    max-width: 640px;
+  }
+  .progress-track {
+    width: 180px; height: 5px; border-radius: 3px; background: var(--panel-2);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: var(--accent); border-radius: 3px;
+    width: 0%; transition: width .3s ease;
+  }
+  .continue-btn {
+    background: var(--panel-2); color: var(--muted);
+    border: none; border-radius: 10px;
+    font-size: 16px; font-weight: 600;
+    padding: 14px 34px; cursor: default;
+    transition: background .15s, color .15s;
+  }
+  .continue-btn.enabled { background: var(--accent); color: #fff; cursor: pointer; }
+  .continue-btn.enabled:hover { background: #3159e0; }
+
+  /* Right: preview panel */
+  .right {
+    flex: 1 1 48%;
+    background: var(--right-bg);
+    display: flex; align-items: center; justify-content: center;
+    padding: 48px;
+  }
+  .preview-card {
+    width: 100%; max-width: 560px; min-height: 420px;
+    background: #161c2b;
+    border-radius: 16px;
+    box-shadow: 0 24px 60px rgba(0,0,0,.45);
+    padding: 22px 26px;
+    display: flex; flex-direction: column;
+  }
+  .preview-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 16px; border-bottom: 1px solid #202839;
+  }
+  .preview-title { font-size: 14px; color: var(--muted); font-weight: 600; }
+  .preview-avatar {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+  }
+  .preview-body { flex: 1; padding-top: 22px; display: flex; flex-direction: column; gap: 14px; }
+  .preview-hint { color: #55607a; font-size: 14px; line-height: 1.5; }
+  .preview-row {
+    display: none;
+    align-items: center; gap: 10px;
+  }
+  .preview-row.visible { display: flex; animation: fadeIn .35s ease; }
+  .preview-row .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex: none; }
+  .preview-row .label { color: var(--muted); font-size: 13px; width: 84px; flex: none; }
+  .preview-row .value {
+    font-size: 14px; font-weight: 600; color: var(--text);
+    background: #1d2537; border: 1px solid #26304a;
+    padding: 6px 12px; border-radius: 8px;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: none;} }
+
+  @media (max-width: 900px) {
+    .right { display: none; }
+    .left { padding: 28px; }
+    h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="left">
+    <div class="top-bar">
+      <div class="logo">AF<small>APPFOLLOW</small></div>
+      <button class="back-btn" id="backBtn" onclick="goBack()" aria-label="Back">&#8249;</button>
+    </div>
+
+    <div class="question-area" id="questionArea">
+      <h1 id="qTitle"></h1>
+      <div class="subtitle" id="qSubtitle"></div>
+      <div class="chips" id="chips"></div>
+      <input type="text" class="other-input" id="otherInput" placeholder="Tell us a bit more…" oninput="onOtherInput()">
+      <div class="summary-list" id="summaryList" style="display:none"></div>
+    </div>
+
+    <div class="bottom-bar">
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <button class="continue-btn" id="continueBtn" onclick="goNext()">Continue</button>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="preview-card">
+      <div class="preview-head">
+        <div class="preview-title" id="previewTitle">Preparing your first session…</div>
+        <div class="preview-avatar">A</div>
+      </div>
+      <div class="preview-body">
+        <div class="preview-hint" id="previewHint">While you answer, we're setting up your workspace and picking the tools that match your goals.</div>
+        <div class="preview-row" id="pr0"><span class="dot"></span><span class="label">Role</span><span class="value" id="pv0"></span></div>
+        <div class="preview-row" id="pr1"><span class="dot"></span><span class="label">Goal</span><span class="value" id="pv1"></span></div>
+        <div class="preview-row" id="pr2"><span class="dot"></span><span class="label">Team</span><span class="value" id="pv2"></span></div>
+        <div class="preview-row" id="pr3"><span class="dot"></span><span class="label">Apps</span><span class="value" id="pv3"></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    title: "Which role best describes you?",
+    subtitle: "If you wear many hats, pick what you do most often.",
+    options: ["Solo builder", "Marketing specialist / CMO", "ASO / UA specialist", "Other"],
+    label: "Role"
+  },
+  {
+    title: "What's your goal right now?",
+    subtitle: "We'll open with the scenario that gets you there.",
+    options: [
+      "Validate an app idea — check market demand",
+      "Build an ASO process for my team",
+      "Set up ASO across multiple apps",
+      "Other"
+    ],
+    label: "Goal"
+  },
+  {
+    title: "How many people are in your team?",
+    subtitle: "Just pick one.",
+    options: ["Just me", "2–10", "11–50", "50+"],
+    label: "Team"
+  },
+  {
+    title: "How many apps do you have?",
+    subtitle: "Counting the ones you plan to grow.",
+    options: ["None yet — pre-launch", "1–3", "4–20", "20+"],
+    label: "Apps"
+  }
+];
+
+let step = 0;
+const answers = questions.map(() => ({ choice: null, other: "" }));
+
+const qTitle = document.getElementById("qTitle");
+const qSubtitle = document.getElementById("qSubtitle");
+const chipsEl = document.getElementById("chips");
+const otherInput = document.getElementById("otherInput");
+const continueBtn = document.getElementById("continueBtn");
+const backBtn = document.getElementById("backBtn");
+const progressFill = document.getElementById("progressFill");
+const summaryList = document.getElementById("summaryList");
+
+function render() {
+  const isSummary = step === questions.length;
+  backBtn.classList.toggle("visible", step > 0);
+  progressFill.style.width = (step / questions.length * 100) + "%";
+
+  if (isSummary) {
+    qTitle.textContent = "Here's what we got";
+    qSubtitle.textContent = "We'll use this to tailor your first session. You can change it anytime in settings.";
+    chipsEl.style.display = "none";
+    otherInput.classList.remove("visible");
+    summaryList.style.display = "flex";
+    summaryList.innerHTML = questions.map((q, i) => `
+      <div class="summary-item">
+        <div class="q">${q.title}</div>
+        <div class="a">${answerText(i)}</div>
+      </div>`).join("");
+    continueBtn.textContent = "Go to my workspace";
+    continueBtn.classList.add("enabled");
+    progressFill.style.width = "100%";
+    return;
+  }
+
+  const q = questions[step];
+  qTitle.textContent = q.title;
+  qSubtitle.textContent = q.subtitle;
+  summaryList.style.display = "none";
+  chipsEl.style.display = "flex";
+  continueBtn.textContent = "Continue";
+  chipsEl.innerHTML = q.options.map((opt, i) =>
+    `<button class="chip${answers[step].choice === i ? " selected" : ""}" onclick="selectChip(${i})">${opt}</button>`
+  ).join("");
+  syncOther();
+  updateContinue();
+}
+
+function selectChip(i) {
+  answers[step].choice = i;
+  [...chipsEl.children].forEach((c, idx) => c.classList.toggle("selected", idx === i));
+  syncOther();
+  updateContinue();
+  updatePreview();
+}
+
+function syncOther() {
+  const q = questions[step];
+  const isOther = q.options[answers[step].choice] === "Other";
+  otherInput.classList.toggle("visible", isOther);
+  otherInput.value = answers[step].other;
+  if (isOther) otherInput.focus();
+}
+
+function onOtherInput() {
+  answers[step].other = otherInput.value;
+  updateContinue();
+  updatePreview();
+}
+
+function answerText(i) {
+  const q = questions[i];
+  if (answers[i].choice === null) return "";
+  const opt = q.options[answers[i].choice];
+  return opt === "Other" ? (answers[i].other || "Other") : opt;
+}
+
+function updateContinue() {
+  const a = answers[step];
+  const q = questions[step];
+  const ok = a.choice !== null && (q.options[a.choice] !== "Other" || a.other.trim().length > 0);
+  continueBtn.classList.toggle("enabled", ok);
+}
+
+function updatePreview() {
+  let any = false;
+  questions.forEach((q, i) => {
+    const row = document.getElementById("pr" + i);
+    const val = document.getElementById("pv" + i);
+    const text = answerText(i);
+    row.classList.toggle("visible", !!text);
+    val.textContent = text;
+    if (text) any = true;
+  });
+  document.getElementById("previewHint").style.display = any ? "none" : "block";
+  document.getElementById("previewTitle").textContent =
+    step === questions.length ? "Your first session is ready" : "Preparing your first session…";
+}
+
+function goNext() {
+  if (!continueBtn.classList.contains("enabled")) return;
+  if (step === questions.length) {
+    alert("Prototype ends here.\n\nIn the product: the workspace opens with the first session tailored to these answers — e.g. a pre-launch market check, a ready-made ASO workflow, or a team demo.");
+    return;
+  }
+  step++;
+  render();
+  updatePreview();
+}
+
+function goBack() {
+  if (step === 0) return;
+  step--;
+  render();
+  updatePreview();
+}
+
+render();
+updatePreview();
+</script>
+</body>
+</html>
