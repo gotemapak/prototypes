@@ -340,7 +340,11 @@ function updatePreview() {
 function goNext() {
   if (!continueBtn.classList.contains("enabled")) return;
   if (step === questions.length) {
-    alert("Prototype ends here.\n\nIn the product: the workspace opens with the first session tailored to these answers — e.g. a pre-launch market check, a ready-made ASO workflow, or a team demo.");
+    // Prototype loop: restart from the beginning with a clean state
+    step = 0;
+    answers.forEach(a => { a.choice = null; a.other = ""; });
+    render();
+    updatePreview();
     return;
   }
   step++;
