@@ -1,0 +1,16 @@
+{
+  "slug": "myiq",
+  "url": "https://myiq.com/en/start?id=5808a8650adceaed7faf15dbf2c819476dc6e5545515d9736443d3fb0d25e39e&e=7faf15",
+  "date": "2026-07-19",
+  "finalUrl": "https://myiq.com/start?id=5808a8650adceaed7faf15dbf2c819476dc6e5545515d9736443d3fb0d25e39e&e=7faf15",
+  "screens": 3,
+  "paywallReached": true,
+  "prices": [
+    "₺53.00",
+    "₺1617.99"
+  ],
+  "priceLines": [
+    "To view your results, you'll be required to start a subscription: ₺53.00 for a 7-day trial, then ₺1617.99/month. It renews automatically unless canceled, and you can cancel anytime in your account. myIQ is for educational/entertainment purposes only, not a professional evaluation. By continuing, you agree to our Terms & Conditions and Privacy Policy."
+  ],
+  "clickPath": []
+}
