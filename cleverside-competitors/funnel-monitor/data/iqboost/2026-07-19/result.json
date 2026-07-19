@@ -2,15 +2,45 @@
   "slug": "iqboost",
   "url": "https://www.iqboost.co/en/iq",
   "date": "2026-07-19",
-  "finalUrl": "https://www.iqboost.co/en/iq",
-  "screens": 14,
+  "finalUrl": "https://www.iqboost.co/en/payment",
+  "screens": 28,
   "paywallReached": true,
   "prices": [
     "€0.50",
     "€49.70"
   ],
   "priceLines": [
-    "Get a 24-hour trial for just €0.50 to try the service, followed by a monthly subscription of €49.70/month. Cancel anytime."
+    "€0.50*",
+    "24-hour trial, then €49.70/month subscription*",
+    "After the 24-hour trial period, and in the absence of your cancellation, our offer will automatically renew as a non-binding subscription at a price of €49.70 including taxes per month. You can cancel at any time here.",
+    "€0.50*",
+    "24-hour trial, then €49.70/month subscription*",
+    "After the 24-hour trial period, and in the absence of your cancellation, our offer will automatically renew as a non-binding subscription at a price of €49.70 including taxes per month. You can cancel at any time here."
   ],
-  "clickPath": []
+  "clickPath": [
+    "Deny [opt]",
+    "Test my IQ now",
+    "Start The Test",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "A [opt]",
+    "Continue"
+  ]
 }

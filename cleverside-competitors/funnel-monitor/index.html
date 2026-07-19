@@ -81,11 +81,16 @@
   .strip img {
     height: 380px;
     width: auto;
+    min-width: 174px; /* пропорция экрана iPhone: держит место до загрузки */
     border: 1px solid var(--border);
     border-radius: 10px;
-    background: #fff;
     cursor: zoom-in;
+    /* shimmer-заглушка, пока картинка не загрузилась */
+    background: linear-gradient(110deg, #e9eaee 8%, #f6f7f9 18%, #e9eaee 33%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s linear infinite;
   }
+  @keyframes shimmer { to { background-position-x: -200%; } }
   .strip figcaption { font-size: 11px; color: var(--muted); margin-top: 4px; }
   .strip::-webkit-scrollbar { height: 10px; }
   .strip::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 5px; }
@@ -252,25 +257,74 @@
   <div class="strip" data-shots="iqboost"></div>
 </section>
 
+<!-- ══════════════ IQTRAINS ══════════════ -->
+<section class="competitor" id="iqtrains">
+  <div class="comp-head">
+    <h2>IQ Trains (iqtrains.com)</h2>
+    <a href="https://iqtrains.com/onboarding/" target="_blank">iqtrains.com/onboarding/</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-19</b> · онбординг-квиз с долгим лоадером расчёта · цены в USD · два плана</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>3 дня → неделя</b></td>
+      <td><b>$0.99</b><span class="sub">3-Day Intro (Start Trial — $0.99 today)</span></td>
+      <td><b>$19.99 / нед</b><span class="sub">еженедельное автопродление</span></td>
+    </tr>
+    <tr>
+      <td><b>3 дня → месяц</b></td>
+      <td><b>$0.99</b><span class="sub">3-Day Intro</span></td>
+      <td><b>$39.99 / мес</b><span class="sub">помесячное автопродление</span></td>
+    </tr>
+  </table>
+
+  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip" data-shots="iqtrains"></div>
+</section>
+
+<!-- ══════════════ IQSCORE ══════════════ -->
+<section class="competitor" id="iqscore">
+  <div class="comp-head">
+    <h2>IQScore (iqscore.me)</h2>
+    <a href="https://iqscore.me/start" target="_blank">iqscore.me/start</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-19</b> · квиз → «See Your Results – Just $1.00» · цены в USD · недельная подписка</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>3 дня → неделя</b></td>
+      <td><b>$1.00</b><span class="sub">3-дневный триал (якорная цена $6.99 зачёркнута)</span></td>
+      <td><b>$14.99 / нед</b><span class="sub">еженедельно до отмены</span></td>
+    </tr>
+  </table>
+
+  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip" data-shots="iqscore"></div>
+</section>
+
 <!-- ══════════════ MYIQ ══════════════ -->
 <section class="competitor" id="myiq">
   <div class="comp-head">
-    <h2>MyIQ (myiq.com)</h2>
+    <h2>MyIQ (myiq.com) — в работе</h2>
     <a href="https://myiq.com/en/start" target="_blank">myiq.com/en/start</a>
   </div>
-  <div class="meta">Дата проверки: <b>2026-07-19</b> · пейволл почти сразу (3-й экран) — почти без квиза · цены гео (₺)</div>
+  <div class="meta">Дата проверки: <b>2026-07-19</b> · цены раскрыты в дисклеймере прямо на лендинге · полный проход квиза ещё в работе (краулер застревал на селекторе языка)</div>
 
   <div class="block-title">Тарифные планы</div>
   <table class="plans">
     <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
     <tr>
       <td><b>7 дней → месяц</b></td>
-      <td><b>~$1.30</b><span class="sub">₺53.00 за 7-дневный триал</span></td>
+      <td><b>~$1.30</b><span class="sub">₺53.00 за 7-дневный триал (гео-цена)</span></td>
       <td><b>~$40 / мес</b><span class="sub">₺1,617.99/мес</span></td>
     </tr>
   </table>
 
-  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip-label">Воронка слева направо (первые 16 экранов)</div>
   <div class="strip" data-shots="myiq"></div>
 </section>
 
