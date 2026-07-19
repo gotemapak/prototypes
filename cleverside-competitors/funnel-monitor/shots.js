@@ -399,8 +399,8 @@ window.SHOTS = {
   ]
  },
  "myiq": {
-  "date": "2026-07-19",
-  "dir": "data/myiq/2026-07-19/",
+  "date": "2026-07-20",
+  "dir": "data/myiq/2026-07-20/",
   "files": [
    "001-screen.png",
    "002-screen.png",
@@ -412,12 +412,16 @@ window.SHOTS = {
    "008-screen.png",
    "009-screen.png",
    "010-screen.png",
-   "011-screen.png",
+   "011-paywall.png",
    "012-paywall.png",
    "013-paywall.png",
-   "014-post-cta.png",
-   "015-post-cta-scroll.png",
-   "016-post-cta-scroll.png"
+   "014-paywall.png",
+   "015-paywall.png",
+   "016-paywall.png",
+   "017-paywall.png",
+   "018-paywall.png",
+   "019-paywall.png",
+   "020-paywall.png"
   ]
  },
  "iqtrains": {
@@ -542,6 +546,51 @@ window.SHOTS = {
    "053-post-cta-scroll.png",
    "054-post-cta-scroll.png",
    "055-post-cta-scroll.png"
+  ]
+ },
+ "cognitivegrowth": {
+  "date": "2026-07-19",
+  "dir": "data/cognitivegrowth/2026-07-19/",
+  "files": [
+   "001-screen.png",
+   "002-screen.png",
+   "003-screen.png",
+   "004-screen.png",
+   "005-screen.png",
+   "006-screen.png",
+   "007-screen.png",
+   "008-screen.png",
+   "009-screen.png",
+   "010-screen.png",
+   "011-screen.png",
+   "012-screen.png",
+   "013-screen.png",
+   "014-screen.png",
+   "015-screen.png",
+   "016-screen.png",
+   "017-screen.png",
+   "018-screen.png",
+   "019-screen.png",
+   "020-screen.png",
+   "021-screen.png",
+   "022-screen.png",
+   "023-screen.png",
+   "024-screen.png",
+   "025-screen.png",
+   "026-screen.png",
+   "027-screen.png",
+   "028-screen.png",
+   "029-paywall.png",
+   "030-paywall.png",
+   "031-paywall.png",
+   "032-paywall.png",
+   "033-paywall.png",
+   "034-paywall.png",
+   "035-paywall.png",
+   "036-paywall.png",
+   "037-paywall.png",
+   "038-paywall.png",
+   "039-paywall.png"
   ]
  }
 };

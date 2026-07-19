@@ -1,0 +1,30 @@
+{
+  "slug": "myiq",
+  "url": "https://myiq.com/en/start?id=5808a8650adceaed7faf15dbf2c819476dc6e5545515d9736443d3fb0d25e39e&e=7faf15",
+  "date": "2026-07-20",
+  "finalUrl": "https://myiq.com/",
+  "screens": 20,
+  "paywallReached": true,
+  "prices": [
+    "₺53.00",
+    "₺1617.99"
+  ],
+  "priceLines": [
+    "₺53.00",
+    "₺1617.99*",
+    "₺53.00",
+    "₺1617.99*"
+  ],
+  "clickPath": [
+    "Male",
+    "Male",
+    "Continue",
+    "7",
+    "1",
+    "6",
+    "Agree",
+    "20",
+    "13",
+    "Logo"
+  ]
+}
