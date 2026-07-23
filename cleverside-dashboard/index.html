@@ -300,37 +300,56 @@ footer.notes code { background: var(--surface-2); padding: 1px 5px; border-radiu
   <section class="chart" id="sec-expconv">
     <div class="head">
       <h2>3. Конверсия в покупку от старта эксперимента</h2>
-      <span class="badge">по дням теста · ARPU · тарифные планы</span>
+      <span class="badge">по дням теста</span>
     </div>
-    <p class="note">Тот же переход в покупку, но по оси X — день с момента старта эксперимента (когорта), а не календарная дата. Рядом — накопленный ARPU по дням, а в таблице — ARPU и разбивка по тарифным планам (Monthly / Annual).</p>
+    <p class="note">Тот же переход в покупку, но по оси X — день с момента старта эксперимента (когорта), а не календарная дата — так тесты, стартовавшие в разные даты, сравнимы на одной шкале.</p>
 
     <div class="legend" id="legend-expconv"></div>
 
     <div class="split">
       <div class="subpanel">
-        <h4>График — конверсия (день теста)</h4>
+        <h4>График (день теста)</h4>
         <div class="line-chart">
           <svg class="line-svg" id="chart-expconv-line" viewBox="0 0 400 220" preserveAspectRatio="none"></svg>
         </div>
       </div>
       <div class="subpanel">
-        <h4>График — ARPU, накопительно (день теста)</h4>
-        <div class="line-chart">
-          <svg class="line-svg" id="chart-expconv-arpu" viewBox="0 0 400 220" preserveAspectRatio="none"></svg>
+        <h4>Таблица</h4>
+        <div class="tablewrap">
+          <table class="ref" id="table-expconv-days"></table>
         </div>
       </div>
     </div>
-    <div class="subpanel" style="margin-top:16px;">
-      <h4>Таблица — ARPU и тарифные планы</h4>
-      <div class="tablewrap">
-        <table class="ref" id="table-expconv"></table>
+  </section>
+
+  <section class="chart" id="sec-arpu">
+    <div class="head">
+      <h2>4. ARPU и тарифные планы</h2>
+      <span class="badge">по дням теста · Monthly / Annual</span>
+    </div>
+    <p class="note">Накопленный ARPU (выручка на одного купившего триал) по дням с момента старта эксперимента, и разбивка итоговой выручки по тарифным планам (Monthly / Annual).</p>
+
+    <div class="legend" id="legend-arpu"></div>
+
+    <div class="split">
+      <div class="subpanel">
+        <h4>График — ARPU, накопительно (день теста)</h4>
+        <div class="line-chart">
+          <svg class="line-svg" id="chart-arpu-line" viewBox="0 0 400 220" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+      <div class="subpanel">
+        <h4>Таблица — ARPU и тарифные планы</h4>
+        <div class="tablewrap">
+          <table class="ref" id="table-arpu"></table>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="chart" id="sec-churn">
     <div class="head">
-      <h2>4. Retention / Churn по дням</h2>
+      <h2>5. Retention / Churn по дням</h2>
       <span class="badge">D3 · D7 · D14 от подписки</span>
     </div>
     <p class="note">Накопленный % отменивших подписку на 3-й / 7-й / 14-й день. Свежие эксперименты, не дожившие до контрольной точки, помечены как «недостаточно данных» — это не 0% retention, а right-censoring.</p>
@@ -355,7 +374,7 @@ footer.notes code { background: var(--surface-2); padding: 1px 5px; border-radiu
 
   <section class="chart draft">
     <div class="head">
-      <h2>5. Retention / LTV (расчётный) <span class="draft-tag">черновик 1-й итерации</span></h2>
+      <h2>6. Retention / LTV (расчётный) <span class="draft-tag">черновик 1-й итерации</span></h2>
       <span class="badge">payback · LTV:CAC</span>
     </div>
     <p class="note">LTV на 30/60/90 дней, payback period к ROAS 40%, LTV:CAC — раздел из первого прохода, ждёт пересборки под фильтр эксперимента.</p>
@@ -364,7 +383,7 @@ footer.notes code { background: var(--surface-2); padding: 1px 5px; border-radiu
 
   <section class="chart">
     <div class="head">
-      <h2>6. Словарь метрик</h2>
+      <h2>7. Словарь метрик</h2>
       <span class="badge">что значит · как считаем</span>
     </div>
     <p class="note">Что значит каждая метрика на дашборде и как она считается — единое понимание для меня, аналитика и команды, без устных уточнений.</p>
@@ -380,7 +399,7 @@ footer.notes code { background: var(--surface-2); padding: 1px 5px; border-radiu
 
   <section class="chart draft">
     <div class="head">
-      <h2>7. Сегменты аудитории <span class="draft-tag">черновик 1-й итерации</span></h2>
+      <h2>8. Сегменты аудитории <span class="draft-tag">черновик 1-й итерации</span></h2>
       <span class="badge">Quiz Funnel A · пример периода</span>
     </div>
     <p class="note">Собственные фильтры вкладки — не влияют на «Обзор». Переключатель меняет срез: кто заходит в воронку / кто платит / кто остаётся активным подписчиком.</p>
@@ -675,9 +694,32 @@ function renderConvTable(rowsList){
   table.innerHTML = html;
 }
 
-// ---------- table + chart: conversion from experiment start (cohort day) ----------
-function renderExpConvTable(rowsList){
-  const table = document.getElementById('table-expconv');
+// ---------- table: conversion from experiment start (cohort day) ----------
+function renderExpConvDaysTable(rowsList){
+  const table = document.getElementById('table-expconv-days');
+  const sorted = [...rowsList].sort((a,b)=>b.subPct-a.subPct);
+  let html = `<thead><tr>
+    <th>Эксперимент / группа</th>
+    <th>Активаций, n</th>
+    <th>День 1, %</th><th>День 3, %</th><th>День 7, %</th>
+  </tr></thead><tbody>`;
+  sorted.forEach(r=>{
+    const label = rowLabel(r);
+    html += `<tr>
+      <td><span class="group-color" style="background:${r.color}"></span>${label}</td>
+      <td>${fmtN(r.activated)}</td>
+      <td class="pct">${fmtPct(r.trend[0],2)}</td>
+      <td class="pct">${fmtPct(r.trend[2],2)}</td>
+      <td class="pct">${fmtPct(r.trend[6],2)}</td>
+    </tr>`;
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+}
+
+// ---------- table: ARPU and tariff plans ----------
+function renderArpuTable(rowsList){
+  const table = document.getElementById('table-arpu');
   const sorted = [...rowsList].sort((a,b)=>b.activated-a.activated);
   let html = `<thead><tr>
     <th>Эксперимент / группа</th>
@@ -920,13 +962,15 @@ function renderAll(){
   renderOverviewTable();
   renderLegend('legend-conv', r);
   renderLegend('legend-expconv', r);
+  renderLegend('legend-arpu', r);
   renderLegend('legend-churn', r);
   renderLineChart('chart-conv-line', r, row => row.trend, { xLabels:['1','2','3','4','5','6','7 (день)'] });
   renderLineChart('chart-expconv-line', r, row => row.trend, { xLabels:['День 1','2','3','4','5','6','7'] });
-  renderLineChart('chart-expconv-arpu', r, row => row.arpuTrend, { xLabels:['D1','D3','D7','D14'], valueFormat: v => '$'+v.toFixed(2) });
+  renderLineChart('chart-arpu-line', r, row => row.arpuTrend, { xLabels:['D1','D3','D7','D14'], valueFormat: v => '$'+v.toFixed(2) });
   renderLineChart('chart-churn-line', r, row => [row.churnD3, row.churnD7, row.hasD14?row.churnD14:null], { xLabels:['D3','D7','D14'] });
   renderConvTable(r);
-  renderExpConvTable(r);
+  renderExpConvDaysTable(r);
+  renderArpuTable(r);
   renderChurnTable(r);
   renderDraftLTV();
 }
