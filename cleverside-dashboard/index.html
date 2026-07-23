@@ -120,9 +120,20 @@ section.chart .badge { font-size: 10.5px; text-transform: uppercase; letter-spac
 section.chart.draft { opacity: 0.75; }
 section.chart .draft-tag { font-size: 10px; color: var(--warn); background: rgba(201,133,0,0.12); border: 1px solid rgba(201,133,0,0.3); border-radius: 6px; padding: 2px 7px; }
 
-/* two-column layout: chart left, table right */
-.split { display: grid; grid-template-columns: 1.1fr 1.4fr; gap: 24px; align-items: start; }
+/* two-column layout: chart left, table right, each its own boxed panel */
+.split { display: grid; grid-template-columns: 1.1fr 1.4fr; gap: 16px; align-items: start; }
 @media (max-width: 880px) { .split { grid-template-columns: 1fr; } }
+.subpanel { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+.subpanel h4 { margin: 0 0 10px; font-size: 11px; text-transform: uppercase; letter-spacing: .03em; color: var(--text-muted); }
+
+/* hierarchical overview table */
+.tree-toggle { cursor: pointer; display: inline-block; width: 14px; color: var(--text-muted); user-select: none; }
+.tree-spacer { display: inline-block; width: 14px; }
+.tree-name-frame { display: inline-flex; align-items: center; border: 1px solid var(--border); border-radius: 6px; padding: 3px 9px; background: var(--surface-1); font-weight: 600; }
+table.ref tr[data-node="experiment"] .tree-name-frame,
+table.ref tr[data-node="group"] .tree-name-frame { font-weight: 500; background: transparent; }
+table.ref tr[data-node="plan"] .tree-name-frame { font-weight: 400; background: transparent; border-style: dashed; color: var(--text-secondary); }
+table.ref tr[data-node="funnel"] { background: var(--header-tint); }
 
 .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
 .legend .item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
@@ -182,14 +193,14 @@ footer.notes code { background: var(--surface-2); padding: 1px 5px; border-radiu
 <body>
 <div class="app" data-theme="">
 
-<div class="proto-banner">Прототип v2 — иерархия «воронка → эксперимент → группы» и формат таблиц по референсу. Разделы CPA/ROAS, Retention/LTV и Сегменты — черновик из первой итерации, ждут доработки.</div>
+<div class="proto-banner">Прототип v3 — общий обзор как раскрываемая таблица (воронка → эксперимент → группа → тарифный план), конверсия от старта эксперимента + ARPU/тарифы. Данные придуманные. Раздел Retention/LTV и Сегменты — черновик из первой итерации, ждут доработки.</div>
 
 <div class="topbar">
   <div class="wrap">
     <div class="topbar-inner">
       <div>
         <h1>Cleverside · Воронки и тесты</h1>
-        <div class="sub">Growth-дашборд · прототип v2</div>
+        <div class="sub">Growth-дашборд · прототип v3</div>
       </div>
       <div class="tabs">
         <button class="tab-btn active" data-view="overview">Обзор</button>
@@ -249,14 +260,10 @@ footer.notes code { background: var(--surface-2); padding: 1px 5px; border-radiu
       <h2>1. Общий обзор</h2>
       <span class="badge" id="overview-scope-badge">все эксперименты</span>
     </div>
-    <p class="note">Верхнеуровневая сводка для текущего выбора фильтров. Если эксперимент не выбран — цифры агрегированы по всей воронке (или по всем воронкам).</p>
-
-    <div class="stat-group-label">Экономика</div>
-    <div class="stat-row" id="stat-row-overview-econ"></div>
-    <div class="stat-group-label">Выручка</div>
-    <div class="stat-row" id="stat-row-overview-rev"></div>
-    <div class="stat-group-label">Конверсии</div>
-    <div class="stat-row" id="stat-row-overview-conv"></div>
+    <p class="note">Строка = воронка, эксперимент, группа или тарифный план — раскрывай ▸, чтобы провалиться на уровень ниже (Воронка → Эксперимент → Группа → Тарифный план). Если наверху в фильтрах выбрана конкретная воронка/эксперимент — таблица сразу стартует с этого уровня.</p>
+    <div class="tablewrap">
+      <table class="ref" id="table-overview"></table>
+    </div>
   </section>
 
   <section class="chart" id="sec-conv">
@@ -269,18 +276,49 @@ footer.notes code { background: var(--surface-2); padding: 1px 5px; border-radiu
     <div class="legend" id="legend-conv"></div>
 
     <div class="split">
-      <div class="line-chart">
-        <svg class="line-svg" id="chart-conv-line" viewBox="0 0 400 220" preserveAspectRatio="none"></svg>
+      <div class="subpanel">
+        <h4>График</h4>
+        <div class="line-chart">
+          <svg class="line-svg" id="chart-conv-line" viewBox="0 0 400 220" preserveAspectRatio="none"></svg>
+        </div>
       </div>
-      <div class="tablewrap">
-        <table class="ref" id="table-conv"></table>
+      <div class="subpanel">
+        <h4>Таблица</h4>
+        <div class="tablewrap">
+          <table class="ref" id="table-conv"></table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="chart" id="sec-expconv">
+    <div class="head">
+      <h2>3. Конверсия в покупку от старта эксперимента</h2>
+      <span class="badge">по дням теста · ARPU · тарифные планы</span>
+    </div>
+    <p class="note">Тот же переход в покупку, но по оси X — день с момента старта эксперимента (когорта), а не календарная дата, и справа вместо WelcomeDone/Paywall — ARPU и разбивка по тарифным планам (Monthly / Annual).</p>
+
+    <div class="legend" id="legend-expconv"></div>
+
+    <div class="split">
+      <div class="subpanel">
+        <h4>График (день теста)</h4>
+        <div class="line-chart">
+          <svg class="line-svg" id="chart-expconv-line" viewBox="0 0 400 220" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+      <div class="subpanel">
+        <h4>ARPU и тарифные планы</h4>
+        <div class="tablewrap">
+          <table class="ref" id="table-expconv"></table>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="chart" id="sec-churn">
     <div class="head">
-      <h2>3. Retention / Churn по дням</h2>
+      <h2>4. Retention / Churn по дням</h2>
       <span class="badge">D3 · D7 · D14 от подписки</span>
     </div>
     <p class="note">Накопленный % отменивших подписку на 3-й / 7-й / 14-й день. Свежие эксперименты, не дожившие до контрольной точки, помечены как «недостаточно данных» — это не 0% retention, а right-censoring.</p>
@@ -288,22 +326,19 @@ footer.notes code { background: var(--surface-2); padding: 1px 5px; border-radiu
     <div class="legend" id="legend-churn"></div>
 
     <div class="split">
-      <div class="line-chart">
-        <svg class="line-svg" id="chart-churn-line" viewBox="0 0 400 220" preserveAspectRatio="none"></svg>
+      <div class="subpanel">
+        <h4>График</h4>
+        <div class="line-chart">
+          <svg class="line-svg" id="chart-churn-line" viewBox="0 0 400 220" preserveAspectRatio="none"></svg>
+        </div>
       </div>
-      <div class="tablewrap">
-        <table class="ref" id="table-churn"></table>
+      <div class="subpanel">
+        <h4>Таблица</h4>
+        <div class="tablewrap">
+          <table class="ref" id="table-churn"></table>
+        </div>
       </div>
     </div>
-  </section>
-
-  <section class="chart draft">
-    <div class="head">
-      <h2>4. CPA / ROAS <span class="draft-tag">черновик 1-й итерации</span></h2>
-      <span class="badge">экономика</span>
-    </div>
-    <p class="note">Раздел из первого прохода — во многом продублирован блоком «Экономика» в разделе 1. Будет объединён с общим обзором в следующей итерации.</p>
-    <div class="stat-row" id="stat-row-cpa"></div>
   </section>
 
   <section class="chart draft">
@@ -380,33 +415,41 @@ const experimentMeta = {
 };
 
 const rows = [
-  { key:'a1', experiment:'expAlpha', funnel:'funnelA', group:'Group 1', color:'var(--c1)', period:'Jul 1–3',
+  { key:'a1', experiment:'expAlpha', funnel:'funnelA', group:'Group 1', color:'var(--c1)', period:'Jul 1–3', source:'Facebook Ads',
     sessionStart:600, welcomeDoneN:196, welcomeDonePct:32.7, paywallN:58, paywallPct:9.6, subN:0, subPct:0,
     buyers:2, activated:1, cancelled:1, renewals:1, spend:270 },
-  { key:'a2', experiment:'expAlpha', funnel:'funnelA', group:'Group 2', color:'var(--c2)', period:'Jul 1–3',
+  { key:'a2', experiment:'expAlpha', funnel:'funnelA', group:'Group 2', color:'var(--c2)', period:'Jul 1–3', source:'Facebook Ads',
     sessionStart:620, welcomeDoneN:176, welcomeDonePct:28.4, paywallN:55, paywallPct:8.9, subN:1, subPct:0.16,
     buyers:3, activated:2, cancelled:2, renewals:1, spend:240 },
-  { key:'b1', experiment:'expBeta', funnel:'funnelA', group:'Window 1', color:'var(--c4)', period:'Jul 13–14',
+  { key:'b1', experiment:'expBeta', funnel:'funnelA', group:'Window 1', color:'var(--c4)', period:'Jul 13–14', source:'Facebook Ads',
     sessionStart:1440, welcomeDoneN:830, welcomeDonePct:57.6, paywallN:360, paywallPct:24.9, subN:24, subPct:1.67,
     buyers:10, activated:7, cancelled:4, renewals:0, spend:630 },
-  { key:'b2', experiment:'expBeta', funnel:'funnelA', group:'Window 2', color:'var(--c5)', period:'Jul 17–19',
+  { key:'b2', experiment:'expBeta', funnel:'funnelA', group:'Window 2', color:'var(--c5)', period:'Jul 17–19', source:'Facebook Ads',
     sessionStart:4390, welcomeDoneN:2780, welcomeDonePct:63.2, paywallN:1080, paywallPct:24.5, subN:101, subPct:2.30,
     buyers:115, activated:62, cancelled:35, renewals:0, spend:3900 },
-  { key:'c1', experiment:'expGamma', funnel:'funnelB', group:'Main group', color:'var(--c3)', period:'Jul 1–8',
+  { key:'c1', experiment:'expGamma', funnel:'funnelB', group:'Main group', color:'var(--c3)', period:'Jul 1–8', source:'Facebook + Google UAC',
     sessionStart:2180, welcomeDoneN:1365, welcomeDonePct:62.7, paywallN:585, paywallPct:26.9, subN:57, subPct:2.62,
     buyers:59, activated:46, cancelled:31, renewals:56, spend:1670 },
 ];
 const TRIAL_PRICE = 0.99;
 const AVG_SUB_PRICE = 29.99; // illustrative assumption — реальная цена подписки уточняется у аналитика
+const ANNUAL_PLAN_PRICE = 149.99; // illustrative
 const NET_REVENUE_FACTOR = 0.85; // illustrative — комиссии/налоги/chargebacks ~15%, уточняется у аналитика
 
 rows.forEach(r=>{
-  r.churnFinalPct = r.cancelled/r.buyers*100;
+  r.churnFinalPct = r.buyers ? r.cancelled/r.buyers*100 : 0;
   r.churnD3 = r.churnFinalPct*0.35;
   r.churnD7 = r.churnFinalPct*0.70;
   r.churnD14 = r.churnFinalPct;
-  r.hasD14 = !(r.key==='test1a' || r.key==='test1b'); // fresh cohorts: not enough elapsed time
+  r.hasD14 = !(r.key==='b1' || r.key==='b2'); // fresh cohorts (Experiment Beta): not enough elapsed time
   r.trend = [0.10,0.25,0.45,0.65,0.80,0.92,1.0].map(t=>r.subPct*t);
+  // illustrative tariff-plan split of activated users — 70% Monthly / 30% Annual
+  const monthlyN = Math.round(r.activated*0.7);
+  const annualN = r.activated - monthlyN;
+  r.plans = [
+    { name:'Monthly', n: monthlyN, revenue: monthlyN*AVG_SUB_PRICE },
+    { name:'Annual', n: annualN, revenue: annualN*ANNUAL_PLAN_PRICE },
+  ];
 });
 
 function resolveColor(v){
@@ -558,15 +601,45 @@ function renderConvTable(rowsList){
     <th>Эксперимент / группа</th>
     <th>WelcomeDone, n</th><th>WelcomeDone, %</th>
     <th>Paywall, n</th><th>Paywall, %</th>
+    <th>WD → Paywall, %</th>
     <th>Subscription, n</th><th>Subscription, %</th>
   </tr></thead><tbody>`;
   sorted.forEach(r=>{
     const label = `${experimentMeta[r.experiment].name.split('(')[0].trim()} — ${r.group}`;
+    const wdToPw = r.welcomeDonePct ? (r.paywallPct/r.welcomeDonePct*100) : null;
     html += `<tr>
       <td><span class="group-color" style="background:${r.color}"></span>${label}</td>
       <td>${fmtN(r.welcomeDoneN)}</td><td class="pct">${fmtPct(r.welcomeDonePct,1)}</td>
       <td>${fmtN(r.paywallN)}</td><td class="pct">${fmtPct(r.paywallPct,1)}</td>
+      <td class="pct">${wdToPw!==null ? fmtPct(wdToPw,1) : '<span class="muted-cell">—</span>'}</td>
       <td>${fmtN(r.subN)}</td><td class="pct">${fmtPct(r.subPct,2)}</td>
+    </tr>`;
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+}
+
+// ---------- table + chart: conversion from experiment start (cohort day) ----------
+function renderExpConvTable(rowsList){
+  const table = document.getElementById('table-expconv');
+  const sorted = [...rowsList].sort((a,b)=>b.activated-a.activated);
+  let html = `<thead><tr>
+    <th>Эксперимент / группа</th>
+    <th>Активаций, n</th>
+    <th>ARPU (D14)</th>
+    <th>Monthly, n</th><th>Monthly, revenue</th>
+    <th>Annual, n</th><th>Annual, revenue</th>
+  </tr></thead><tbody>`;
+  sorted.forEach(r=>{
+    const label = `${experimentMeta[r.experiment].name.split('(')[0].trim()} — ${r.group}`;
+    const totalRevenue = r.plans[0].revenue + r.plans[1].revenue;
+    const arpu = r.activated ? totalRevenue/r.activated : null;
+    html += `<tr>
+      <td><span class="group-color" style="background:${r.color}"></span>${label}</td>
+      <td>${fmtN(r.activated)}</td>
+      <td>${arpu!==null ? '$'+arpu.toFixed(2) : '<span class="muted-cell">—</span>'}</td>
+      <td>${fmtN(r.plans[0].n)}</td><td>$${r.plans[0].revenue.toFixed(0)}</td>
+      <td>${fmtN(r.plans[1].n)}</td><td>$${r.plans[1].revenue.toFixed(0)}</td>
     </tr>`;
   });
   html += '</tbody>';
@@ -596,26 +669,7 @@ function renderChurnTable(rowsList){
   table.innerHTML = html;
 }
 
-// ---------- draft sections (unchanged from v1, minimal) ----------
-function renderDraftCPA(){
-  const root = document.getElementById('stat-row-cpa');
-  const r = currentRows();
-  const totalSpend = r.reduce((s,x)=>s+x.spend,0);
-  const totalActivated = r.reduce((s,x)=>s+x.activated,0);
-  const blended = totalActivated ? totalSpend/totalActivated : 0;
-  root.innerHTML = '';
-  [
-    ['Спенд (US)', '$'+totalSpend.toFixed(0)],
-    ['Активаций', totalActivated],
-    ['CPA по 1-й оплате', totalActivated ? '$'+blended.toFixed(2) : '—'],
-  ].forEach(([label,value])=>{
-    const div = document.createElement('div'); div.className='stat-tile';
-    div.innerHTML = `<div class="label">${label}</div><div class="value">${value}</div>`;
-    root.appendChild(div);
-  });
-}
-
-// ---------- Overview (section 1) ----------
+// ---------- Overview (section 1): hierarchical Funnel → Experiment → Group → Tariff Plan table ----------
 function computeOverview(rowsList){
   const spend = rowsList.reduce((s,r)=>s+r.spend,0);
   const sessionStart = rowsList.reduce((s,r)=>s+r.sessionStart,0);
@@ -623,6 +677,7 @@ function computeOverview(rowsList){
   const activated = rowsList.reduce((s,r)=>s+r.activated,0);
   const buyers = rowsList.reduce((s,r)=>s+r.buyers,0);
   const renewals = rowsList.reduce((s,r)=>s+r.renewals,0);
+  const cancelled = rowsList.reduce((s,r)=>s+r.cancelled,0);
 
   const cpa0d = trials ? spend/trials : null;
   const cpaReal = activated ? spend/activated : null;
@@ -637,35 +692,124 @@ function computeOverview(rowsList){
   const convToTrial = sessionStart ? trials/sessionStart*100 : null;
   const convTrialToPurchase = trials ? activated/trials*100 : null;
 
-  return { spend, cpa0d, cpaReal, roas0d, grossRevenue, netRevenue, arpuD3, arpuD14, convToTrial, convTrialToPurchase };
+  const churnFinal = buyers ? cancelled/buyers*100 : null;
+  const hasD14 = rowsList.every(r=>r.hasD14);
+  const churnD3 = churnFinal!==null ? churnFinal*0.35 : null;
+  const churnD14 = (churnFinal!==null && hasD14) ? churnFinal : null;
+
+  const sources = [...new Set(rowsList.map(r=>r.source))];
+  const source = sources.length===0 ? null : sources.length===1 ? sources[0] : `${sources.length} источника`;
+
+  return { spend, cpa0d, cpaReal, roas0d, grossRevenue, netRevenue, arpuD3, arpuD14, convToTrial, convTrialToPurchase, churnD3, churnD14, hasD14, source };
 }
 
-function statTile(root, label, value, note){
-  const div = document.createElement('div'); div.className='stat-tile';
-  div.innerHTML = `<div class="label">${label}</div><div class="value">${value}</div>`;
-  root.appendChild(div);
-  if (note) attachTooltip(div, note);
+// ---- tree construction: Funnel -> Experiment -> Group -> Tariff Plan ----
+const expandedNodes = new Set();
+
+function planNode(rowKey, plan){
+  return {
+    type:'plan', id:`p-${rowKey}-${plan.name}`, name: plan.name,
+    metrics: { source:null, spend:null, cpa0d:null, cpaReal:null, roas0d:null,
+      grossRevenue: plan.revenue, netRevenue: plan.revenue*NET_REVENUE_FACTOR,
+      arpuD3:null, arpuD14: plan.n ? plan.revenue/plan.n : null,
+      convToTrial:null, convTrialToPurchase:null, churnD3:null, churnD14:null, hasD14:null },
+    planN: plan.n, children: [],
+  };
+}
+function groupNode(row){
+  return {
+    type:'group', id:`g-${row.key}`,
+    name: `${experimentMeta[row.experiment].name.split('(')[0].trim()} — ${row.group}`,
+    metrics: computeOverview([row]),
+    children: row.plans.map(p => planNode(row.key, p)),
+  };
+}
+function experimentNode(expKey, groupRows){
+  return {
+    type:'experiment', id:`e-${expKey}`, name: experimentMeta[expKey].name,
+    metrics: computeOverview(groupRows),
+    children: groupRows.map(r => groupNode(r)),
+  };
+}
+function funnelNode(funnelKey, expRows){
+  const expKeys = [...new Set(expRows.map(r=>r.experiment))];
+  return {
+    type:'funnel', id:`f-${funnelKey}`, name: funnelMeta[funnelKey].name,
+    metrics: computeOverview(expRows),
+    children: expKeys.map(ek => experimentNode(ek, expRows.filter(r=>r.experiment===ek))),
+  };
+}
+function buildOverviewTree(){
+  const scopeRows = currentRows();
+  if (curExperiment !== 'all') return scopeRows.map(r => groupNode(r));
+  if (curFunnel !== 'all') {
+    const expKeys = [...new Set(scopeRows.map(r=>r.experiment))];
+    return expKeys.map(ek => experimentNode(ek, scopeRows.filter(r=>r.experiment===ek)));
+  }
+  const funnelKeys = [...new Set(scopeRows.map(r=>r.funnel))];
+  return funnelKeys.map(fk => funnelNode(fk, scopeRows.filter(r=>r.funnel===fk)));
 }
 
-function renderOverview(rowsList){
-  const o = computeOverview(rowsList);
+function fmtMoney0(v){ return v===null||v===undefined ? '<span class="muted-cell">—</span>' : '$'+v.toFixed(0); }
+function fmtMoney2(v){ return v===null||v===undefined ? '<span class="muted-cell">—</span>' : '$'+v.toFixed(2); }
+function fmtPctCell(v){ return v===null||v===undefined ? '<span class="muted-cell">—</span>' : v.toFixed(2)+'%'; }
+
+function renderTreeNode(node, depth, out){
+  const hasChildren = node.children && node.children.length>0;
+  const expanded = expandedNodes.has(node.id);
+  const toggle = hasChildren ? `<span class="tree-toggle" data-id="${node.id}">${expanded?'▾':'▸'}</span>` : `<span class="tree-spacer"></span>`;
+  const indent = depth*16;
+  const m = node.metrics;
+  const churnD14Cell = m.hasD14===false ? '<span class="censored">недост.</span>' : fmtPctCell(m.churnD14);
+  const titleAttr = node.type==='plan' ? ` title="n=${node.planN}"` : '';
+  out.push(`<tr data-node="${node.type}"${titleAttr}>
+    <td style="padding-left:${8+indent}px;"><span class="tree-name-frame">${toggle}${node.name}</span></td>
+    <td style="text-align:left;">${m.source || '<span class="muted-cell">—</span>'}</td>
+    <td>${m.spend!==null&&m.spend!==undefined ? '$'+m.spend.toFixed(0) : '<span class="muted-cell">—</span>'}</td>
+    <td>${fmtMoney2(m.cpa0d)}</td>
+    <td>${fmtMoney2(m.cpaReal)}</td>
+    <td>${fmtPctCell(m.roas0d)}</td>
+    <td>${fmtMoney0(m.grossRevenue)}</td>
+    <td>${fmtMoney0(m.netRevenue)}</td>
+    <td>${fmtMoney2(m.arpuD3)}</td>
+    <td>${fmtMoney2(m.arpuD14)}</td>
+    <td>${fmtPctCell(m.convToTrial)}</td>
+    <td>${fmtPctCell(m.convTrialToPurchase)}</td>
+    <td>${fmtPctCell(m.churnD3)}</td>
+    <td>${churnD14Cell}</td>
+  </tr>`);
+  if (hasChildren && expanded) node.children.forEach(c => renderTreeNode(c, depth+1, out));
+}
+
+function renderOverviewTable(){
   document.getElementById('overview-scope-badge').textContent = document.getElementById('active-scope').textContent;
-
-  const econ = document.getElementById('stat-row-overview-econ'); econ.innerHTML = '';
-  statTile(econ, 'Spend (US)', '$'+o.spend.toFixed(0));
-  statTile(econ, 'CPA 0-day (по триалу)', o.cpa0d!==null ? '$'+o.cpa0d.toFixed(2) : '— (0 триалов)');
-  statTile(econ, 'CPA (по 1-й оплате)', o.cpaReal!==null ? '$'+o.cpaReal.toFixed(2) : '— (0 активаций)');
-  statTile(econ, 'ROAS 0-day', o.roas0d!==null ? o.roas0d.toFixed(1)+'%' : '—', 'Оценка на основе цены триала $'+TRIAL_PRICE.toFixed(2));
-
-  const rev = document.getElementById('stat-row-overview-rev'); rev.innerHTML = '';
-  statTile(rev, 'Gross Revenue', '$'+o.grossRevenue.toFixed(0), 'Иллюстративно: триалы×$'+TRIAL_PRICE+' + (активации+продления)×$'+AVG_SUB_PRICE+' — точная сумма из Chargebee у аналитика');
-  statTile(rev, 'Net Revenue', '$'+o.netRevenue.toFixed(0), 'Иллюстративно: Gross × '+(NET_REVENUE_FACTOR*100)+'% (допущение на комиссии/налоги/chargebacks — уточнить у аналитика)');
-  statTile(rev, 'ARPU D3', o.arpuD3!==null ? '$'+o.arpuD3.toFixed(2) : '—', 'Выручка на 3-й день / кол-во купивших триал');
-  statTile(rev, 'ARPU D14', o.arpuD14!==null ? '$'+o.arpuD14.toFixed(2) : '—', 'Выручка на 14-й день / кол-во купивших триал');
-
-  const conv = document.getElementById('stat-row-overview-conv'); conv.innerHTML = '';
-  statTile(conv, 'Session Start → Триал', o.convToTrial!==null ? o.convToTrial.toFixed(2)+'%' : '—');
-  statTile(conv, 'Триал → Первая оплата', o.convTrialToPurchase!==null ? o.convTrialToPurchase.toFixed(1)+'%' : '—');
+  const tree = buildOverviewTree();
+  const out = [];
+  tree.forEach(n => renderTreeNode(n, 0, out));
+  const table = document.getElementById('table-overview');
+  table.innerHTML = `<thead><tr>
+    <th style="text-align:left;">Название</th>
+    <th style="text-align:left;">Источник</th>
+    <th>Spend</th>
+    <th>CPA 0-day</th>
+    <th>CPA (опл.)</th>
+    <th>ROAS 0d</th>
+    <th>Gross Rev.</th>
+    <th>Net Rev.</th>
+    <th>ARPU D3</th>
+    <th>ARPU D14</th>
+    <th>Start→Триал</th>
+    <th>Триал→Опл.</th>
+    <th>Churn D3</th>
+    <th>Churn D14</th>
+  </tr></thead><tbody>${out.join('')}</tbody>`;
+  table.querySelectorAll('.tree-toggle').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const id = el.dataset.id;
+      if (expandedNodes.has(id)) expandedNodes.delete(id); else expandedNodes.add(id);
+      renderOverviewTable();
+    });
+  });
 }
 
 // ---------- Metrics glossary (section 6) ----------
@@ -716,14 +860,16 @@ function renderDraftLTV(){
 function renderAll(){
   const r = currentRows();
   updateScopeNote();
-  renderOverview(r);
+  renderOverviewTable();
   renderLegend('legend-conv', r);
+  renderLegend('legend-expconv', r);
   renderLegend('legend-churn', r);
   renderLineChart('chart-conv-line', r, row => row.trend, { xLabels:['1','2','3','4','5','6','7 (день)'] });
+  renderLineChart('chart-expconv-line', r, row => row.trend, { xLabels:['День 1','2','3','4','5','6','7'] });
   renderLineChart('chart-churn-line', r, row => [row.churnD3, row.churnD7, row.hasD14?row.churnD14:null], { xLabels:['D3','D7','D14'] });
   renderConvTable(r);
+  renderExpConvTable(r);
   renderChurnTable(r);
-  renderDraftCPA();
   renderDraftLTV();
 }
 renderAll();
