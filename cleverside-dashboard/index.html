@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cleverside — прототип дашборда по воронкам и тестам</title>
+<style>
+:root {
+  --page: #f2f2ef;
+  --surface-1: #ffffff;
+  --surface-2: #f7f7f4;
+  --header-tint: #e7edf5;
+  --text-primary: #14140f;
+  --text-secondary: #55544c;
+  --text-muted: #8b897f;
+  --gridline: #e4e2d8;
+  --baseline: #c7c5b7;
+  --border: rgba(20,20,15,0.10);
+  --good: #0ca30c;
+  --critical: #d03b3b;
+  --warn: #c98500;
+  --row-alt: #f7f7f4;
+
+  --c1: #2a78d6;
+  --c2: #008300;
+  --c3: #e87ba4;
+  --c4: #eda100;
+  --c5: #1baf7a;
+
+  --radius: 12px;
+}
+:root[data-theme="dark"] {
+  --page: #101010;
+  --surface-1: #1a1a19;
+  --surface-2: #171716;
+  --header-tint: #1c2530;
+  --text-primary: #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted: #8b897f;
+  --gridline: #2c2c2a;
+  --baseline: #3a3a37;
+  --border: rgba(255,255,255,0.10);
+  --good: #0ca30c;
+  --critical: #e66767;
+  --warn: #c98500;
+  --row-alt: #1f1f1d;
+  --c1: #3987e5; --c2: #008300; --c3: #d55181; --c4: #c98500; --c5: #199e70;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #101010;
+    --surface-1: #1a1a19;
+    --surface-2: #171716;
+    --header-tint: #1c2530;
+    --text-primary: #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted: #8b897f;
+    --gridline: #2c2c2a;
+    --baseline: #3a3a37;
+    --border: rgba(255,255,255,0.10);
+    --good: #0ca30c;
+    --critical: #e66767;
+    --warn: #c98500;
+    --row-alt: #1f1f1d;
+    --c1: #3987e5; --c2: #008300; --c3: #d55181; --c4: #c98500; --c5: #199e70;
+  }
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; }
+html, body { background: var(--page); }
+.app {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  color: var(--text-primary);
+  background: var(--page);
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 20px; }
+
+.proto-banner {
+  background: linear-gradient(135deg, #2a78d6, #1baf7a);
+  color: #fff; font-size: 12.5px; padding: 8px 20px; text-align: center;
+}
+
+.topbar { border-bottom: 1px solid var(--border); background: var(--surface-1); position: sticky; top: 0; z-index: 30; }
+.topbar-inner { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; }
+.topbar h1 { font-size: 17px; margin: 0; }
+.topbar .sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.tabs { display: flex; gap: 4px; }
+.tab-btn { border: none; background: transparent; color: var(--text-secondary); font-size: 13.5px; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-family: inherit; }
+.tab-btn.active { background: var(--surface-2); color: var(--text-primary); font-weight: 600; }
+.tab-btn:hover:not(.active) { background: var(--surface-2); }
+
+.filterbar { display: flex; flex-wrap: wrap; gap: 18px; align-items: flex-end; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.filter { display: flex; flex-direction: column; gap: 3px; }
+.filter label { font-size: 10.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+select { font-family: inherit; font-size: 13px; color: var(--text-primary); background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; min-width: 165px; }
+.pill-group { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.pill-group button { border: none; background: var(--surface-2); color: var(--text-secondary); font-size: 12.5px; padding: 7px 12px; cursor: pointer; font-family: inherit; border-right: 1px solid var(--border); }
+.pill-group button:last-child { border-right: none; }
+.pill-group button.active { background: var(--c1); color: #fff; }
+.filter-divider { width: 1px; align-self: stretch; background: var(--border); margin: 0 2px; }
+.filter-spacer { flex: 1; }
+.filter-note { font-size: 11.5px; color: var(--text-muted); max-width: 230px; line-height: 1.4; }
+.active-filter-chip {
+  font-size: 12px; color: var(--text-primary); background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 20px; padding: 6px 12px; display: flex; align-items: center; gap: 6px;
+}
+.active-filter-chip .dim { color: var(--text-muted); }
+
+.view { display: none; }
+.view.active { display: block; }
+
+section.chart { background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 22px 18px; margin: 20px 0; }
+section.chart .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 4px; }
+section.chart h2 { font-size: 15px; margin: 0; }
+section.chart .note { font-size: 12px; color: var(--text-muted); margin: 2px 0 16px; line-height: 1.5; }
+section.chart .badge { font-size: 10.5px; text-transform: uppercase; letter-spacing: .03em; color: var(--text-muted); background: var(--surface-2); border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; white-space: nowrap; }
+section.chart.draft { opacity: 0.75; }
+section.chart .draft-tag { font-size: 10px; color: var(--warn); background: rgba(201,133,0,0.12); border: 1px solid rgba(201,133,0,0.3); border-radius: 6px; padding: 2px 7px; }
+
+/* two-column layout: chart left, table right */
+.split { display: grid; grid-template-columns: 1.1fr 1.4fr; gap: 24px; align-items: start; }
+@media (max-width: 880px) { .split { grid-template-columns: 1fr; } }
+
+.legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
+.legend .item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
+.legend .dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+/* line chart */
+.line-chart { position: relative; height: 220px; }
+.line-svg { width: 100%; height: 100%; overflow: visible; }
+.axis-label { font-size: 10px; fill: var(--text-muted); }
+.grid-line { stroke: var(--gridline); stroke-width: 1; }
+.point { cursor: pointer; }
+
+/* reference-style flat table */
+.tablewrap { overflow-x: auto; }
+table.ref { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+table.ref thead th {
+  background: var(--header-tint); color: var(--text-secondary); font-weight: 600; text-align: right;
+  padding: 9px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; position: sticky; top: 0;
+}
+table.ref thead th:first-child { text-align: left; }
+table.ref tbody td { text-align: right; padding: 8px 10px; font-variant-numeric: tabular-nums; border-bottom: 1px solid var(--gridline); white-space: nowrap; }
+table.ref tbody td:first-child { text-align: left; white-space: normal; }
+table.ref tbody tr:nth-child(even) { background: var(--row-alt); }
+table.ref tbody tr:hover { outline: 1px solid var(--c1); outline-offset: -1px; }
+table.ref .group-color { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 6px; }
+table.ref .pct { color: var(--text-secondary); }
+table.ref .muted-cell { color: var(--text-muted); font-style: italic; }
+table.ref .censored { color: var(--warn); font-style: italic; }
+
+.stat-group-label { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); margin: 14px 0 8px; }
+.stat-group-label:first-of-type { margin-top: 4px; }
+.stat-row { display: flex; gap: 12px; flex-wrap: wrap; margin: 4px 0 18px; }
+.stat-tile { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; flex: 1; min-width: 150px; }
+.stat-tile .label { font-size: 11.5px; color: var(--text-muted); margin-bottom: 5px; }
+.stat-tile .value { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+.seg-switch { display: flex; gap: 4px; margin-bottom: 18px; }
+.hbar-group { margin-bottom: 20px; }
+.hbar-group h3 { font-size: 13px; margin: 0 0 10px; color: var(--text-secondary); }
+.hbar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.hbar-name { width: 130px; font-size: 12px; color: var(--text-secondary); text-align: right; flex-shrink: 0; }
+.hbar-track { flex: 1; height: 16px; background: var(--gridline); border-radius: 4px; }
+.hbar-fill { height: 100%; border-radius: 4px; background: var(--c3); }
+.hbar-val { width: 50px; font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+
+footer.notes { font-size: 11.5px; color: var(--text-muted); line-height: 1.7; margin: 24px 0 40px; }
+footer.notes code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+
+#tooltip { position: fixed; pointer-events: none; z-index: 50; background: var(--text-primary); color: var(--surface-1); font-size: 12px; padding: 6px 10px; border-radius: 6px; max-width: 260px; line-height: 1.4; opacity: 0; transform: translate(-50%, -120%); transition: opacity .08s ease; }
+#tooltip.show { opacity: 0.96; }
+
+@media (max-width: 720px) {
+  .topbar-inner { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+</style>
+</head>
+<body>
+<div class="app" data-theme="">
+
+<div class="proto-banner">Прототип v2 — иерархия «воронка → эксперимент → группы» и формат таблиц по референсу. Разделы CPA/ROAS, Retention/LTV и Сегменты — черновик из первой итерации, ждут доработки.</div>
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="topbar-inner">
+      <div>
+        <h1>Cleverside · Воронки и тесты</h1>
+        <div class="sub">Growth-дашборд · прототип v2</div>
+      </div>
+      <div class="tabs">
+        <button class="tab-btn active" data-view="overview">Обзор</button>
+        <button class="tab-btn" data-view="segments">Сегменты</button>
+      </div>
+    </div>
+    <div class="filterbar">
+      <div class="filter">
+        <label>Воронка</label>
+        <select id="f-funnel">
+          <option value="all">Все воронки</option>
+          <option value="funnelA">Quiz Funnel A (funnel-a.example.com)</option>
+          <option value="funnelB">Quiz Funnel B (funnel-b.example.com)</option>
+        </select>
+      </div>
+      <div class="filter">
+        <label>Эксперимент</label>
+        <select id="f-experiment">
+          <option value="all">Все эксперименты</option>
+        </select>
+      </div>
+      <div class="filter-divider"></div>
+      <div class="filter">
+        <label>Шкала</label>
+        <div class="pill-group" id="f-scale">
+          <button class="active" data-val="calendar">Календарь</button>
+          <button data-val="cohort">День теста</button>
+        </div>
+      </div>
+      <div class="filter">
+        <label>Период</label>
+        <div class="pill-group" id="f-period">
+          <button data-val="7d">7д</button>
+          <button data-val="30d">30д</button>
+          <button class="active" data-val="test">Весь тест</button>
+        </div>
+      </div>
+      <div class="filter">
+        <label>Источник трафика</label>
+        <select id="f-source">
+          <option>Все (Facebook)</option>
+        </select>
+      </div>
+      <div class="filter-spacer"></div>
+      <div class="filter-note" id="active-scope">Показаны все эксперименты (5 групп)</div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ===================== OVERVIEW ===================== -->
+<div class="view active" id="view-overview">
+
+  <section class="chart" id="sec-overview">
+    <div class="head">
+      <h2>1. Общий обзор</h2>
+      <span class="badge" id="overview-scope-badge">все эксперименты</span>
+    </div>
+    <p class="note">Верхнеуровневая сводка для текущего выбора фильтров. Если эксперимент не выбран — цифры агрегированы по всей воронке (или по всем воронкам).</p>
+
+    <div class="stat-group-label">Экономика</div>
+    <div class="stat-row" id="stat-row-overview-econ"></div>
+    <div class="stat-group-label">Выручка</div>
+    <div class="stat-row" id="stat-row-overview-rev"></div>
+    <div class="stat-group-label">Конверсии</div>
+    <div class="stat-row" id="stat-row-overview-conv"></div>
+  </section>
+
+  <section class="chart" id="sec-conv">
+    <div class="head">
+      <h2>2. Конверсия в покупку</h2>
+      <span class="badge">WelcomeDone → Paywall → Subscription</span>
+    </div>
+    <p class="note">WelcomeDone = 2-й экран (первое действие после старта квиза). Paywall = дошёл до экрана оплаты (CompleteRegistration). Subscription = купил (Subscribe). % — от Session Start. Если эксперимент не выбран в фильтрах — показаны все эксперименты/группы выбранной воронки.</p>
+
+    <div class="legend" id="legend-conv"></div>
+
+    <div class="split">
+      <div class="line-chart">
+        <svg class="line-svg" id="chart-conv-line" viewBox="0 0 400 220" preserveAspectRatio="none"></svg>
+      </div>
+      <div class="tablewrap">
+        <table class="ref" id="table-conv"></table>
+      </div>
+    </div>
+  </section>
+
+  <section class="chart" id="sec-churn">
+    <div class="head">
+      <h2>3. Retention / Churn по дням</h2>
+      <span class="badge">D3 · D7 · D14 от подписки</span>
+    </div>
+    <p class="note">Накопленный % отменивших подписку на 3-й / 7-й / 14-й день. Свежие эксперименты, не дожившие до контрольной точки, помечены как «недостаточно данных» — это не 0% retention, а right-censoring.</p>
+
+    <div class="legend" id="legend-churn"></div>
+
+    <div class="split">
+      <div class="line-chart">
+        <svg class="line-svg" id="chart-churn-line" viewBox="0 0 400 220" preserveAspectRatio="none"></svg>
+      </div>
+      <div class="tablewrap">
+        <table class="ref" id="table-churn"></table>
+      </div>
+    </div>
+  </section>
+
+  <section class="chart draft">
+    <div class="head">
+      <h2>4. CPA / ROAS <span class="draft-tag">черновик 1-й итерации</span></h2>
+      <span class="badge">экономика</span>
+    </div>
+    <p class="note">Раздел из первого прохода — во многом продублирован блоком «Экономика» в разделе 1. Будет объединён с общим обзором в следующей итерации.</p>
+    <div class="stat-row" id="stat-row-cpa"></div>
+  </section>
+
+  <section class="chart draft">
+    <div class="head">
+      <h2>5. Retention / LTV (расчётный) <span class="draft-tag">черновик 1-й итерации</span></h2>
+      <span class="badge">payback · LTV:CAC</span>
+    </div>
+    <p class="note">LTV на 30/60/90 дней, payback period к ROAS 40%, LTV:CAC — раздел из первого прохода, ждёт пересборки под фильтр эксперимента.</p>
+    <div class="stat-row" id="stat-row-ltv"></div>
+  </section>
+
+  <section class="chart">
+    <div class="head">
+      <h2>6. Словарь метрик</h2>
+      <span class="badge">что значит · как считаем</span>
+    </div>
+    <p class="note">Что значит каждая метрика на дашборде и как она считается — единое понимание для меня, аналитика и команды, без устных уточнений.</p>
+    <div class="tablewrap">
+      <table class="ref" id="table-glossary"></table>
+    </div>
+  </section>
+
+</div>
+
+<!-- ===================== SEGMENTS ===================== -->
+<div class="view" id="view-segments">
+
+  <section class="chart draft">
+    <div class="head">
+      <h2>7. Сегменты аудитории <span class="draft-tag">черновик 1-й итерации</span></h2>
+      <span class="badge">Quiz Funnel A · пример периода</span>
+    </div>
+    <p class="note">Собственные фильтры вкладки — не влияют на «Обзор». Переключатель меняет срез: кто заходит в воронку / кто платит / кто остаётся активным подписчиком.</p>
+
+    <div class="filterbar" style="border:none; padding: 6px 0 16px;">
+      <div class="filter"><label>Пол</label><select><option>Все</option><option>Женский</option><option>Мужской</option></select></div>
+      <div class="filter"><label>Возраст</label><select><option>Все</option><option>18–24</option><option>25–34</option><option>35–44</option><option>45+</option></select></div>
+      <div class="filter"><label>Ответ на вопрос квиза</label><select><option>Любой</option><option>Цель: память</option><option>Цель: концентрация</option><option>Цель: тревожность</option></select></div>
+    </div>
+
+    <div class="seg-switch pill-group" id="seg-switch">
+      <button class="active" data-val="in">Кто приходит</button>
+      <button data-val="buy">Кто покупает</button>
+      <button data-val="stay">Кто остаётся</button>
+    </div>
+
+    <div class="hbar-group"><h3>По полу</h3><div id="hbar-gender"></div></div>
+    <div class="hbar-group"><h3>По возрасту</h3><div id="hbar-age"></div></div>
+    <div class="hbar-group"><h3>По психографике (топ-мотивы из квиза)</h3><div id="hbar-psy"></div></div>
+  </section>
+
+</div>
+
+<footer class="notes">
+  Прототип использует полностью придуманные данные (5 групп: Group 1 / Group 2 одной кампании, Window 1 / Window 2 одного эксперимента, Main группа второй воронки) — иллюстрируют структуру и логику фильтров/графиков/таблиц, не реальные показатели проекта. В боевом дашборде все n и % — точные COUNT() из ClickHouse/Chargebee, а не расчётные оценки.
+</footer>
+
+</div>
+<div id="tooltip"></div>
+
+<script>
+const fmtN = n => n.toLocaleString('ru-RU');
+const fmtPct = (v,d=2) => v.toFixed(d)+'%';
+
+// ---------- data model: funnel -> experiment -> group(s) ----------
+const funnelMeta = {
+  funnelA: { name: 'Quiz Funnel A', domain: 'funnel-a.example.com' },
+  funnelB: { name: 'Quiz Funnel B', domain: 'funnel-b.example.com' },
+};
+const experimentMeta = {
+  expAlpha: { funnel:'funnelA', name: 'Experiment Alpha — Campaign X (Jul 1–3)' },
+  expBeta:  { funnel:'funnelA', name: 'Experiment Beta' },
+  expGamma: { funnel:'funnelB', name: 'Experiment Gamma — Campaign Y' },
+};
+
+const rows = [
+  { key:'a1', experiment:'expAlpha', funnel:'funnelA', group:'Group 1', color:'var(--c1)', period:'Jul 1–3',
+    sessionStart:600, welcomeDoneN:196, welcomeDonePct:32.7, paywallN:58, paywallPct:9.6, subN:0, subPct:0,
+    buyers:2, activated:1, cancelled:1, renewals:1, spend:270 },
+  { key:'a2', experiment:'expAlpha', funnel:'funnelA', group:'Group 2', color:'var(--c2)', period:'Jul 1–3',
+    sessionStart:620, welcomeDoneN:176, welcomeDonePct:28.4, paywallN:55, paywallPct:8.9, subN:1, subPct:0.16,
+    buyers:3, activated:2, cancelled:2, renewals:1, spend:240 },
+  { key:'b1', experiment:'expBeta', funnel:'funnelA', group:'Window 1', color:'var(--c4)', period:'Jul 13–14',
+    sessionStart:1440, welcomeDoneN:830, welcomeDonePct:57.6, paywallN:360, paywallPct:24.9, subN:24, subPct:1.67,
+    buyers:10, activated:7, cancelled:4, renewals:0, spend:630 },
+  { key:'b2', experiment:'expBeta', funnel:'funnelA', group:'Window 2', color:'var(--c5)', period:'Jul 17–19',
+    sessionStart:4390, welcomeDoneN:2780, welcomeDonePct:63.2, paywallN:1080, paywallPct:24.5, subN:101, subPct:2.30,
+    buyers:115, activated:62, cancelled:35, renewals:0, spend:3900 },
+  { key:'c1', experiment:'expGamma', funnel:'funnelB', group:'Main group', color:'var(--c3)', period:'Jul 1–8',
+    sessionStart:2180, welcomeDoneN:1365, welcomeDonePct:62.7, paywallN:585, paywallPct:26.9, subN:57, subPct:2.62,
+    buyers:59, activated:46, cancelled:31, renewals:56, spend:1670 },
+];
+const TRIAL_PRICE = 0.99;
+const AVG_SUB_PRICE = 29.99; // illustrative assumption — реальная цена подписки уточняется у аналитика
+const NET_REVENUE_FACTOR = 0.85; // illustrative — комиссии/налоги/chargebacks ~15%, уточняется у аналитика
+
+rows.forEach(r=>{
+  r.churnFinalPct = r.cancelled/r.buyers*100;
+  r.churnD3 = r.churnFinalPct*0.35;
+  r.churnD7 = r.churnFinalPct*0.70;
+  r.churnD14 = r.churnFinalPct;
+  r.hasD14 = !(r.key==='test1a' || r.key==='test1b'); // fresh cohorts: not enough elapsed time
+  r.trend = [0.10,0.25,0.45,0.65,0.80,0.92,1.0].map(t=>r.subPct*t);
+});
+
+function resolveColor(v){
+  const m = v.match(/--[a-z0-9]+/);
+  return m ? getComputedStyle(document.documentElement).getPropertyValue(m[0]).trim() : v;
+}
+
+let curFunnel = 'all';
+let curExperiment = 'all';
+
+function currentRows(){
+  return rows.filter(r => (curFunnel==='all' || r.funnel===curFunnel) && (curExperiment==='all' || r.experiment===curExperiment));
+}
+
+// ---------- filter wiring ----------
+const funnelSel = document.getElementById('f-funnel');
+const expSel = document.getElementById('f-experiment');
+
+function populateExperiments(){
+  expSel.innerHTML = '<option value="all">Все эксперименты</option>';
+  Object.entries(experimentMeta).forEach(([key, meta])=>{
+    if (curFunnel!=='all' && meta.funnel!==curFunnel) return;
+    const opt = document.createElement('option'); opt.value=key; opt.textContent=meta.name;
+    expSel.appendChild(opt);
+  });
+}
+populateExperiments();
+
+function updateScopeNote(){
+  const r = currentRows();
+  const note = document.getElementById('active-scope');
+  const groupCount = r.length;
+  const expCount = new Set(r.map(x=>x.experiment)).size;
+  if (curExperiment!=='all') {
+    note.textContent = `${experimentMeta[curExperiment].name} — ${groupCount} групп(а)`;
+  } else if (curFunnel!=='all') {
+    note.textContent = `${funnelMeta[curFunnel].name} — ${expCount} эксп., ${groupCount} групп`;
+  } else {
+    note.textContent = `Показаны все эксперименты (${groupCount} групп)`;
+  }
+}
+
+funnelSel.addEventListener('change', e=>{
+  curFunnel = e.target.value;
+  curExperiment = 'all';
+  populateExperiments();
+  renderAll();
+});
+expSel.addEventListener('change', e=>{
+  curExperiment = e.target.value;
+  renderAll();
+});
+
+document.querySelectorAll('.pill-group').forEach(group=>{
+  if (group.id === 'seg-switch') return;
+  group.addEventListener('click', e=>{
+    if (e.target.tagName !== 'BUTTON') return;
+    group.querySelectorAll('button').forEach(b=>b.classList.remove('active'));
+    e.target.classList.add('active');
+  });
+});
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+  });
+});
+
+// ---------- tooltip ----------
+function tooltipEl(){ return document.getElementById('tooltip'); }
+function attachTooltip(el, html){
+  el.addEventListener('mouseenter', ()=>{ const t=tooltipEl(); t.innerHTML=html; t.classList.add('show'); });
+  el.addEventListener('mousemove', e=>{ const t=tooltipEl(); t.style.left=e.clientX+'px'; t.style.top=e.clientY+'px'; });
+  el.addEventListener('mouseleave', ()=> tooltipEl().classList.remove('show'));
+}
+
+// ---------- legend ----------
+function renderLegend(rootId, rowsList){
+  const root = document.getElementById(rootId);
+  root.innerHTML = '';
+  rowsList.forEach(r=>{
+    const item = document.createElement('div'); item.className='item';
+    item.innerHTML = `<span class="dot" style="background:${r.color}"></span>${experimentMeta[r.experiment].name.split('(')[0].trim()} — ${r.group}`;
+    root.appendChild(item);
+  });
+}
+
+// ---------- line chart: conversion trend ----------
+function renderLineChart(svgId, rowsList, seriesFn, opts){
+  const svg = document.getElementById(svgId);
+  const W = 400, H = 220, padL = 34, padR = 10, padT = 14, padB = 24;
+  const xs = opts.xLabels;
+  const allVals = rowsList.flatMap(r => seriesFn(r).filter(v=>v!==null));
+  const maxV = Math.max(...allVals, 0.01) * 1.25;
+  const x = i => padL + (i/(xs.length-1))*(W-padL-padR);
+  const y = v => H-padB - (v/maxV)*(H-padT-padB);
+
+  let html = '';
+  // y gridlines + labels
+  [0,0.25,0.5,0.75,1].forEach(t=>{
+    const yy = H-padB - t*(H-padT-padB);
+    html += `<line class="grid-line" x1="${padL}" y1="${yy}" x2="${W-padR}" y2="${yy}"/>`;
+    html += `<text class="axis-label" x="4" y="${yy+3}">${(maxV*t).toFixed(1)}%</text>`;
+  });
+  // x labels
+  xs.forEach((lab,i)=>{
+    html += `<text class="axis-label" x="${x(i)}" y="${H-6}" text-anchor="middle">${lab}</text>`;
+  });
+  // lines
+  rowsList.forEach(r=>{
+    const vals = seriesFn(r);
+    const color = resolveColor(r.color);
+    let points = [];
+    vals.forEach((v,i)=>{ if (v!==null) points.push([x(i), y(v), v]); });
+    if (points.length < 2) {
+      // single point (e.g. no data) — just draw a marker
+      if (points.length===1) html += `<circle class="point" cx="${points[0][0]}" cy="${points[0][1]}" r="3.5" fill="${color}"/>`;
+      return;
+    }
+    const path = points.map((p,i)=> (i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+    html += `<path d="${path}" fill="none" stroke="${color}" stroke-width="2"/>`;
+  });
+  svg.innerHTML = html;
+
+  // attach hover after render (need real DOM circles for tooltip, add them separately with events)
+  rowsList.forEach(r=>{
+    const vals = seriesFn(r);
+    const color = resolveColor(r.color);
+    vals.forEach((v,i)=>{
+      if (v===null) return;
+      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx', x(i)); c.setAttribute('cy', y(v)); c.setAttribute('r', 3.5);
+      c.setAttribute('fill', color); c.classList.add('point');
+      const groupLabel = `${experimentMeta[r.experiment].name.split('(')[0].trim()} — ${r.group}`;
+      attachTooltip(c, `${groupLabel}<br>${xs[i]}: ${v.toFixed(2)}%`);
+      svg.appendChild(c);
+    });
+  });
+}
+
+// ---------- table: conversion ----------
+function renderConvTable(rowsList){
+  const table = document.getElementById('table-conv');
+  const sorted = [...rowsList].sort((a,b)=>b.subPct-a.subPct);
+  let html = `<thead><tr>
+    <th>Эксперимент / группа</th>
+    <th>WelcomeDone, n</th><th>WelcomeDone, %</th>
+    <th>Paywall, n</th><th>Paywall, %</th>
+    <th>Subscription, n</th><th>Subscription, %</th>
+  </tr></thead><tbody>`;
+  sorted.forEach(r=>{
+    const label = `${experimentMeta[r.experiment].name.split('(')[0].trim()} — ${r.group}`;
+    html += `<tr>
+      <td><span class="group-color" style="background:${r.color}"></span>${label}</td>
+      <td>${fmtN(r.welcomeDoneN)}</td><td class="pct">${fmtPct(r.welcomeDonePct,1)}</td>
+      <td>${fmtN(r.paywallN)}</td><td class="pct">${fmtPct(r.paywallPct,1)}</td>
+      <td>${fmtN(r.subN)}</td><td class="pct">${fmtPct(r.subPct,2)}</td>
+    </tr>`;
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+}
+
+// ---------- table: churn ----------
+function renderChurnTable(rowsList){
+  const table = document.getElementById('table-churn');
+  const sorted = [...rowsList].sort((a,b)=>a.churnFinalPct-b.churnFinalPct);
+  let html = `<thead><tr>
+    <th>Эксперимент / группа</th>
+    <th>Subscriptions, n</th><th>Churn D3</th><th>Churn D7</th><th>Churn D14</th>
+  </tr></thead><tbody>`;
+  sorted.forEach(r=>{
+    const label = `${experimentMeta[r.experiment].name.split('(')[0].trim()} — ${r.group}`;
+    const d14cell = r.hasD14 ? fmtPct(r.churnD14,1) : '<span class="censored">недост. данных</span>';
+    html += `<tr>
+      <td><span class="group-color" style="background:${r.color}"></span>${label}</td>
+      <td>${fmtN(r.buyers)}</td>
+      <td class="pct">${fmtPct(r.churnD3,1)}</td>
+      <td class="pct">${fmtPct(r.churnD7,1)}</td>
+      <td>${d14cell}</td>
+    </tr>`;
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+}
+
+// ---------- draft sections (unchanged from v1, minimal) ----------
+function renderDraftCPA(){
+  const root = document.getElementById('stat-row-cpa');
+  const r = currentRows();
+  const totalSpend = r.reduce((s,x)=>s+x.spend,0);
+  const totalActivated = r.reduce((s,x)=>s+x.activated,0);
+  const blended = totalActivated ? totalSpend/totalActivated : 0;
+  root.innerHTML = '';
+  [
+    ['Спенд (US)', '$'+totalSpend.toFixed(0)],
+    ['Активаций', totalActivated],
+    ['CPA по 1-й оплате', totalActivated ? '$'+blended.toFixed(2) : '—'],
+  ].forEach(([label,value])=>{
+    const div = document.createElement('div'); div.className='stat-tile';
+    div.innerHTML = `<div class="label">${label}</div><div class="value">${value}</div>`;
+    root.appendChild(div);
+  });
+}
+
+// ---------- Overview (section 1) ----------
+function computeOverview(rowsList){
+  const spend = rowsList.reduce((s,r)=>s+r.spend,0);
+  const sessionStart = rowsList.reduce((s,r)=>s+r.sessionStart,0);
+  const trials = rowsList.reduce((s,r)=>s+r.subN,0);
+  const activated = rowsList.reduce((s,r)=>s+r.activated,0);
+  const buyers = rowsList.reduce((s,r)=>s+r.buyers,0);
+  const renewals = rowsList.reduce((s,r)=>s+r.renewals,0);
+
+  const cpa0d = trials ? spend/trials : null;
+  const cpaReal = activated ? spend/activated : null;
+  const revenue0d = trials*TRIAL_PRICE;
+  const roas0d = spend ? revenue0d/spend*100 : null;
+
+  const grossRevenue = trials*TRIAL_PRICE + (activated+renewals)*AVG_SUB_PRICE;
+  const netRevenue = grossRevenue*NET_REVENUE_FACTOR;
+  const arpuD3 = buyers ? (trials*TRIAL_PRICE)/buyers : null;
+  const arpuD14 = buyers ? (trials*TRIAL_PRICE + activated*AVG_SUB_PRICE)/buyers : null;
+
+  const convToTrial = sessionStart ? trials/sessionStart*100 : null;
+  const convTrialToPurchase = trials ? activated/trials*100 : null;
+
+  return { spend, cpa0d, cpaReal, roas0d, grossRevenue, netRevenue, arpuD3, arpuD14, convToTrial, convTrialToPurchase };
+}
+
+function statTile(root, label, value, note){
+  const div = document.createElement('div'); div.className='stat-tile';
+  div.innerHTML = `<div class="label">${label}</div><div class="value">${value}</div>`;
+  root.appendChild(div);
+  if (note) attachTooltip(div, note);
+}
+
+function renderOverview(rowsList){
+  const o = computeOverview(rowsList);
+  document.getElementById('overview-scope-badge').textContent = document.getElementById('active-scope').textContent;
+
+  const econ = document.getElementById('stat-row-overview-econ'); econ.innerHTML = '';
+  statTile(econ, 'Spend (US)', '$'+o.spend.toFixed(0));
+  statTile(econ, 'CPA 0-day (по триалу)', o.cpa0d!==null ? '$'+o.cpa0d.toFixed(2) : '— (0 триалов)');
+  statTile(econ, 'CPA (по 1-й оплате)', o.cpaReal!==null ? '$'+o.cpaReal.toFixed(2) : '— (0 активаций)');
+  statTile(econ, 'ROAS 0-day', o.roas0d!==null ? o.roas0d.toFixed(1)+'%' : '—', 'Оценка на основе цены триала $'+TRIAL_PRICE.toFixed(2));
+
+  const rev = document.getElementById('stat-row-overview-rev'); rev.innerHTML = '';
+  statTile(rev, 'Gross Revenue', '$'+o.grossRevenue.toFixed(0), 'Иллюстративно: триалы×$'+TRIAL_PRICE+' + (активации+продления)×$'+AVG_SUB_PRICE+' — точная сумма из Chargebee у аналитика');
+  statTile(rev, 'Net Revenue', '$'+o.netRevenue.toFixed(0), 'Иллюстративно: Gross × '+(NET_REVENUE_FACTOR*100)+'% (допущение на комиссии/налоги/chargebacks — уточнить у аналитика)');
+  statTile(rev, 'ARPU D3', o.arpuD3!==null ? '$'+o.arpuD3.toFixed(2) : '—', 'Выручка на 3-й день / кол-во купивших триал');
+  statTile(rev, 'ARPU D14', o.arpuD14!==null ? '$'+o.arpuD14.toFixed(2) : '—', 'Выручка на 14-й день / кол-во купивших триал');
+
+  const conv = document.getElementById('stat-row-overview-conv'); conv.innerHTML = '';
+  statTile(conv, 'Session Start → Триал', o.convToTrial!==null ? o.convToTrial.toFixed(2)+'%' : '—');
+  statTile(conv, 'Триал → Первая оплата', o.convTrialToPurchase!==null ? o.convTrialToPurchase.toFixed(1)+'%' : '—');
+}
+
+// ---------- Metrics glossary (section 6) ----------
+const glossary = [
+  ['Session Start', 'Заход на лендинг / старт сессии.', 'Внешнее событие — нет в БД, берётся из внешнего трекера/Google Sheets.'],
+  ['WelcomeDone (2-й экран)', 'Начал квиз — первое действие после лендинга.', "COUNT(DISTINCT session) по событию ViewContent."],
+  ['Paywall (CompleteRegistration)', 'Дошёл до экрана оплаты.', "COUNT(DISTINCT session) по событию CompleteRegistration."],
+  ['Триал / Subscription', 'Оформил пробную подписку на пейволе — ещё не значит оплатил.', "COUNT по событию Subscribe (web_events) = subscription_created (chargebee)."],
+  ['Первая оплата / Активация', 'Реально прошло первое списание.', "COUNT по subscription_activated (chargebee_events)."],
+  ['CPA 0-day', 'Стоимость привлечения оформившего триал, без гарантии оплаты.', "Spend / кол-во триалов."],
+  ['CPA (реальный)', 'Стоимость реально заплатившего юзера. Основная метрика для scale/kill.', "Spend / кол-во активаций."],
+  ['ROAS 0-day', 'Мгновенный возврат на расходы в момент оформления триала.', "(триалы × цена триала) / Spend."],
+  ['Gross Revenue', 'Вся начисленная выручка по подпискам, без вычетов.', "Сумма успешных списаний (activated + renewed × сумма платежа)."],
+  ['Net Revenue', 'Выручка за вычетом комиссий, налогов, chargebacks/disputes.', "Gross Revenue − комиссии/налоги − спорные и возвращённые платежи."],
+  ['ARPU D3 / D14', 'Средняя выручка на купившего триал (buyer) к 3-му/14-му дню.', "Накопленная выручка когорты на день N / кол-во buyers."],
+  ['Конв. Session Start → Триал', 'Доходимость от захода до оформления триала.', "Триалы / Session Start."],
+  ['Конв. Триал → Первая оплата', 'Доля триалов, дошедших до первого списания.', "Активации / Триалы."],
+  ['Churn D3 / D7 / D14', 'Накопленная доля отписавшихся к N-му дню от активации.', "COUNT(cancelled к дню N) / COUNT(activated)."],
+  ['LTV D30 / D60 / D90', 'Прогнозная накопленная выручка на активировавшегося юзера к дню N.', "Выручка когорты на день N / кол-во активировавшихся."],
+  ['Payback period', 'Сколько дней нужно, чтобы выручка на юзера окупила CPA.', "Мин. день N, при котором LTV(N) ≥ CPA (реальный)."],
+  ['LTV:CAC', 'Соотношение прогнозной выручки к стоимости привлечения.', "LTV (на горизонте, напр. D90) / CPA."],
+];
+function renderGlossary(){
+  const table = document.getElementById('table-glossary');
+  let html = '<thead><tr><th style="text-align:left">Метрика</th><th style="text-align:left">Что значит</th><th style="text-align:left">Как считаем</th></tr></thead><tbody>';
+  glossary.forEach(([name, meaning, formula])=>{
+    html += `<tr><td style="white-space:normal;font-weight:600;">${name}</td><td style="text-align:left;white-space:normal;">${meaning}</td><td style="text-align:left;white-space:normal;color:var(--text-secondary);">${formula}</td></tr>`;
+  });
+  html += '</tbody>';
+  table.innerHTML = html;
+}
+renderGlossary();
+function renderDraftLTV(){
+  const root = document.getElementById('stat-row-ltv');
+  root.innerHTML = '';
+  [
+    ['LTV D30 (референс Group C1)', '$4.10'],
+    ['Payback period', '~18 дней (оценка)'],
+    ['LTV:CAC (референс Group C1)', '0.21 : 1'],
+  ].forEach(([label,value])=>{
+    const div = document.createElement('div'); div.className='stat-tile';
+    div.innerHTML = `<div class="label">${label}</div><div class="value" style="font-size:16px;">${value}</div>`;
+    root.appendChild(div);
+  });
+}
+
+// ---------- master render ----------
+function renderAll(){
+  const r = currentRows();
+  updateScopeNote();
+  renderOverview(r);
+  renderLegend('legend-conv', r);
+  renderLegend('legend-churn', r);
+  renderLineChart('chart-conv-line', r, row => row.trend, { xLabels:['1','2','3','4','5','6','7 (день)'] });
+  renderLineChart('chart-churn-line', r, row => [row.churnD3, row.churnD7, row.hasD14?row.churnD14:null], { xLabels:['D3','D7','D14'] });
+  renderConvTable(r);
+  renderChurnTable(r);
+  renderDraftCPA();
+  renderDraftLTV();
+}
+renderAll();
+
+// ---------- segments tab (unchanged draft) ----------
+const segData = {
+  in:  { gender:[['Женский',58],['Мужской',42]], age:[['18–24',22],['25–34',35],['35–44',26],['45+',17]],
+         psy:[['Память',31],['Концентрация',27],['Тревожность',24],['Другое',18]] },
+  buy: { gender:[['Женский',64],['Мужской',36]], age:[['18–24',14],['25–34',38],['35–44',31],['45+',17]],
+         psy:[['Память',36],['Концентрация',29],['Тревожность',22],['Другое',13]] },
+  stay:{ gender:[['Женский',61],['Мужской',39]], age:[['18–24',11],['25–34',33],['35–44',36],['45+',20]],
+         psy:[['Память',40],['Концентрация',26],['Тревожность',20],['Другое',14]] },
+};
+function renderHBars(rootId, data){
+  const root = document.getElementById(rootId);
+  root.innerHTML = '';
+  const max = Math.max(...data.map(d=>d[1]));
+  data.forEach(([label,val])=>{
+    const row = document.createElement('div'); row.className='hbar-row';
+    const name = document.createElement('div'); name.className='hbar-name'; name.textContent=label;
+    const track = document.createElement('div'); track.className='hbar-track';
+    const fill = document.createElement('div'); fill.className='hbar-fill'; fill.style.width=(val/max*100)+'%';
+    track.appendChild(fill);
+    const v = document.createElement('div'); v.className='hbar-val'; v.textContent=val+'%';
+    row.append(name, track, v);
+    attachTooltip(row, `${label}: ${val}%`);
+    root.appendChild(row);
+  });
+}
+function renderSegments(mode){
+  renderHBars('hbar-gender', segData[mode].gender);
+  renderHBars('hbar-age', segData[mode].age);
+  renderHBars('hbar-psy', segData[mode].psy);
+}
+renderSegments('in');
+document.getElementById('seg-switch').addEventListener('click', e=>{
+  if (e.target.tagName!=='BUTTON') return;
+  document.querySelectorAll('#seg-switch button').forEach(b=>b.classList.remove('active'));
+  e.target.classList.add('active');
+  renderSegments(e.target.dataset.val);
+});
+</script>
+</body>
+</html>
