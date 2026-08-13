@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5-Minute Brain Breaks — Brain AI</title>
+<style>
+  :root {
+    --bg: #f3ecdf;
+    --card: #fbf7ee;
+    --ink: #26322d;
+    --ink-soft: #5c6b62;
+    --accent: #4f7364;
+    --accent-ink: #ffffff;
+    --accent-warm: #b97f2c;
+    --line: #ddd0b6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: Optima, Candara, "Noto Sans", "Segoe UI", system-ui, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+
+  .meta-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    flex-wrap: wrap;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 14px;
+    margin-bottom: 56px;
+  }
+  .meta-bar strong { color: var(--accent); font-weight: 700; }
+
+  /* ---- Cover ---- */
+  .cover {
+    text-align: center;
+    padding: 48px 32px 44px;
+    margin-bottom: 40px;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    position: relative;
+  }
+  .cover .tag {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 6px 18px;
+    border-radius: 2px;
+    margin-bottom: 26px;
+  }
+  .cover h1 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-size: clamp(2.1rem, 5vw, 3rem);
+    font-weight: 400;
+    line-height: 1.15;
+    margin: 0 0 20px;
+  }
+  .cover p.sub {
+    max-width: 48ch;
+    margin: 0 auto 28px;
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+  }
+  .cover .bonus-line {
+    font-size: 0.88rem;
+    color: var(--ink);
+    border-top: 1px solid var(--line);
+    padding-top: 20px;
+    margin-top: 8px;
+  }
+  .cover .bonus-line b { color: var(--accent); }
+
+  /* ---- Exercise cards ---- */
+  .exercise {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 36px 36px 32px;
+    margin-bottom: 28px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 28px;
+    align-items: start;
+  }
+  .exercise .body-col { min-width: 0; }
+  .exercise .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+  .exercise .eyebrow .num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: Georgia, serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .exercise .eyebrow .time { color: var(--accent-warm); font-weight: 700; }
+  .exercise h2 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+    font-weight: 400;
+    font-size: 1.55rem;
+    margin: 0 0 12px;
+  }
+  .exercise p.instructions { margin: 0 0 16px; max-width: 62ch; font-size: 1rem; }
+  .exercise .why {
+    display: flex;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    border-left: 2px solid var(--accent);
+    padding-left: 12px;
+  }
+  .exercise .why b { color: var(--ink); font-weight: 600; }
+
+  .visual-col { width: 148px; flex-shrink: 0; text-align: center; }
+  .visual-frame {
+    width: 148px;
+    height: 148px;
+    border-radius: 4px;
+    background: #eee3ce;
+    border: 1px dashed var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .visual-frame svg { width: 74px; height: 74px; }
+  .visual-caption {
+    margin-top: 10px;
+    font-size: 0.72rem;
+    line-height: 1.4;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+
+  @media (max-width: 560px) {
+    .exercise { grid-template-columns: 1fr; }
+    .visual-col { width: 100%; }
+    .visual-frame { width: 100%; }
+  }
+
+  /* ---- Games spread ---- */
+  .games-spread {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 40px 36px;
+    margin-top: 40px;
+  }
+  .games-spread .tag {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 6px 18px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+  .games-spread h2 {
+    font-family: Georgia, serif;
+    font-weight: 400;
+    font-size: 1.7rem;
+    margin: 0 0 12px;
+  }
+  .games-spread p.intro { max-width: 56ch; color: var(--ink-soft); margin: 0 0 28px; }
+
+  .game-shots {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .game-shot {
+    aspect-ratio: 9/16;
+    border-radius: 10px;
+    border: 1px dashed var(--line);
+    background: repeating-linear-gradient(135deg, #eee3ce, #eee3ce 10px, #e7d9bd 10px, #e7d9bd 20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px;
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    font-style: italic;
+  }
+  @media (max-width: 560px) {
+    .game-shots { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .store-row {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    border-top: 1px solid var(--line);
+    padding-top: 28px;
+  }
+  .qr-box {
+    width: 108px;
+    height: 108px;
+    padding: 6px;
+    background: #fff;
+    border-radius: 6px;
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .qr-box img { width: 100%; height: 100%; display: block; }
+  .store-text { min-width: 220px; }
+  .store-text .label {
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+  }
+  .store-text a {
+    color: var(--accent);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 1.05rem;
+    word-break: break-word;
+  }
+  .store-text a:hover { text-decoration: underline; }
+
+  .note {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+  .note h4 {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.72rem;
+    color: var(--ink);
+    margin: 0 0 8px;
+  }
+  .note ul { margin: 0; padding-left: 18px; }
+  .note li { margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="meta-bar">
+    <span>Brain AI · PDF-бонус · <strong>WEB-256</strong></span>
+    <span>Черновик контента v2 · 2026-08-13</span>
+  </div>
+
+  <div class="cover">
+    <span class="tag">Bonus Guide</span>
+    <h1>5-Minute Brain Breaks</h1>
+    <p class="sub">Five simple exercises you can do every day to keep your mind sharp — no equipment, no pen, just a few spare minutes wherever you are.</p>
+    <p class="bonus-line">This is a free bonus PDF from <b>Brain AI</b>, made for you as a thank-you for taking the test.</p>
+  </div>
+
+  <div class="exercise">
+    <div class="body-col">
+      <p class="eyebrow"><span class="num">1</span> Exercise One <span class="time">~3 min</span></p>
+      <h2>Count It Down</h2>
+      <p class="instructions">Pick any number between 40 and 100. Now count backward by 3s &#8212; 97, 94, 91 &#8212; for as long as you can, all in your head. No pen, no phone. If you lose your place, just pick a new number and start again.</p>
+      <p class="why"><b>Why it helps:</b>&nbsp;Working with numbers this way keeps your working memory active &#8212; the same skill you use to hold a phone number or a grocery list in mind.</p>
+    </div>
+    <div class="visual-col">
+      <div class="visual-frame">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 78 L35 78 L35 58 L55 58 L55 38 L75 38 L75 18" stroke="#4f7364" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="75" cy="18" r="5" fill="#b97f2c"/>
+          <circle cx="55" cy="38" r="3.5" fill="#4f7364"/>
+          <circle cx="35" cy="58" r="3.5" fill="#4f7364"/>
+          <circle cx="15" cy="78" r="3.5" fill="#4f7364"/>
+        </svg>
+      </div>
+      <p class="visual-caption">Visual idea: a descending staircase of numbers, one warm dot marking the starting point</p>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="body-col">
+      <p class="eyebrow"><span class="num">2</span> Exercise Two <span class="time">~2 min</span></p>
+      <h2>Five Things I See</h2>
+      <p class="instructions">Look around wherever you're sitting or standing. Silently name five things you can see &#8212; a lamp, a sign, a cup, anything at all. Then close your eyes and try to recall all five, in the same order you named them.</p>
+      <p class="why"><b>Why it helps:</b>&nbsp;This is a quick workout for short-term memory and attention &#8212; the two things people notice slipping first, and the two most worth practicing.</p>
+    </div>
+    <div class="visual-col">
+      <div class="visual-frame">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 50 C20 34 34 22 50 22 C66 22 80 34 80 50 C80 66 66 78 50 78 C34 78 20 66 20 50 Z" stroke="#4f7364" stroke-width="3"/>
+          <circle cx="50" cy="50" r="13" fill="#b97f2c"/>
+          <circle cx="50" cy="50" r="5" fill="#fbf7ee"/>
+        </svg>
+      </div>
+      <p class="visual-caption">Visual idea: a simple open eye, looking out at five small everyday objects</p>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="body-col">
+      <p class="eyebrow"><span class="num">3</span> Exercise Three <span class="time">~2 min</span></p>
+      <h2>Word Chain</h2>
+      <p class="instructions">Think of a category &#8212; fruits, countries, things in a kitchen, anything you like. Try to name five different words in that category before you count to twenty in your head. Pick a new category each time you play.</p>
+      <p class="why"><b>Why it helps:</b>&nbsp;Finding the right word quickly is a skill of its own, separate from memory &#8212; this keeps that word-finding pathway warm.</p>
+    </div>
+    <div class="visual-col">
+      <div class="visual-frame">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="14" y="40" width="26" height="20" rx="10" stroke="#4f7364" stroke-width="3"/>
+          <rect x="37" y="40" width="26" height="20" rx="10" stroke="#b97f2c" stroke-width="3"/>
+          <rect x="60" y="40" width="26" height="20" rx="10" stroke="#4f7364" stroke-width="3"/>
+        </svg>
+      </div>
+      <p class="visual-caption">Visual idea: three overlapping chain links, each holding a different short word</p>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="body-col">
+      <p class="eyebrow"><span class="num">4</span> Exercise Four <span class="time">~3 min</span></p>
+      <h2>What Comes Next?</h2>
+      <p class="instructions">Make up a simple sequence of numbers, like 2, 5, 8, or 100, 90, 80. Figure out the pattern, then say the next two numbers out loud. Once it feels easy, try a harder jump &#8212; every 7s, or every 11s.</p>
+      <p class="why"><b>Why it helps:</b>&nbsp;Spotting a pattern and predicting what's next is the same kind of thinking you use to plan a schedule or follow a recipe.</p>
+    </div>
+    <div class="visual-col">
+      <div class="visual-frame">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="22" cy="72" r="7" fill="#4f7364"/>
+          <circle cx="46" cy="54" r="7" fill="#4f7364"/>
+          <circle cx="70" cy="36" r="7" fill="#4f7364"/>
+          <circle cx="88" cy="18" r="7" fill="none" stroke="#b97f2c" stroke-width="3" stroke-dasharray="3 3"/>
+          <path d="M22 72 L46 54 L70 36 L88 18" stroke="#ddd0b6" stroke-width="2" stroke-dasharray="4 4"/>
+        </svg>
+      </div>
+      <p class="visual-caption">Visual idea: a rising row of dots with a dashed, question-mark dot at the end</p>
+    </div>
+  </div>
+
+  <div class="exercise">
+    <div class="body-col">
+      <p class="eyebrow"><span class="num">5</span> Exercise Five <span class="time">~2 min</span></p>
+      <h2>Slow Breath, Sharp Mind</h2>
+      <p class="instructions">Breathe in slowly while you count to four. Hold for four. Breathe out for four. Repeat five times, counting each breath in your head. Let your shoulders drop a little more with every breath out.</p>
+      <p class="why"><b>Why it helps:</b>&nbsp;A calm body gives your mind a clean, focused reset &#8212; and focus is what makes every other exercise here easier.</p>
+    </div>
+    <div class="visual-col">
+      <div class="visual-frame">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 60 C25 40 35 40 40 60 C45 80 55 80 60 60 C65 40 75 40 85 60" stroke="#4f7364" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+          <circle cx="40" cy="60" r="3" fill="#b97f2c"/>
+          <circle cx="60" cy="60" r="3" fill="#b97f2c"/>
+        </svg>
+      </div>
+      <p class="visual-caption">Visual idea: a soft, single-line breathing wave, calm and unhurried</p>
+    </div>
+  </div>
+
+  <div class="games-spread">
+    <span class="tag">Keep Going</span>
+    <h2>Play More Brain Games</h2>
+    <p class="intro">These five exercises are just a taste. Brain AI has 30+ games across Memory, Logic, Math, and Problem Solving &#8212; ready whenever you want a longer session.</p>
+    <div class="game-shots">
+      <div class="game-shot">Screenshot slot 1<br>&#8212; Memory game &#8212;</div>
+      <div class="game-shot">Screenshot slot 2<br>&#8212; Logic game &#8212;</div>
+      <div class="game-shot">Screenshot slot 3<br>&#8212; Pattern game &#8212;</div>
+    </div>
+    <div class="store-row">
+      <div class="qr-box">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=0&data=https%3A%2F%2Fapps.apple.com%2Fus%2Fapp%2Fbrain-ai-mind-training-games%2Fid6498627465" alt="QR code to Brain AI on the App Store" width="200" height="200">
+      </div>
+      <div class="store-text">
+        <p class="label">Get the app</p>
+        <a href="https://apps.apple.com/us/app/brain-ai-mind-training-games/id6498627465" target="_blank" rel="noopener">apps.apple.com/&#8203;brain-ai-mind-training-games</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <h4>Что дальше по этому черновику</h4>
+    <ul>
+      <li>3 слота скриншотов игр &#8212; плейсхолдеры, реальных скринов приложения под рукой не было; заменить на настоящие перед сборкой в Canva.</li>
+      <li>QR-код и ссылка ведут на реальный Store-лист Brain AI (apps.apple.com/us/app/brain-ai-mind-training-games/id6498627465) &#8212; проверено поиском, сходится с продуктом Cleverside.</li>
+      <li>Иконки при упражнениях &#8212; наглядные плейсхолдеры направления для дизайнера, не финальная иллюстрация.</li>
+      <li>После сборки PDF &#8212; обратно в WEB-256: апсейл-экран, прайс, письмо с вложением, тест скачивания и оплаты (флоу Елизаветы).</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>
