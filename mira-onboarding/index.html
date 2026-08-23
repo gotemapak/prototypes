@@ -285,10 +285,9 @@
         <div class="notch"></div>
       </div>
     </div>
+    <button class="ob-cta" id="day2-cta" style="display:none;max-width:380px;background:var(--brand);color:#fff">Как это выглядит в чате на второй день →</button>
   </div>
 </div>
-
-<footer class="page-foot">Прототип не отправляет данные и не хранит ввод — все ответы Миры заранее написаны для демонстрации логики флоу.</footer>
 
 <script>
 (function(){
@@ -309,7 +308,7 @@
     'ob-micro': ['Для остальных вариантов сейчас нет уникальной механики — она была бы аналогична «следить за рынком», в зависимости от контекста. Пока для всех, кроме трейдинга, делаем нейтральную переброску на Paywall, а для трейдинга — более разветвлённую механику.'],
     'ob-preview': ['Даём пользователю первый образ результата на основе того, что уже о нём знаем, и предлагаем включить этот сценарий самостоятельно.'],
     'ob-confirm': [],
-    'paywall': ['Пробуем продать уже в первой сессии: по данным Adapty, 70–90% покупок в мобильных приложениях происходят именно в ней — предполагаю похожий паттерн и в мини-приложениях, это стоит уточнить.', 'Адаптируем контент Paywall под ответы, которые пользователь дал по ходу онбординга — здесь мои предположения, тоже стоит уточнить.'],
+    'paywall': ['Пробуем продать уже в первой сессии: по данным Adapty, 70–90% покупок в мобильных приложениях происходят именно в ней — предполагаю похожий паттерн и в мини-приложениях, это стоит уточнить.', 'Адаптируем контент Paywall под ответы, которые пользователь дал по ходу онбординга — здесь мои предположения, тоже стоит уточнить.', 'По-хорошему я бы пересобрал структуру Paywall на основе предыдущих ответов под кейс пользователя. Сейчас для примера меняю только текст, а не структуру — так быстрее и проще для демонстрации.'],
     'app-home': ['Подставляем в «Лучшее для тебя» настройки, которые уже реально работают.', 'То же самое предлагаем не только здесь, а прямо в чате — на второй день, следующим сообщением после первого результата: «Не хочешь попробовать ещё вот это?» с тем, что популярно у похожих пользователей.'],
     'tg-d2': [],
   };
@@ -791,7 +790,6 @@
       <div class="navitem"><span>✨</span>Генерация</div>
       <div class="navitem"><span>⚙️</span>Настройки</div>
     </div>
-    ${seg==='trading' ? `<div style="padding:6px 18px 4px"><button class="ob-cta" style="background:var(--brand);color:#fff" data-go="tg-d2">Как это выглядит в чате на второй день →</button></div>` : ''}
     <button class="skip-link" data-go="restart">← Начать заново</button>`;
   }
 
@@ -846,6 +844,9 @@
     renderTracker(def.step);
     const cm = document.getElementById('my-commentary');
     if (cm) cm.innerHTML = (COMMENTS[def.id] || []).map(t=>`<li>${t}</li>`).join('') || '<li style="color:var(--mute);list-style:none;margin-left:-18px">—</li>';
+
+    const day2 = document.getElementById('day2-cta');
+    if (day2) day2.style.display = (def.id === 'app-home' && state.important === 'trading') ? '' : 'none';
 
     wrap.querySelectorAll('[data-go]').forEach(el=>{
       el.addEventListener('click', ()=>{
@@ -902,6 +903,9 @@
       el.addEventListener('click', ()=>{ state.pwPlan = el.dataset.pwPlan; render(); });
     });
   }
+
+  const day2Btn = document.getElementById('day2-cta');
+  if (day2Btn) day2Btn.addEventListener('click', ()=>go('tg-d2'));
 
   render();
 })();
