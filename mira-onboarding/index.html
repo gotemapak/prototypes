@@ -730,12 +730,16 @@
 
   function appHome(){
     const seg = state.important;
-    let cards;
+    let cards, sections = null;
     if (seg === 'trading'){
-      cards = [
-        ['🤖','Автоматизировать стратегию','Собрать бота под твой сценарий'],
-        ['🔔','Настроенные алерты', (state.drills.join(', ')||'TON') + ' · ' + (state.freqs.join(', ')||'раз в день')],
-        ['👥','Популярно у трейдеров как ты','Алерты по объёму торгов'],
+      sections = [
+        { title:'Что уже работает', cards:[
+          ['🔔','Настроенные алерты', (state.drills.join(', ')||'TON') + ' · ' + (state.freqs.join(', ')||'раз в день')],
+        ]},
+        { title:'Популярно у похожих', cards:[
+          ['🤖','Автоматизировать стратегию','Собрать бота под твой сценарий'],
+          ['📊','Алерты по объёму торгов','Часто включают вместе с ценой'],
+        ]},
       ];
     } else if (seg === 'content' || seg === 'productivity'){
       const primary = primaryPick();
@@ -751,8 +755,9 @@
       <h2>Привет, ${nm()}!</h2>
       <p>${seg ? 'Собрала главное под то, с чего мы начали' : 'Вот что я умею'}</p>
     </div>
-    <div class="app-section-title">${seg ? 'Лучшее для тебя' : 'Лучшее'}</div>
-    ${cards.map(([ic,t,sub])=>`<div class="flat-card"><span class="ic">${ic}</span><div><b>${t}</b><span>${sub}</span></div></div>`).join('')}
+    ${sections
+      ? sections.map(s=>`<div class="app-section-title">${s.title}</div>${s.cards.map(([ic,t,sub])=>`<div class="flat-card"><span class="ic">${ic}</span><div><b>${t}</b><span>${sub}</span></div></div>`).join('')}`).join('')
+      : `<div class="app-section-title">${seg ? 'Лучшее для тебя' : 'Лучшее'}</div>${cards.map(([ic,t,sub])=>`<div class="flat-card"><span class="ic">${ic}</span><div><b>${t}</b><span>${sub}</span></div></div>`).join('')}`}
     <div class="app-section-title">Основное</div>
     <div class="flat-card"><span class="ic">⏰</span><div><b>Напомнить о важном</b><span>Ласковое напоминание</span></div></div>
     <div class="flat-card"><span class="ic">📰</span><div><b>Ежедневные новости</b><span>Подборка по интересам</span></div></div>
