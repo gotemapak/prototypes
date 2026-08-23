@@ -309,7 +309,8 @@
     'ob-preview': ['Даём пользователю первый образ результата на основе того, что уже о нём знаем, и предлагаем включить этот сценарий самостоятельно.'],
     'ob-confirm': [],
     'paywall': ['Пробуем продать уже в первой сессии: по данным Adapty, 70–90% покупок в мобильных приложениях происходят именно в ней — предполагаю похожий паттерн и в мини-приложениях, это стоит уточнить.', 'Адаптируем контент Paywall под ответы, которые пользователь дал по ходу онбординга — здесь мои предположения, тоже стоит уточнить.'],
-    'app-home': ['Подставляем в «Лучшее для тебя» настройки, которые уже реально работают, и предлагаем то, что чаще всего выбирают другие пользователи с таким же ответом.'],
+    'app-home': ['Подставляем в «Лучшее для тебя» настройки, которые уже реально работают.', 'То же самое предлагаем не только здесь, а прямо в чате — на второй день, следующим сообщением после первого результата: «Не хочешь попробовать ещё вот это?» с тем, что популярно у похожих пользователей.'],
+    'tg-d2': [],
   };
 
   const mascot = `<svg viewBox="0 0 64 64" fill="none"><defs><radialGradient id="g" cx="35%" cy="30%" r="75%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#cfe0ff"/></radialGradient></defs>
@@ -354,6 +355,7 @@
       list.push({ id:'paywall', step:4, surface:'home', render: paywall });
     }
     list.push({ id:'app-home', step:5, surface:'home', render: appHome });
+    list.push({ id:'tg-d2', step:5, surface:'tg', render: tgD2 });
     return list;
   }
 
@@ -766,7 +768,25 @@
       <div class="navitem"><span>✨</span>Генерация</div>
       <div class="navitem"><span>⚙️</span>Настройки</div>
     </div>
+    ${seg==='trading' ? '<button class="skip-link" data-go="tg-d2">Как это выглядит в чате на второй день →</button>' : ''}
     <button class="skip-link" data-go="restart">← Начать заново</button>`;
+  }
+
+  function tgD2(){
+    return `
+    ${statusbar('light')}
+    <div class="tg-header"><span class="tg-back" data-go="app-home" style="cursor:pointer">‹</span><div class="tg-avatar">✳️</div><div><div class="tg-title">Mira ✓</div><div class="tg-sub">бот · 548 106 пользователей</div></div></div>
+    <div class="tg-body">
+      <div class="toast" style="align-self:center">Вчера, 9:00</div>
+      <div class="bubble mira">☀️ Изменение акций за 24 часа<br>${(state.drills.length?state.drills:['TON']).map(a=>`${a}: ${TRADING_CHANGE[a]||'+1%'}`).join('<br>')}<span class="time">9:00</span></div>
+      <div class="toast" style="align-self:center">Сегодня, 9:00</div>
+      <div class="bubble mira">☀️ Изменение акций за 24 часа<br>${(state.drills.length?state.drills:['TON']).map(a=>`${a}: ${TRADING_CHANGE[a]||'+1%'}`).join('<br>')}<span class="time">9:00</span></div>
+      <div class="bubble mira">Кстати, ${nm()} — не хочешь попробовать ещё вот это? Часто включают вместе с алертами по цене:<br>🤖 Автоматизировать стратегию<br>📊 Алерты по объёму торгов<span class="time">9:01</span></div>
+      <div class="inline-btns">
+        <button class="ibtn primary">Попробовать</button>
+        <button class="ibtn ghost">Не сейчас</button>
+      </div>
+    </div>`;
   }
 
   // ---------------- Tracker ----------------
