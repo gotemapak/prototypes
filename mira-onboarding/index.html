@@ -303,6 +303,7 @@
     'ob-learn': ['Даём больше причин остаться с ботом — он учится, лучше понимает пользователя и со временем делает более точные предложения.'],
     'ob-name': ['Выносим персонализацию вперёд и используем имя на всех следующих экранах.', 'Берём уже известное имя из Telegram, но оставляем возможность сгенерировать случайное.'],
     'ob-important': ['Сейчас подготовил контент для варианта «Следить за рынком и присылать алерты» — в качестве примера, остальные пока отключены («Скоро»). Это демонстрация того, что я хочу получить: дать человеку вещественный результат уже в первой сессии, прямо внутри онбординга.', 'После изучения аудитории сделал бы аналогичные ветки и для остальных ответов.'],
+    'ob-social': ['Экран регалий и поглаживаний: показываем, что довольно много пользователей уже используют нашего помощника для решения таких же задач — это должно снизить тревожность перед тем, как углубляться в вопросы.'],
     'ob-drill': ['Пробуем собрать первую автоматизацию — своего рода крючок, чтобы пользователь остался в продукте через понимание сегмента.', 'Я не эксперт в трейдинге, поэтому предполагаю, что самые частые сценарии — слежение за рынком акций или майнинг; стоит проверить на реальных данных.'],
     'ob-freq': ['Предполагаю, что для этого сегмента важны срочность, скорость и амплитуда изменений.'],
     'ob-micro': ['Для остальных вариантов сейчас нет уникальной механики — она была бы аналогична «следить за рынком», в зависимости от контекста. Пока для всех, кроме трейдинга, делаем нейтральную переброску на Paywall, а для трейдинга — более разветвлённую механику.'],
@@ -330,7 +331,7 @@
     content: ['Фото и видео','Идеи для постов','Планирование публикаций'],
     productivity: ['Календарь и встречи','Напоминания о задачах','Утренний план дня'],
   };
-  const DRILL_HEAD = 'Что интересно в первую очередь?';
+  const DRILL_HEAD = 'Что интересно отслеживать сейчас?';
 
   // ---------------- Screens ----------------
   function screens(){
@@ -343,6 +344,7 @@
       { id:'ob-important', step:2, surface:'ob', render: obImportant },
     ];
     if (state.important){
+      list.push({ id:'ob-social', step:2, surface:'ob', render: obSocial });
       list.push({ id:'ob-drill', step:2, surface:'ob', render: obDrill });
       if (state.important === 'content' || state.important === 'productivity'){
         list.push({ id:'ob-micro', step:2, surface:'ob', render: obMicro });
@@ -355,7 +357,7 @@
       list.push({ id:'paywall', step:4, surface:'home', render: paywall });
     }
     list.push({ id:'app-home', step:5, surface:'home', render: appHome });
-    list.push({ id:'tg-d2', step:5, surface:'tg', render: tgD2 });
+    list.push({ id:'tg-d2', step:6, surface:'tg', render: tgD2 });
     return list;
   }
 
@@ -395,7 +397,7 @@
   }
 
   function progress(n){
-    return `<div class="ob-progress">${[1,2,3,4,5,6,7].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div>`;
+    return `<div class="ob-progress">${[1,2,3,4,5,6,7,8].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div>`;
   }
 
   function obHero(){
@@ -479,6 +481,27 @@
     </div>`;
   }
 
+  function obSocial(){
+    return `
+    ${statusbar('dark')}
+    <div class="ob">
+      <div class="ob-top"><button data-go="ob-important">‹ Назад</button><span></span></div>
+      ${progress(5)}
+      <div class="ob-mid">
+        <div class="ob-mascot" style="width:48px;height:48px">${mascot}</div>
+        <h2 class="ob-h" style="font-size:19px">Уже 177 000 трейдеров в Telegram следят за рынком акций и майнинга с помощью Миры</h2>
+        <div class="pv-wrap">
+          <div class="pv-card" style="flex-direction:row;justify-content:space-around;text-align:center;padding:16px 10px">
+            <div><div style="font-size:19px;font-weight:800">177 000+</div><div style="font-size:10.5px;color:#8b859a">пользователей</div></div>
+            <div><div style="font-size:19px;font-weight:800">⭐ 4.7</div><div style="font-size:10.5px;color:#8b859a">средняя оценка</div></div>
+            <div><div style="font-size:19px;font-weight:800">🏆</div><div style="font-size:10.5px;color:#8b859a">топ AI для трейдинга</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="ob-bottom"><button class="ob-cta" data-go="ob-drill">Продолжить</button></div>
+    </div>`;
+  }
+
   const CONTENT_PRIORITY = ['Планирование публикаций','Идеи для постов','Фото и видео'];
   const PRODUCTIVITY_PRIORITY = ['Напоминания о задачах','Утренний план дня','Календарь и встречи'];
   const ICONS = {
@@ -532,8 +555,8 @@
     return `
     ${statusbar('dark')}
     <div class="ob">
-      <div class="ob-top"><button data-go="ob-important">‹ Назад</button><span></span></div>
-      ${progress(5)}
+      <div class="ob-top"><button data-go="ob-social">‹ Назад</button><span></span></div>
+      ${progress(6)}
       <div class="ob-mid">
         <div class="ob-mascot" style="width:44px;height:44px">${mascot}</div>
         <h2 class="ob-h" style="font-size:20px">${DRILL_HEAD}</h2>
@@ -555,7 +578,7 @@
     ${statusbar('dark')}
     <div class="ob">
       <div class="ob-top"><button data-go="ob-preview">‹ Назад</button><span></span></div>
-      ${progress(7)}
+      ${progress(8)}
       <div class="ob-mid">
         <div class="ob-mascot" style="width:44px;height:44px">${mascot}</div>
         <h2 class="ob-h" style="font-size:20px">Как часто присылать изменения?</h2>
@@ -620,7 +643,7 @@
     ${statusbar('dark')}
     <div class="ob">
       <div class="ob-top"><span></span><span></span></div>
-      ${progress(state.important === 'trading' ? 6 : 7)}
+      ${progress(state.important === 'trading' ? 7 : 8)}
       <div class="ob-mid">
         <h2 class="ob-h" style="font-size:19px">Пример сообщения</h2>
         <div class="pv-wrap">${previewCard()}</div>
@@ -768,7 +791,7 @@
       <div class="navitem"><span>✨</span>Генерация</div>
       <div class="navitem"><span>⚙️</span>Настройки</div>
     </div>
-    ${seg==='trading' ? '<button class="skip-link" data-go="tg-d2">Как это выглядит в чате на второй день →</button>' : ''}
+    ${seg==='trading' ? `<div style="padding:6px 18px 4px"><button class="ob-cta" style="background:var(--brand);color:#fff" data-go="tg-d2">Как это выглядит в чате на второй день →</button></div>` : ''}
     <button class="skip-link" data-go="restart">← Начать заново</button>`;
   }
 
@@ -791,7 +814,7 @@
 
   // ---------------- Tracker ----------------
   function renderTracker(currentStep){
-    const labels = ['Telegram','Мини-апп','Вопросы','Превью','Paywall','Дома'];
+    const labels = ['Telegram','Мини-апп','Вопросы','Превью','Paywall','Дома','На следующий день'];
     trackerEl.innerHTML = labels.map((l,i)=>{
       const cls = i < currentStep ? 'done' : (i === currentStep ? 'active' : '');
       return `<div class="tstep ${cls}"><span class="num">${i+1}</span><span class="lbl">${l}</span></div>` + (i<labels.length-1?'<span class="tline"></span>':'');
@@ -845,7 +868,7 @@
       });
     });
     wrap.querySelectorAll('[data-set-important]').forEach(el=>{
-      el.addEventListener('click', ()=>{ state.important = el.dataset.setImportant; state.drills = []; go('ob-drill'); });
+      el.addEventListener('click', ()=>{ state.important = el.dataset.setImportant; state.drills = []; go('ob-social'); });
     });
     wrap.querySelectorAll('[data-toggle-drill]').forEach(el=>{
       el.addEventListener('click', ()=>{
