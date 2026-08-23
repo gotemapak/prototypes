@@ -1,0 +1,857 @@
+<title>Mira Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --void:#faf9fc; --surface:#ffffff; --surface-2:#f0f3fb;
+    --brand:#3355e6; --brand-soft:#eaf0ff; --brand-line:#d6e2fb;
+    --ink:#15182b; --mute:#666f8c; --line:#e5e8f2;
+    --tg-bg:#e9f0e4; --tg-bubble:#ffffff; --tg-blue:#3a9ee0; --tg-ink:#1c1c1c; --tg-mute:#7c8a72;
+    --shadow: 0 20px 60px -20px rgba(20,30,80,0.22);
+    /* fixed Mira brand gradient — recreates the app's own chrome, not page-themed */
+    --ob-top:#2c3ee4; --ob-bottom:#6fabff;
+    --chip-bg:#e6edfb; --chip-ink:#1c2b57; --chip-sel:#3355e6;
+    /* Pro/paywall surface uses the app's own purple, distinct from onboarding blue */
+    --pw-bg:#efeef4; --pw-card:#ffffff; --pw-accent:#7c4de0; --pw-accent-soft:#efe7fc; --pw-ink:#171423; --pw-mute:#8b859a; --pw-line:#e7e3ee;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --void:#0b0b10; --surface:#15151f; --surface-2:#1b1b27;
+      --brand:#7c96ff; --brand-soft:#1e243d; --brand-line:#2c3556;
+      --ink:#f2f2f7; --mute:#9a9fb5; --line:#272736;
+      --tg-bg:#131a10; --tg-bubble:#1c2418; --tg-blue:#5db8ee; --tg-ink:#eef2ea; --tg-mute:#8fae7f;
+      --shadow: 0 20px 60px -20px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"]{
+    --void:#0b0b10; --surface:#15151f; --surface-2:#1b1b27;
+    --brand:#7c96ff; --brand-soft:#1e243d; --brand-line:#2c3556;
+    --ink:#f2f2f7; --mute:#9a9fb5; --line:#272736;
+    --tg-bg:#131a10; --tg-bubble:#1c2418; --tg-blue:#5db8ee; --tg-ink:#eef2ea; --tg-mute:#8fae7f;
+    --shadow: 0 20px 60px -20px rgba(0,0,0,0.6);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--void); color:var(--ink);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{ font-family:'Manrope',sans-serif; text-wrap:balance; }
+  .mono{ font-family:'JetBrains Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+
+  .page{
+    max-width:1180px; margin:0 auto; padding:28px 20px 80px;
+    display:grid; grid-template-columns: 340px minmax(0,1fr); gap:28px; align-items:start;
+  }
+  @media (max-width: 920px){ .page{ grid-template-columns: 1fr; } }
+
+  /* ---------- Rail ---------- */
+  .rail{ position:sticky; top:20px; display:flex; flex-direction:column; gap:16px; }
+  @media (max-width:920px){ .rail{ position:static; } }
+
+  .eyebrow{ font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--brand); font-weight:600; margin:0 0 6px; }
+  .rail h1{ font-size:24px; font-weight:800; line-height:1.2; margin:0 0 10px; }
+  .rail .lede{ font-size:14px; color:var(--mute); line-height:1.55; margin:0; }
+
+  .card{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:18px; }
+  .goal-card{ background:linear-gradient(155deg, var(--brand-soft), var(--surface) 70%); border:1px solid var(--brand-line); }
+  .goal-card .k{ font-size:12px; font-weight:600; color:var(--brand); text-transform:uppercase; letter-spacing:.06em; }
+  .goal-card p{ margin:6px 0 0; font-size:14px; line-height:1.55; }
+
+  .seg-legend{ display:flex; flex-direction:column; gap:10px; }
+  .seg-row{ display:flex; align-items:flex-start; gap:10px; font-size:13.5px; color:var(--mute); line-height:1.4; }
+  .seg-row .sw{ width:10px; height:10px; border-radius:3px; flex:none; margin-top:4px; }
+  .seg-row b{ color:var(--ink); font-weight:600; }
+  .card .now-label{ font-size:12px; font-weight:600; color:var(--mute); text-transform:uppercase; letter-spacing:.06em; margin:0 0 12px; }
+
+  .credit{ font-size:12px; color:var(--mute); line-height:1.6; }
+  .credit a{ color:var(--brand); }
+
+  /* ---------- Stage ---------- */
+  .stage{ display:flex; flex-direction:column; align-items:center; gap:20px; }
+  .tracker{
+    display:flex; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--line);
+    border-radius:999px; padding:8px 14px; box-shadow:var(--shadow);
+  }
+  .tstep{ display:flex; align-items:center; gap:6px; }
+  .tstep .num{ width:20px; height:20px; border-radius:50%; display:grid; place-items:center; font-size:10.5px; font-weight:700; background:var(--surface-2); color:var(--mute); transition:.25s; }
+  .tstep.active .num{ background:var(--brand); color:#fff; }
+  .tstep.done .num{ background:var(--brand); color:#fff; opacity:.5; }
+  .tstep .lbl{ font-size:11.5px; color:var(--mute); font-weight:600; }
+  .tstep.active .lbl{ color:var(--ink); }
+  .tline{ width:16px; height:1px; background:var(--line); }
+  @media (max-width:480px){ .tstep .lbl{ display:none; } }
+
+  .phone{ width:380px; max-width:92vw; height:780px; max-height:82vh; border-radius:46px; background:#050308; padding:14px; box-shadow: var(--shadow), 0 0 0 1px rgba(50,80,220,0.15); position:relative; }
+  .screen{ width:100%; height:100%; border-radius:34px; overflow:hidden; position:relative; background:var(--void); }
+  .notch{ position:absolute; top:14px; left:50%; transform:translateX(-50%); width:120px; height:26px; background:#050308; border-radius:14px; z-index:30; }
+  .statusbar{ position:absolute; top:0; left:0; right:0; height:52px; z-index:20; display:flex; align-items:flex-end; justify-content:space-between; padding:8px 26px 6px; font-size:13px; font-weight:600; pointer-events:none; }
+  .statusbar.on-light{ color:#1c1c1c; } .statusbar.on-dark{ color:#fff; }
+
+  .screen-inner{ position:absolute; inset:0; padding-top:52px; overflow-y:auto; overflow-x:hidden; display:flex; flex-direction:column; opacity:0; transform:translateY(10px); pointer-events:none; transition:opacity .28s ease, transform .28s ease; }
+  .screen-inner.active{ opacity:1; transform:translateY(0); pointer-events:auto; }
+  @media (prefers-reduced-motion: reduce){ .screen-inner{ transition:none; } }
+  .screen-inner::-webkit-scrollbar{ width:0; }
+
+  /* Telegram surface */
+  .surf-tg{ background:var(--tg-bg); }
+  .tg-header{ display:flex; align-items:center; gap:10px; padding:10px 16px 12px; border-bottom:1px solid rgba(0,0,0,0.06); background:var(--tg-bg); }
+  .tg-back{ color:var(--tg-blue); font-size:20px; font-weight:600; cursor:pointer; }
+  .tg-avatar{ width:34px; height:34px; border-radius:50%; background:linear-gradient(140deg,var(--ob-top),var(--ob-bottom)); display:grid; place-items:center; color:#fff; font-size:16px; flex:none; }
+  .tg-title{ font-size:15px; font-weight:700; color:var(--tg-ink); display:flex; align-items:center; gap:4px; }
+  .tg-sub{ font-size:11.5px; color:var(--tg-mute); }
+  .tg-body{ flex:1; padding:14px 12px; display:flex; flex-direction:column; gap:10px; }
+
+  .bubble{ max-width:82%; padding:10px 13px; border-radius:16px; font-size:13.6px; line-height:1.48; box-shadow:0 1px 1px rgba(0,0,0,0.04); }
+  .bubble.mira{ background:var(--tg-bubble); color:var(--tg-ink); border-bottom-left-radius:5px; align-self:flex-start; }
+  .bubble .time{ display:block; font-size:10px; opacity:.55; margin-top:4px; text-align:right; }
+
+  .result-card{ align-self:flex-start; max-width:88%; background:var(--tg-bubble); border-radius:16px; padding:14px; box-shadow:0 1px 1px rgba(0,0,0,0.04); display:flex; flex-direction:column; gap:10px; }
+  .rc-row{ display:flex; align-items:baseline; justify-content:space-between; }
+  .rc-price{ font-size:22px; font-weight:800; color:var(--tg-ink); }
+  .rc-change{ font-size:13px; font-weight:700; color:#1f9d6c; }
+  .spark{ width:100%; height:36px; display:block; }
+  .rc-img{ width:100%; aspect-ratio:4/3; border-radius:12px; background:linear-gradient(135deg,#ffb37a,#ff7ab8 45%,#8a7cff); display:flex; align-items:flex-end; padding:10px; font-size:11px; color:#fff; font-weight:600; }
+  .rc-cal{ display:flex; flex-direction:column; gap:8px; }
+  .cal-row{ display:flex; gap:10px; align-items:center; font-size:12.5px; color:var(--tg-ink); }
+  .cal-time{ font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--tg-blue); width:42px; flex:none; }
+  .cal-dot{ width:6px; height:6px; border-radius:50%; background:var(--tg-blue); flex:none; }
+  .rc-list{ display:flex; flex-direction:column; gap:6px; }
+  .rc-list li{ font-size:12.5px; color:var(--tg-ink); line-height:1.45; }
+
+  .tg-cta-bar{ padding:10px 14px 16px; }
+  .tg-cta{ width:100%; background:var(--tg-blue); color:#fff; border:none; border-radius:14px; padding:13px; font-size:14.5px; font-weight:700; font-family:inherit; cursor:pointer; transition:.15s; }
+  .tg-cta:hover{ filter:brightness(1.06); }
+
+  /* Telegram permission popup */
+  .tg-overlay{ position:absolute; inset:0; background:rgba(10,15,10,.45); display:flex; align-items:center; justify-content:center; padding:0 28px; }
+  .tg-modal{ width:100%; background:var(--tg-bubble); border-radius:20px; padding:22px 20px; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,.3); }
+  .tg-modal .av{ width:56px; height:56px; border-radius:50%; margin:0 auto 12px; background:linear-gradient(140deg,var(--ob-top),var(--ob-bottom)); display:grid; place-items:center; color:#fff; font-size:24px; }
+  .tg-modal b{ font-size:15.5px; color:var(--tg-ink); display:block; }
+  .tg-modal .link{ font-size:12.5px; color:var(--tg-blue); margin:2px 0 12px; display:block; }
+  .tg-modal p{ font-size:12.5px; color:var(--tg-mute); line-height:1.5; margin:0 0 16px; }
+  .tg-modal p a{ color:var(--tg-blue); }
+  .tg-modal .go{ width:100%; background:var(--tg-blue); color:#fff; border:none; border-radius:12px; padding:12px; font-size:14px; font-weight:700; font-family:inherit; cursor:pointer; margin-bottom:8px; }
+  .tg-modal .cancel{ width:100%; background:none; color:var(--tg-mute); border:none; padding:8px; font-size:14px; font-weight:600; font-family:inherit; }
+
+  /* ---------- Mira full-bleed onboarding chrome (fixed brand gradient) ---------- */
+  .ob{ background:linear-gradient(180deg, var(--ob-top), var(--ob-bottom) 115%); color:#fff; flex:1; display:flex; flex-direction:column; position:relative; }
+  .ob-top{ display:flex; align-items:center; justify-content:space-between; padding:0 18px 10px; font-size:13px; font-weight:600; }
+  .ob-top button{ background:none; border:none; color:#fff; font:inherit; font-weight:600; cursor:pointer; padding:4px 0; }
+  .ob-skip{ background:var(--chip-bg) !important; color:var(--chip-ink) !important; font-size:12px !important; font-weight:700 !important; padding:7px 14px !important; border-radius:999px !important; }
+  .ob-progress{ display:flex; gap:5px; padding:0 18px 18px; }
+  .ob-progress i{ flex:1; height:3px; border-radius:2px; background:rgba(255,255,255,.28); font-style:normal; }
+  .ob-progress i.on{ background:#fff; }
+  .ob-mid{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px 26px; gap:16px; }
+  .ob-mascot{ width:54px; height:54px; filter:drop-shadow(0 8px 18px rgba(0,0,0,.28)); }
+  .ob-mascot svg{ width:100%; height:100%; }
+  .ob-h{ font-size:22px; font-weight:800; line-height:1.28; margin:0; }
+  .ob-sub{ font-size:13.5px; color:rgba(255,255,255,.82); margin:0; line-height:1.5; max-width:270px; }
+  .ob-bullets{ display:flex; flex-direction:column; gap:11px; text-align:left; width:100%; margin-top:2px; }
+  .ob-bullets div{ display:flex; gap:10px; align-items:flex-start; font-size:13.5px; font-weight:600; }
+  .ob-bullets span.ic{ font-size:17px; flex:none; }
+  .ob-chips{ display:flex; flex-direction:column; gap:10px; width:100%; text-align:left; margin-top:2px; }
+  .ob-chip{ display:block; width:100%; background:var(--chip-bg); color:var(--chip-ink); border:none; border-radius:16px; padding:14px 16px; font-size:14px; font-weight:700; text-align:left; cursor:pointer; font-family:inherit; transition:.15s; }
+  .ob-chip:hover{ filter:brightness(.97); transform:translateY(-1px); }
+  .ob-chip .ic{ margin-right:8px; }
+  .ob-check{ display:flex; align-items:center; gap:11px; width:100%; background:var(--chip-bg); color:var(--chip-ink); border:none; border-radius:16px; padding:13px 16px; font-size:14px; font-weight:700; text-align:left; cursor:pointer; font-family:inherit; transition:.15s; }
+  .ob-check:hover{ filter:brightness(.97); }
+  .ob-check.on{ background:var(--chip-sel); color:#fff; }
+  .ob-check .box{ width:19px; height:19px; border-radius:6px; border:2px solid rgba(28,43,87,.3); flex:none; display:grid; place-items:center; font-size:12px; }
+  .ob-check.on .box{ border-color:#fff; background:rgba(255,255,255,.2); }
+  .ob-check .box i{ opacity:0; }
+  .ob-check.on .box i{ opacity:1; }
+  .ob-input{ width:100%; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.32); color:#fff; border-radius:14px; padding:13px 16px; font-size:14px; font-family:inherit; text-align:left; }
+  .ob-input::placeholder{ color:rgba(255,255,255,.62); }
+  .ob-rand{ background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.28); color:#fff; font-size:12.5px; font-weight:600; padding:8px 14px; border-radius:999px; cursor:pointer; font-family:inherit; align-self:center; }
+  .pv-wrap{ width:100%; display:flex; flex-direction:column; gap:8px; }
+  .pv-label{ font-size:11px; color:rgba(255,255,255,.72); text-align:center; }
+  .pv-card{ width:100%; background:#fff; border-radius:16px 16px 16px 5px; padding:13px 15px; text-align:left; display:flex; flex-direction:column; gap:8px; color:#171423; box-shadow:0 10px 26px rgba(10,10,30,.22); }
+  .pv-card .who{ font-size:11px; font-weight:700; color:var(--tg-blue); }
+  .pv-card .lbl{ font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; font-weight:700; color:#8b859a; }
+  .pv-card .price{ font-size:22px; font-weight:800; }
+  .pv-card .chg{ font-size:12.5px; font-weight:700; color:#1f9d6c; }
+  .pv-card .spark2{ width:100%; height:34px; }
+  .pv-card .agenda div{ display:flex; gap:8px; align-items:center; font-size:12.5px; }
+  .pv-card .agenda b{ font-family:'JetBrains Mono',monospace; width:40px; flex:none; color:var(--tg-blue); }
+  .pv-card .img{ width:100%; aspect-ratio:16/9; border-radius:12px; background:linear-gradient(135deg,#ffd08a,#ff8fc0 45%,#8fa7ff); }
+  .pv-card ul{ margin:0; padding-left:18px; font-size:12.5px; line-height:1.6; }
+  .pv-card .stamp{ align-self:flex-end; font-size:10px; color:#a6a1b3; }
+
+  .ob-bottom{ padding:14px 22px 22px; display:flex; flex-direction:column; gap:8px; }
+  .ob-cta{ width:100%; background:#fff; color:var(--ob-top); border:none; border-radius:16px; padding:14px; font-size:15px; font-weight:800; font-family:'Manrope',sans-serif; cursor:pointer; }
+  .ob-cta.ghost{ background:rgba(255,255,255,.16); color:#fff; }
+
+  /* Home (light section below the blue hero, matches the real app) */
+  .home-hero{ background:linear-gradient(180deg, var(--ob-top), var(--ob-bottom) 120%); color:#fff; text-align:center; padding:30px 22px 26px; }
+  .home-hero h2{ font-size:22px; font-weight:800; margin:6px 0 4px; }
+  .home-hero p{ font-size:13px; color:rgba(255,255,255,.82); margin:0; }
+  .app-section-title{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--mute); padding:16px 18px 8px; }
+  .flat-card{ display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:13px 15px; margin:0 18px 8px; }
+  .flat-card .ic{ font-size:17px; }
+  .flat-card b{ display:block; font-size:13.5px; }
+  .flat-card span{ font-size:11.5px; color:var(--mute); }
+  .app-navbar{ margin-top:auto; display:flex; justify-content:space-around; padding:12px 10px 20px; border-top:1px solid var(--line); background:var(--surface); }
+  .navitem{ display:flex; flex-direction:column; align-items:center; gap:3px; font-size:10px; color:var(--mute); font-weight:600; }
+  .navitem.on{ color:var(--brand); }
+  .skip-link{ text-align:center; font-size:12.5px; color:var(--mute); padding:8px 0 18px; cursor:pointer; text-decoration:underline; text-underline-offset:3px; background:none; border:none; font-family:inherit; width:100%; }
+  .skip-link:hover{ color:var(--ink); }
+  .skip-link.on-grad{ color:rgba(255,255,255,.75); }
+  .skip-link.on-grad:hover{ color:#fff; }
+
+  /* Learning-loop screen: icon ring around the mascot */
+  .learn-ring{ position:relative; width:120px; height:120px; margin:4px auto 2px; }
+  .learn-ring .core{ position:absolute; inset:28px; }
+  .learn-ring .orb{ position:absolute; width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.16); border:1px solid rgba(255,255,255,.3); display:grid; place-items:center; font-size:15px; }
+  .learn-ring .o1{ top:-4px; left:44px; } .learn-ring .o2{ top:36px; left:-4px; } .learn-ring .o3{ top:36px; right:-4px; } .learn-ring .o4{ bottom:-4px; left:44px; }
+
+  /* ---------- Paywall (soft, shown inline in onboarding) ---------- */
+  .pw{ background:var(--pw-bg); color:var(--pw-ink); flex:1; display:flex; flex-direction:column; }
+  .pw-header{ display:flex; align-items:center; justify-content:space-between; padding:10px 16px 12px; }
+  .pw-back{ color:var(--tg-blue); font-size:15px; font-weight:600; display:flex; align-items:center; gap:2px; cursor:pointer; }
+  .pw-title{ text-align:center; }
+  .pw-title b{ font-size:15px; display:flex; align-items:center; gap:4px; justify-content:center; }
+  .pw-title span{ font-size:11px; color:var(--pw-mute); }
+  .pw-more{ width:30px; height:30px; border-radius:50%; border:1px solid var(--pw-line); display:grid; place-items:center; color:var(--pw-mute); font-size:14px; }
+  .pw-toggle{ display:flex; gap:0; background:var(--pw-card); border:1px solid var(--pw-line); border-radius:999px; padding:4px; margin:4px 16px 16px; }
+  .pw-toggle button{ flex:1; border:none; background:none; padding:9px 10px; border-radius:999px; font-size:13.5px; font-weight:700; font-family:inherit; cursor:pointer; color:var(--pw-ink); }
+  .pw-toggle button.on{ background:var(--pw-accent-soft); color:var(--pw-accent); }
+  .pw-card{ background:var(--pw-card); border-radius:20px; margin:0 16px 14px; padding:16px 16px 6px; }
+  .pw-cardhead{ display:flex; justify-content:space-between; font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--pw-accent); padding-bottom:12px; }
+  .pw-cardhead span:last-child{ color:var(--pw-mute); display:flex; gap:14px; }
+  .pw-row{ display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-top:1px solid var(--pw-line); gap:8px; }
+  .pw-row:first-of-type{ border-top:none; }
+  .pw-row b{ display:block; font-size:13.5px; }
+  .pw-row span.d{ font-size:11px; color:var(--pw-mute); }
+  .pw-row .marks{ display:flex; gap:16px; flex:none; }
+  .pw-row .marks i{ font-style:normal; width:18px; text-align:center; color:var(--pw-mute); font-size:13px; }
+  .pw-row .marks i.yes{ color:var(--pw-accent); font-weight:800; }
+  .pw-plans{ display:flex; gap:8px; padding:0 16px 14px; overflow-x:auto; }
+  .pw-plan{ flex:1; min-width:104px; background:var(--pw-card); border:2px solid var(--pw-line); border-radius:16px; padding:12px 12px 10px; position:relative; cursor:pointer; }
+  .pw-plan.on{ border-color:var(--pw-accent); background:linear-gradient(160deg,var(--pw-accent-soft),var(--pw-card) 70%); }
+  .pw-plan .check{ position:absolute; top:8px; right:8px; width:18px; height:18px; border-radius:50%; background:var(--pw-accent); color:#fff; font-size:10px; display:none; place-items:center; }
+  .pw-plan.on .check{ display:grid; }
+  .pw-plan .lb{ font-size:12.5px; font-weight:700; display:block; margin-bottom:6px; }
+  .pw-plan .pr{ font-size:16px; font-weight:800; display:block; }
+  .pw-plan .st{ font-size:11px; color:var(--pw-mute); display:block; margin-top:3px; }
+  .pw-plan .was{ font-size:10.5px; color:var(--pw-mute); text-decoration:line-through; margin-right:4px; }
+  .pw-plan .off{ display:inline-block; background:#fde3e3; color:#c23; font-size:9.5px; font-weight:800; border-radius:6px; padding:1px 5px; margin-left:4px; }
+  .pw-plan .hit{ position:absolute; bottom:0; right:0; background:var(--pw-accent); color:#fff; font-size:9px; font-weight:800; padding:3px 8px 3px 10px; border-radius:0 14px 0 10px; }
+  .pw-gift{ margin:2px 16px 12px; background:var(--pw-card); border:1px solid var(--pw-line); border-radius:16px; padding:12px; text-align:center; font-size:13.5px; font-weight:700; }
+  .pw-cta{ margin:auto 16px 20px; background:var(--pw-accent); color:#fff; border:none; border-radius:16px; padding:14px; text-align:center; cursor:pointer; font-family:inherit; }
+  .pw-cta b{ display:block; font-size:14.5px; }
+  .pw-cta span{ font-size:11px; color:rgba(255,255,255,.78); }
+
+  footer.page-foot{ max-width:1180px; margin:40px auto 0; padding:0 20px; color:var(--mute); font-size:12px; text-align:center; }
+</style>
+
+<div class="page">
+
+  <!-- ============ RATIONALE RAIL ============ -->
+  <aside class="rail">
+    <div>
+      <p class="eyebrow">Mira · тестовое, онбординг</p>
+      <h1>Онбординг с нуля</h1>
+    </div>
+
+    <div class="card goal-card">
+      <div class="k">Цель онбординга</div>
+      <p style="margin-bottom:12px">Максимизировать <strong>D1-возврат</strong>: за пару вопросов понять, зачем человек пришёл, показать реальный результат под его задачу — и договориться, что Mira Daily будет присылать именно такое.</p>
+      <div class="seg-legend">
+        <div class="seg-row"><span class="sw" style="background:#1f9d6c"></span><b>Рынки и трейдинг</b>&nbsp;— цены, алерты, автоматизация стратегий</div>
+        <div class="seg-row"><span class="sw" style="background:#e0700f"></span><b>Контент</b>&nbsp;— генерация фото/видео, флоу-публикации</div>
+        <div class="seg-row"><span class="sw" style="background:#2f6fd6"></span><b>Продуктивность</b>&nbsp;— календарь, дела, напоминания</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="now-label">Мои комментарии</p>
+      <ul id="my-commentary" style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.6;color:var(--ink);display:flex;flex-direction:column;gap:6px"></ul>
+    </div>
+
+    <p class="credit">Артём Пак, 2026-08-23.</p>
+  </aside>
+
+  <!-- ============ STAGE ============ -->
+  <div class="stage">
+    <div class="tracker" id="tracker"></div>
+    <div class="phone">
+      <div class="screen" id="screen-root">
+        <div class="notch"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="page-foot">Прототип не отправляет данные и не хранит ввод — все ответы Миры заранее написаны для демонстрации логики флоу.</footer>
+
+<script>
+(function(){
+  const root = document.getElementById('screen-root');
+  const trackerEl = document.getElementById('tracker');
+
+  let state = { name:'', important:null, drills:[], customText:'', includeChat:null, pwTier:null, pwPlan:null, freqs:[], microAnswer:'', microSkipped:false };
+
+  const COMMENTS = {
+    'tg-intro': ['Добавляю примеры по нашим трём основным сегментам, чтобы дать первый образ результата уже в чате.'],
+    'ob-hero': ['Повторяем ключевые результаты, которые человек может получить, и делаем помощника более «вещественным» через первый образ картинки и текста.'],
+    'ob-learn': ['Даём больше причин остаться с ботом — он учится, лучше понимает пользователя и со временем делает более точные предложения.'],
+    'ob-name': ['Выносим персонализацию вперёд и используем имя на всех следующих экранах.', 'Берём уже известное имя из Telegram, но оставляем возможность сгенерировать случайное.'],
+    'ob-important': ['Фокусируемся в первую очередь на контенте и кейсах, которые сейчас популярны и которые мы хорошо решаем.', 'Оставляем возможность написать свой вариант, который мы не учли.'],
+    'ob-drill': ['Пробуем собрать первую автоматизацию — своего рода крючок, чтобы пользователь остался в продукте через понимание сегмента.', 'Я не эксперт в трейдинге, поэтому предполагаю, что самые частые сценарии — слежение за рынком акций или майнинг; стоит проверить на реальных данных.'],
+    'ob-freq': ['Предполагаю, что для этого сегмента важны срочность, скорость и амплитуда изменений.'],
+    'ob-micro': ['Для остальных вариантов сейчас нет уникальной механики — она была бы аналогична «следить за рынком», в зависимости от контекста. Пока для всех, кроме трейдинга, делаем нейтральную переброску на Paywall, а для трейдинга — более разветвлённую механику.'],
+    'ob-preview': ['Даём пользователю первый образ результата на основе того, что уже о нём знаем, и предлагаем включить этот сценарий самостоятельно.'],
+    'ob-confirm': [],
+    'paywall': ['Пробуем продать уже в первой сессии: по данным Adapty, 70–90% покупок в мобильных приложениях происходят именно в ней — предполагаю похожий паттерн и в мини-приложениях, это стоит уточнить.', 'Адаптируем контент Paywall под ответы, которые пользователь дал по ходу онбординга — здесь мои предположения, тоже стоит уточнить.'],
+    'app-home': ['Подставляем в «Лучшее для тебя» настройки, которые уже реально работают, и предлагаем то, что чаще всего выбирают другие пользователи с таким же ответом.'],
+  };
+
+  const mascot = `<svg viewBox="0 0 64 64" fill="none"><defs><radialGradient id="g" cx="35%" cy="30%" r="75%"><stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#cfe0ff"/></radialGradient></defs>
+    <path d="M32 2 C34 18 34 20 50 24 C34 28 34 30 32 46 C30 30 30 28 14 24 C30 20 30 18 32 2Z" fill="url(#g)"/>
+    <circle cx="52" cy="10" r="4" fill="#fff"/><circle cx="8" cy="46" r="3" fill="#fff"/></svg>`;
+
+  function nm(){ return state.name || 'друг'; }
+
+  const IMPORTANT = {
+    trading: { ic:'📈', label:'Следить за рынком и присылать алерты' },
+    content: { ic:'🎬', label:'Создавать контент' },
+    productivity: { ic:'🗓️', label:'Планировать день и напоминать о важном' },
+    custom: { ic:'✍️', label:'Свой вариант' },
+  };
+  const DRILL = {
+    trading: ['Рынок акций','TON','ETH','BTC'],
+    content: ['Фото и видео','Идеи для постов','Планирование публикаций'],
+    productivity: ['Календарь и встречи','Напоминания о задачах','Утренний план дня'],
+  };
+  const DRILL_HEAD = 'Что интересно в первую очередь?';
+
+  // ---------------- Screens ----------------
+  function screens(){
+    const list = [
+      { id:'tg-intro', step:0, surface:'tg', render: tgIntro },
+      { id:'tg-popup', step:0, surface:'tg', render: tgPopup },
+      { id:'ob-hero', step:1, surface:'ob', render: obHero },
+      { id:'ob-learn', step:1, surface:'ob', render: obLearn },
+      { id:'ob-name', step:1, surface:'ob', render: obName },
+      { id:'ob-important', step:2, surface:'ob', render: obImportant },
+    ];
+    if (state.important){
+      list.push({ id:'ob-drill', step:2, surface:'ob', render: obDrill });
+      if (state.important === 'content' || state.important === 'productivity'){
+        list.push({ id:'ob-micro', step:2, surface:'ob', render: obMicro });
+      }
+      list.push({ id:'ob-preview', step:3, surface:'ob', render: obPreview });
+      if (state.important === 'trading'){
+        list.push({ id:'ob-freq', step:3, surface:'ob', render: obFreq });
+      }
+      list.push({ id:'ob-confirm', step:3, surface:'ob', render: obConfirm });
+      list.push({ id:'paywall', step:4, surface:'home', render: paywall });
+    }
+    list.push({ id:'app-home', step:5, surface:'home', render: appHome });
+    return list;
+  }
+
+  // ---------------- Renderers ----------------
+  function statusbar(theme){ return `<div class="statusbar on-${theme}"><span>9:41</span><span>••••  📶  🔋</span></div>`; }
+
+  function tgIntro(){
+    return `
+    ${statusbar('light')}
+    <div class="tg-header">
+      <span class="tg-back">‹</span>
+      <div class="tg-avatar">✳️</div>
+      <div><div class="tg-title">Mira ✓</div><div class="tg-sub">бот · 548 106 пользователей</div></div>
+    </div>
+    <div class="tg-body">
+      <div class="bubble mira">Привет, я Мира, твой личный помощник в Telegram.<br><br>Помогаю следить за рынком и торговать, создавать контент, сайты, вести календарь, ничего не забывать и многое другое.<br><br>Давай познакомимся, чтобы я стала полезнее ✨<span class="time">9:40</span></div>
+      <button class="bubble mira" style="border:none;font-family:inherit;cursor:pointer;color:var(--tg-blue);font-weight:700;width:82%;text-align:center;background:var(--tg-bubble)" data-go="tg-popup">Давай</button>
+    </div>`;
+  }
+
+  function tgPopup(){
+    return `
+    ${statusbar('light')}
+    <div class="tg-header"><span class="tg-back">‹</span><div class="tg-avatar">✳️</div><div><div class="tg-title">Mira ✓</div><div class="tg-sub">бот · 548 106 пользователей</div></div></div>
+    <div style="position:relative;flex:1">
+      <div class="tg-overlay">
+        <div class="tg-modal">
+          <div class="av">✳️</div>
+          <b>Mira</b>
+          <span class="link">О боте ›</span>
+          <p>Открывая это мини-приложение, вы принимаете <a>Условия использования мини-приложений</a>.</p>
+          <button class="go" data-go="ob-hero">Запустить</button>
+          <button class="cancel">Отмена</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function progress(n){
+    return `<div class="ob-progress">${[1,2,3,4,5,6,7].map(i=>`<i class="${i<=n?'on':''}"></i>`).join('')}</div>`;
+  }
+
+  function obHero(){
+    return `
+    ${statusbar('dark')}
+    <div class="ob">
+      <div class="ob-top"><span></span><span></span></div>
+      ${progress(1)}
+      <div class="ob-mid">
+        <div class="ob-mascot">${mascot}</div>
+        <h2 class="ob-h">Привет, я Мира.<br>Твой помощник в Telegram</h2>
+        <p class="ob-sub">Помогу с тем, на что обычно не хочется тратить время</p>
+        <div class="ob-bullets">
+          <div><span class="ic">📈</span>Слежу за рынками и присылаю алерты</div>
+          <div><span class="ic">🎬</span>Создаю контент и сайты за минуты</div>
+          <div><span class="ic">🗓️</span>Веду календарь и напоминаю о важном</div>
+        </div>
+      </div>
+      <div class="ob-bottom"><button class="ob-cta" data-go="ob-learn">Начать</button></div>
+    </div>`;
+  }
+
+  function obLearn(){
+    return `
+    ${statusbar('dark')}
+    <div class="ob">
+      <div class="ob-top"><span></span><span></span></div>
+      ${progress(2)}
+      <div class="ob-mid">
+        <div class="learn-ring">
+          <div class="orb o1">💬</div><div class="orb o2">🎤</div><div class="orb o3">📷</div><div class="orb o4">🎬</div>
+          <div class="core">${mascot}</div>
+        </div>
+        <h2 class="ob-h" style="font-size:20px">Чем больше пишешь — тем лучше понимаю</h2>
+        <p class="ob-sub">Сообщения, голосовые, фото и видео — запоминаю детали и постепенно подстраиваюсь под твои задачи</p>
+        <div class="pv-card" style="flex-direction:row;align-items:center;gap:10px;padding:11px 14px">
+          <span style="font-size:17px">🔒</span>
+          <span style="font-size:11.5px;line-height:1.4;color:#4a4560">Информация защищена. Изменить или удалить можно в любой момент в настройках</span>
+        </div>
+      </div>
+      <div class="ob-bottom"><button class="ob-cta" data-go="ob-name">Дальше</button></div>
+    </div>`;
+  }
+
+  function obName(){
+    return `
+    ${statusbar('dark')}
+    <div class="ob">
+      <div class="ob-top"><span></span><span></span></div>
+      ${progress(3)}
+      <div class="ob-mid">
+        <div class="ob-mascot" style="width:44px;height:44px">${mascot}</div>
+        <h2 class="ob-h" style="font-size:20px">Как мне к тебе обращаться?</h2>
+        <p class="ob-sub">Я взяла имя из Telegram, можно придумать своё</p>
+        <input id="name-input" class="ob-input" value="Артём">
+        <button class="ob-rand" data-rand-name="1">🎲 Случайное имя</button>
+      </div>
+      <div class="ob-bottom">
+        <button class="ob-cta" data-go="ob-important" data-set-name-from="name-input">Продолжить</button>
+      </div>
+    </div>`;
+  }
+
+  function obImportant(){
+    const chips = Object.entries(IMPORTANT).map(([k,v])=>
+      `<button class="ob-chip" data-set-important="${k}"><span class="ic">${v.ic}</span>${v.label}</button>`
+    ).join('');
+    return `
+    ${statusbar('dark')}
+    <div class="ob">
+      <div class="ob-top"><button data-go="ob-name">‹ Назад</button><span></span></div>
+      ${progress(4)}
+      <div class="ob-mid">
+        <span class="ob-skip" style="background:rgba(255,255,255,.16);color:#fff;pointer-events:none">👋 ${nm()}</span>
+        <div class="ob-mascot" style="width:44px;height:44px">${mascot}</div>
+        <h2 class="ob-h" style="font-size:20px">Чем тебе помочь?</h2>
+        <p class="ob-sub">Выбери то, что сейчас важнее всего</p>
+        <div class="ob-chips">${chips}</div>
+      </div>
+    </div>`;
+  }
+
+  const CONTENT_PRIORITY = ['Планирование публикаций','Идеи для постов','Фото и видео'];
+  const PRODUCTIVITY_PRIORITY = ['Напоминания о задачах','Утренний план дня','Календарь и встречи'];
+  const ICONS = {
+    'Рынок акций':'📊', TON:'💎', ETH:'♦️', BTC:'₿',
+    'Фото и видео':'🎬', 'Идеи для постов':'💡', 'Планирование публикаций':'🗓️',
+    'Календарь и встречи':'🗓️', 'Напоминания о задачах':'⏰', 'Утренний план дня':'☀️',
+  };
+  function primaryPick(){
+    if (state.important === 'content') return CONTENT_PRIORITY.find(x=>state.drills.includes(x)) || state.drills[0];
+    if (state.important === 'productivity') return PRODUCTIVITY_PRIORITY.find(x=>state.drills.includes(x)) || state.drills[0];
+    return state.drills[0];
+  }
+  function deferredPicks(){ const p = primaryPick(); return state.drills.filter(d=>d!==p); }
+
+  const MICRO_Q = {
+    'Планирование публикаций':'Расскажи немного, о чём хочешь публиковать и как часто',
+    'Идеи для постов':'О чём хочешь идеи для постов?',
+    'Фото и видео':'Опиши в двух словах, что хочешь создать',
+    'Напоминания о задачах':'Что важно не забыть в первую очередь?',
+    'Утренний план дня':'Во сколько обычно начинается твой день?',
+    'Календарь и встречи':'Расскажи, какие встречи у тебя чаще всего',
+  };
+  const MICRO_VOICE_SAMPLE = {
+    'Планирование публикаций':'у меня SaaS для фрилансеров, публикую 2 раза в неделю',
+    'Идеи для постов':'делаю обзоры на гаджеты, нужны идеи на неделю вперёд',
+    'Фото и видео':'аватарка в стиле киберпанк для профиля',
+    'Напоминания о задачах':'не забыть оплатить аренду и созвониться с клиентом',
+    'Утренний план дня':'обычно начинаю в 9 утра',
+    'Календарь и встречи':'созвоны с командой и клиентами, 3–4 в день',
+  };
+
+  function obDrill(){
+    if (state.important === 'custom'){
+      return `
+      ${statusbar('dark')}
+      <div class="ob">
+        <div class="ob-top"><button data-go="ob-important">‹ Назад</button><button class="ob-skip" data-go="app-home">Пропустить</button></div>
+        ${progress(5)}
+        <div class="ob-mid">
+          <div class="ob-mascot" style="width:44px;height:44px">${mascot}</div>
+          <h2 class="ob-h" style="font-size:20px">Расскажи в двух словах, с чем помочь</h2>
+          <input id="custom-input" class="ob-input" placeholder="Например: следить за курсом доллара">
+        </div>
+        <div class="ob-bottom"><button class="ob-cta" data-go="ob-preview" data-set-custom-from="custom-input">Продолжить</button></div>
+      </div>`;
+    }
+    const opts = DRILL[state.important].map(o=>{
+      const on = state.drills.includes(o);
+      return `<button class="ob-check ${on?'on':''}" data-toggle-drill="${o}"><span class="box"><i>✓</i></span>${o}</button>`;
+    }).join('');
+    return `
+    ${statusbar('dark')}
+    <div class="ob">
+      <div class="ob-top"><button data-go="ob-important">‹ Назад</button><span></span></div>
+      ${progress(5)}
+      <div class="ob-mid">
+        <div class="ob-mascot" style="width:44px;height:44px">${mascot}</div>
+        <h2 class="ob-h" style="font-size:20px">${DRILL_HEAD}</h2>
+        <p class="ob-sub">Можно выбрать несколько</p>
+        <div class="ob-chips">${opts}</div>
+      </div>
+      <div class="ob-bottom"><button class="ob-cta" data-go="ob-next-after-drill">Продолжить</button></div>
+    </div>`;
+  }
+
+  // Trading: ask notification cadence — multi-select, several cadences can be active at once
+  const FREQ_OPTS = ['Раз в день','Раз в час','Сразу при резких скачках цены'];
+  function obFreq(){
+    const opts = FREQ_OPTS.map(o=>{
+      const on = state.freqs.includes(o);
+      return `<button class="ob-check ${on?'on':''}" data-toggle-freq="${o}"><span class="box"><i>✓</i></span>${o}</button>`;
+    }).join('');
+    return `
+    ${statusbar('dark')}
+    <div class="ob">
+      <div class="ob-top"><button data-go="ob-preview">‹ Назад</button><span></span></div>
+      ${progress(7)}
+      <div class="ob-mid">
+        <div class="ob-mascot" style="width:44px;height:44px">${mascot}</div>
+        <h2 class="ob-h" style="font-size:20px">Как часто присылать изменения?</h2>
+        <p class="ob-sub">Можно выбрать несколько — пришлём отдельным сообщением на каждый вариант</p>
+        <div class="ob-chips">${opts}</div>
+      </div>
+      <div class="ob-bottom"><button class="ob-cta" data-go="ob-confirm">Продолжить</button></div>
+    </div>`;
+  }
+
+  // Content / productivity: quick voice-or-text micro-question on the top-priority pick
+  function obMicro(){
+    const q = MICRO_Q[primaryPick()] || 'Расскажи немного, с чем помочь';
+    return `
+    ${statusbar('dark')}
+    <div class="ob">
+      <div class="ob-top"><button data-go="ob-drill">‹ Назад</button><span></span></div>
+      ${progress(6)}
+      <div class="ob-mid">
+        <div class="ob-mascot" style="width:44px;height:44px">${mascot}</div>
+        <h2 class="ob-h" style="font-size:20px">${q}</h2>
+        <p class="ob-sub">Можешь наговорить голосом или написать коротко</p>
+        <input id="micro-input" class="ob-input" placeholder="Начни печатать…">
+        <button class="ob-rand" data-mic="1">🎤 Наговорить голосом</button>
+      </div>
+      <div class="ob-bottom">
+        <button class="ob-cta" data-go="ob-preview" data-set-micro-from="micro-input">Продолжить</button>
+        <button class="skip-link on-grad" data-go="ob-preview" data-set-micro-skip="1">Пропустить</button>
+      </div>
+    </div>`;
+  }
+
+  const TRADING_CHANGE = { TON:'+2%', ETH:'+3%', BTC:'+1%', 'Рынок акций':'+0.5%' };
+  const FREQ_TITLE = {
+    'Раз в день':'Изменение акций за 24 часа',
+    'Раз в час':'Изменение акций за последний час',
+    'Сразу при резких скачках цены':'Резкий скачок цены (~30 минут)',
+  };
+
+  function previewCard(){
+    if (state.important === 'trading'){
+      const picked = state.drills.length ? state.drills : ['TON'];
+      const freqs = ['Раз в день']; // frequency is asked after this screen — show the default daily example
+      return freqs.map(f=>{
+        const lines = picked.map(a=>`${a}: ${TRADING_CHANGE[a]||'+1%'}`).join('<br>');
+        return `<div class="pv-card"><span class="who">Mira, сейчас</span><span style="font-size:13.5px;line-height:1.6">${FREQ_TITLE[f]}<br>${lines}</span><span class="stamp">9:41</span></div>`;
+      }).join('');
+    }
+    if (state.important === 'content' || state.important === 'productivity'){
+      const primary = primaryPick();
+      const body = state.microAnswer
+        ? `Записала: «${state.microAnswer}». Начинаю с этого — ${primary.toLowerCase()}.`
+        : `Пока начну с общего по «${primary}» — подстроюсь точнее по мере переписки.`;
+      return `<div class="pv-card"><span class="who">Mira, сейчас</span><span style="font-size:13.5px;line-height:1.55">${body}</span><span class="stamp">9:41</span></div>`;
+    }
+    return `<div class="pv-card"><span class="who">Mira, сейчас</span><span style="font-size:13.5px;line-height:1.5">«${state.customText || '—'}» — начинаю разбираться, покажу первые результаты в чате.</span><span class="stamp">9:41</span></div>`;
+  }
+
+  function obPreview(){
+    const nextYes = state.important === 'trading' ? 'ob-freq' : 'ob-confirm';
+    return `
+    ${statusbar('dark')}
+    <div class="ob">
+      <div class="ob-top"><span></span><span></span></div>
+      ${progress(state.important === 'trading' ? 6 : 7)}
+      <div class="ob-mid">
+        <h2 class="ob-h" style="font-size:19px">Пример сообщения</h2>
+        <div class="pv-wrap">${previewCard()}</div>
+        <p class="ob-sub">Присылать тебе такое каждое утро в чат?</p>
+      </div>
+      <div class="ob-bottom">
+        <button class="ob-cta" data-set-chat="1" data-go="${nextYes}">Включай</button>
+        <button class="ob-cta ghost" data-set-chat="0" data-go="paywall">Я посмотрю сам</button>
+      </div>
+    </div>`;
+  }
+
+  function obConfirm(){
+    const deferred = (state.important==='content'||state.important==='productivity') ? deferredPicks() : [];
+    let learned = '';
+    if (state.important === 'trading'){
+      learned = `Буду присылать по ${state.drills.join(', ')} — ${(state.freqs.join(', ')||'раз в день').toLowerCase()}.`;
+    } else if (state.important === 'content' || state.important === 'productivity'){
+      learned = state.microAnswer ? `Запомнила: «${state.microAnswer}» — учту это в следующий раз.`
+        : `Пока начну с общего — узнаю тебя лучше по мере использования.`;
+      if (deferred.length) learned += ` Ещё вижу, что тебе интересно: ${deferred.join(', ')} — тоже учла.`;
+    }
+    return `
+    ${statusbar('dark')}
+    <div class="ob">
+      <div class="ob-top"><span></span><span></span></div>
+      <div class="ob-mid">
+        <div class="ob-mascot" style="width:48px;height:48px">${mascot}</div>
+        <h2 class="ob-h" style="font-size:20px">Отлично, ${nm()}!</h2>
+        <p class="ob-sub">Включила — буду присылать вот такое в чат. Обновила информацию о тебе и сохранила её в памяти.</p>
+        ${learned?`<div class="pv-card"><span style="font-size:13px;line-height:1.5">${learned}</span></div>`:''}
+      </div>
+      <div class="ob-bottom"><button class="ob-cta" data-go="paywall">Продолжить</button></div>
+    </div>`;
+  }
+
+  // ---------------- Paywall ----------------
+  const PW_COPY = {
+    trading: {
+      eyebrow:'ДЛЯ ТРЕЙДИНГА',
+      modelsTitle:'Модели, которые лучше понимают трендинг', modelsDesc:'Claude Opus, GPT Pro и другие',
+      servicesDesc:'Топовые платформы рынка акций и биткоина',
+      tokenDesc: (tier)=> tier==='pro' ? '350 проверок рынка • алерты без лимита • экспорт отчётов' : '10 000 проверок рынка • алерты без лимита • экспорт отчётов',
+      autoTitle:'Алерты и стратегии без остановки, 24/7',
+      showWatermark:false,
+    },
+    content: { eyebrow:'ДЛЯ КОНТЕНТА', servicesDesc:'Публикация в соцсети, 1 000+ сервисов', autoTitle:'Публикации по расписанию, 24/7', showWatermark:true },
+    productivity: { eyebrow:'ДЛЯ ПРОДУКТИВНОСТИ', servicesDesc:'Календарь, почта, таск-трекеры', autoTitle:'Напоминания и задачи по расписанию', showWatermark:true },
+    custom: { eyebrow:'ЕЖЕДНЕВНЫЕ ЗАДАЧИ', servicesDesc:'1 000+ сервисов', autoTitle:'Запланированные задачи, автономная работа 24/7', showWatermark:true },
+  };
+  const PW_PLANS = {
+    pro: [
+      { id:'w', lb:'1 неделя', pr:'998 ₽', st:'499', cta:'1 неделю' },
+      { id:'m', lb:'1 месяц', pr:'2 998 ₽', st:'1 499', cta:'1 месяц', hit:true },
+      { id:'3m', lb:'3 месяца', pr:'5 998 ₽', st:'2 999', cta:'3 месяца' },
+    ],
+    promax: [
+      { id:'m', lb:'1 месяц', pr:'10 998 ₽', st:'5 499', cta:'1 месяц', hit:true },
+      { id:'3m', lb:'3 месяца', pr:'21 998 ₽', was:'32 833 ₽', off:'-33%', st:'10 999', cta:'3 месяца' },
+      { id:'y', lb:'1 год', pr:'59 998 ₽', st:'29 999', cta:'1 год' },
+    ],
+  };
+  function pwDefault(){ if(!state.pwTier) state.pwTier='pro'; if(!state.pwPlan) state.pwPlan='w'; }
+
+  function paywall(){
+    pwDefault();
+    const copy = PW_COPY[state.important] || PW_COPY.custom;
+    const plans = PW_PLANS[state.pwTier];
+    const active = plans.find(p=>p.id===state.pwPlan) || plans[0];
+    const tokenDesc = typeof copy.tokenDesc === 'function' ? copy.tokenDesc(state.pwTier)
+      : (state.pwTier==='pro' ? '350 сообщений • 20 изображений • 4 видео' : '10 000 сообщений • 200 изображений • 100 видео');
+    const rows = [
+      [copy.modelsTitle||'Мощные ИИ-модели', copy.modelsDesc||'Claude Opus, GPT Pro и другие'],
+      ['Подключение сервисов', copy.servicesDesc],
+      [state.pwTier==='pro' ? '700 ⭐ на баланс' : '7 000 ⭐ в месяц', tokenDesc],
+      [copy.autoTitle, ''],
+    ];
+    if (copy.showWatermark !== false) rows.push(['Без водяных знаков и модерации', '']);
+    return `
+    ${statusbar('light')}
+    <div class="pw">
+      <div class="pw-header">
+        <span class="pw-back" data-go="app-home">‹ Назад</span>
+        <div class="pw-title"><b>Mira ✓</b><span>мини-приложение</span></div>
+        <div class="pw-more">•••</div>
+      </div>
+      <div class="pw-toggle">
+        <button class="${state.pwTier==='pro'?'on':''}" data-pw-tier="pro">😎 Pro</button>
+        <button class="${state.pwTier==='promax'?'on':''}" data-pw-tier="promax">🔥 Pro Max</button>
+      </div>
+      <div class="pw-card">
+        <div class="pw-cardhead"><span>${copy.eyebrow}</span><span><span>FREE</span><span>${state.pwTier==='pro'?'PRO':'MAX'}</span></span></div>
+        ${rows.map(([t,d])=>`<div class="pw-row"><div><b>${t}</b>${d?`<span class="d">${d}</span>`:''}</div><div class="marks"><i>—</i><i class="yes">✓</i></div></div>`).join('')}
+      </div>
+      <div class="pw-plans">
+        ${plans.map(p=>`
+          <div class="pw-plan ${p.id===active.id?'on':''}" data-pw-plan="${p.id}">
+            <div class="check">✓</div>
+            <span class="lb">${p.lb}</span>
+            <span class="pr">${p.was?`<span class="was">${p.was}</span>`:''}${p.pr}${p.off?`<span class="off">${p.off}</span>`:''}</span>
+            <span class="st">⭐ ${p.st}</span>
+            ${p.hit?'<span class="hit">ХИТ</span>':''}
+          </div>`).join('')}
+      </div>
+      <button class="pw-gift">🎁 Подарить друзьям</button>
+      <button class="pw-cta" data-go="app-home"><b>Подписаться на ${active.cta}</b><span>Оплачивайте звёздами или картой</span></button>
+    </div>`;
+  }
+
+  function appHome(){
+    const seg = state.important;
+    let cards;
+    if (seg === 'trading'){
+      cards = [
+        ['🤖','Автоматизировать стратегию','Собрать бота под твой сценарий'],
+        ['🔔','Настроенные алерты', (state.drills.join(', ')||'TON') + ' · ' + (state.freqs.join(', ')||'раз в день')],
+        ['👥','Популярно у трейдеров как ты','Алерты по объёму торгов'],
+      ];
+    } else if (seg === 'content' || seg === 'productivity'){
+      const primary = primaryPick();
+      cards = [[ICONS[primary]||'✨', 'Продолжить: '+primary, state.microAnswer ? 'По тому, что рассказал(а)' : 'Начали, дальше уточню']];
+      deferredPicks().forEach(d=>cards.push([ICONS[d]||'✨', d, 'Тоже интересно — начнём, когда будешь готов(а)']));
+    } else {
+      cards = [['🔍','Задай любой вопрос','Помогу во всём разобраться'],['🌐','Создать сайт','Один войс — от идеи до продукта']];
+    }
+    return `
+    ${statusbar('dark')}
+    <div class="home-hero">
+      <div class="ob-mascot" style="width:46px;height:46px;margin:0 auto 10px">${mascot}</div>
+      <h2>Привет, ${nm()}!</h2>
+      <p>${seg ? 'Собрала главное под то, с чего мы начали' : 'Вот что я умею'}</p>
+    </div>
+    <div class="app-section-title">${seg ? 'Лучшее для тебя' : 'Лучшее'}</div>
+    ${cards.map(([ic,t,sub])=>`<div class="flat-card"><span class="ic">${ic}</span><div><b>${t}</b><span>${sub}</span></div></div>`).join('')}
+    <div class="app-section-title">Основное</div>
+    <div class="flat-card"><span class="ic">⏰</span><div><b>Напомнить о важном</b><span>Ласковое напоминание</span></div></div>
+    <div class="flat-card"><span class="ic">📰</span><div><b>Ежедневные новости</b><span>Подборка по интересам</span></div></div>
+    <div class="app-navbar">
+      <div class="navitem on"><span>🔎</span>Открытия</div>
+      <div class="navitem"><span>✨</span>Генерация</div>
+      <div class="navitem"><span>⚙️</span>Настройки</div>
+    </div>
+    <button class="skip-link" data-go="restart">← Начать заново</button>`;
+  }
+
+  // ---------------- Tracker ----------------
+  function renderTracker(currentStep){
+    const labels = ['Telegram','Мини-апп','Вопросы','Превью','Paywall','Дома'];
+    trackerEl.innerHTML = labels.map((l,i)=>{
+      const cls = i < currentStep ? 'done' : (i === currentStep ? 'active' : '');
+      return `<div class="tstep ${cls}"><span class="num">${i+1}</span><span class="lbl">${l}</span></div>` + (i<labels.length-1?'<span class="tline"></span>':'');
+    }).join('');
+  }
+
+  // ---------------- Navigation ----------------
+  let current = 'tg-intro';
+
+  function go(id){
+    if (id === 'restart'){ state = { name:'', important:null, drills:[], customText:'', includeChat:null, pwTier:null, pwPlan:null, freqs:[], microAnswer:'', microSkipped:false }; current='tg-intro'; render(); return; }
+    if (id === 'ob-next-after-drill'){ current = state.important === 'trading' ? 'ob-preview' : 'ob-micro'; render(); return; }
+    current = id;
+    render();
+  }
+
+  function render(){
+    const list = screens();
+    let def = list.find(s=>s.id===current);
+    if (!def){ current = 'tg-intro'; def = list[0]; }
+
+    root.querySelectorAll('.screen-inner').forEach(n=>n.remove());
+    const wrap = document.createElement('div');
+    wrap.className = 'screen-inner active surf-' + def.surface;
+    wrap.innerHTML = def.render();
+    root.appendChild(wrap);
+    requestAnimationFrame(()=>wrap.classList.add('active'));
+
+    renderTracker(def.step);
+    const cm = document.getElementById('my-commentary');
+    if (cm) cm.innerHTML = (COMMENTS[def.id] || []).map(t=>`<li>${t}</li>`).join('') || '<li style="color:var(--mute);list-style:none;margin-left:-18px">—</li>';
+
+    wrap.querySelectorAll('[data-go]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        if (el.dataset.setNameFrom){
+          const inp = document.getElementById(el.dataset.setNameFrom);
+          state.name = (inp && inp.value.trim()) || '';
+        }
+        if (el.dataset.setCustomFrom){
+          const inp = document.getElementById(el.dataset.setCustomFrom);
+          state.customText = (inp && inp.value.trim()) || '';
+        }
+        if (el.dataset.setMicroFrom){
+          const inp = document.getElementById(el.dataset.setMicroFrom);
+          state.microAnswer = (inp && inp.value.trim()) || '';
+          state.microSkipped = !state.microAnswer;
+        }
+        if (el.dataset.setMicroSkip){ state.microAnswer = ''; state.microSkipped = true; }
+        if (el.dataset.setChat !== undefined) state.includeChat = el.dataset.setChat === '1';
+        go(el.dataset.go);
+      });
+    });
+    wrap.querySelectorAll('[data-set-important]').forEach(el=>{
+      el.addEventListener('click', ()=>{ state.important = el.dataset.setImportant; state.drills = []; go('ob-drill'); });
+    });
+    wrap.querySelectorAll('[data-toggle-drill]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const v = el.dataset.toggleDrill;
+        const i = state.drills.indexOf(v);
+        if (i === -1) state.drills.push(v); else state.drills.splice(i,1);
+        render();
+      });
+    });
+    wrap.querySelectorAll('[data-toggle-freq]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const v = el.dataset.toggleFreq;
+        const i = state.freqs.indexOf(v);
+        if (i === -1) state.freqs.push(v); else state.freqs.splice(i,1);
+        render();
+      });
+    });
+    wrap.querySelectorAll('[data-rand-name]').forEach(el=>{
+      el.addEventListener('click', ()=>{ const i=document.getElementById('name-input'); if(i) i.value='Солнышко'; });
+    });
+    wrap.querySelectorAll('[data-mic]').forEach(el=>{
+      el.addEventListener('click', ()=>{
+        const i=document.getElementById('micro-input');
+        if (i) i.value = MICRO_VOICE_SAMPLE[primaryPick()] || 'наговорил(а) голосом';
+      });
+    });
+    wrap.querySelectorAll('[data-pw-tier]').forEach(el=>{
+      el.addEventListener('click', ()=>{ state.pwTier = el.dataset.pwTier; state.pwPlan = null; render(); });
+    });
+    wrap.querySelectorAll('[data-pw-plan]').forEach(el=>{
+      el.addEventListener('click', ()=>{ state.pwPlan = el.dataset.pwPlan; render(); });
+    });
+  }
+
+  render();
+})();
+</script>
