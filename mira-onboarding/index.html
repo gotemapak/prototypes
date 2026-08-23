@@ -157,6 +157,8 @@
   .ob-chip{ display:block; width:100%; background:var(--chip-bg); color:var(--chip-ink); border:none; border-radius:16px; padding:14px 16px; font-size:14px; font-weight:700; text-align:left; cursor:pointer; font-family:inherit; transition:.15s; }
   .ob-chip:hover{ filter:brightness(.97); transform:translateY(-1px); }
   .ob-chip .ic{ margin-right:8px; }
+  .ob-chip.disabled{ opacity:.4; cursor:not-allowed; pointer-events:none; display:flex; align-items:center; justify-content:space-between; }
+  .ob-chip.disabled .soon{ font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:.04em; background:rgba(28,43,87,.14); padding:3px 8px; border-radius:999px; }
   .ob-check{ display:flex; align-items:center; gap:11px; width:100%; background:var(--chip-bg); color:var(--chip-ink); border:none; border-radius:16px; padding:13px 16px; font-size:14px; font-weight:700; text-align:left; cursor:pointer; font-family:inherit; transition:.15s; }
   .ob-check:hover{ filter:brightness(.97); }
   .ob-check.on{ background:var(--chip-sel); color:#fff; }
@@ -300,7 +302,7 @@
     'ob-hero': ['Повторяем ключевые результаты, которые человек может получить, и делаем помощника более «вещественным» через первый образ картинки и текста.'],
     'ob-learn': ['Даём больше причин остаться с ботом — он учится, лучше понимает пользователя и со временем делает более точные предложения.'],
     'ob-name': ['Выносим персонализацию вперёд и используем имя на всех следующих экранах.', 'Берём уже известное имя из Telegram, но оставляем возможность сгенерировать случайное.'],
-    'ob-important': ['Фокусируемся в первую очередь на контенте и кейсах, которые сейчас популярны и которые мы хорошо решаем.', 'Оставляем возможность написать свой вариант, который мы не учли.'],
+    'ob-important': ['«Создавать контент», «Планировать день и напоминать о важном» и «Свой вариант» пока отключены (Скоро) — я подготовил разветвлённый контент только для «Следить за рынком и присылать алерты» в качестве примера.', 'После изучения аудитории по каждому сегменту сделаю аналогичные ветки и для остальных ответов.'],
     'ob-drill': ['Пробуем собрать первую автоматизацию — своего рода крючок, чтобы пользователь остался в продукте через понимание сегмента.', 'Я не эксперт в трейдинге, поэтому предполагаю, что самые частые сценарии — слежение за рынком акций или майнинг; стоит проверить на реальных данных.'],
     'ob-freq': ['Предполагаю, что для этого сегмента важны срочность, скорость и амплитуда изменений.'],
     'ob-micro': ['Для остальных вариантов сейчас нет уникальной механики — она была бы аналогична «следить за рынком», в зависимости от контекста. Пока для всех, кроме трейдинга, делаем нейтральную переброску на Paywall, а для трейдинга — более разветвлённую механику.'],
@@ -456,9 +458,10 @@
   }
 
   function obImportant(){
-    const chips = Object.entries(IMPORTANT).map(([k,v])=>
-      `<button class="ob-chip" data-set-important="${k}"><span class="ic">${v.ic}</span>${v.label}</button>`
-    ).join('');
+    const chips = Object.entries(IMPORTANT).map(([k,v])=>{
+      if (k === 'trading') return `<button class="ob-chip" data-set-important="${k}"><span class="ic">${v.ic}</span>${v.label}</button>`;
+      return `<button class="ob-chip disabled" disabled><span><span class="ic">${v.ic}</span>${v.label}</span><span class="soon">Скоро</span></button>`;
+    }).join('');
     return `
     ${statusbar('dark')}
     <div class="ob">
