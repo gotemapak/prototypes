@@ -48,6 +48,9 @@
   .skill p { margin:0 0 6px; font-weight:600; }
   .bar { height:10px; border-radius:6px; background:#DCE6F7; margin:4px 0; position:relative; overflow:hidden; }
   .bar i { position:absolute; inset:0 auto 0 0; border-radius:6px; }
+  .row { display:grid; grid-template-columns:120px 1fr; align-items:center; gap:10px; font-size:15px; color:var(--muted); margin:6px 0; }
+  .row .bar { margin:0; }
+  .bar i.blur { filter:blur(9px); }
   .legend { display:flex; gap:16px; font-size:15px; color:var(--muted); margin:6px 0 10px; }
   .legend span::before { content:""; display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px; background:var(--c); }
   /* plan */
@@ -75,15 +78,15 @@
   <section>
     <h1>Your results are ready</h1>
     <div class="score"><div><div><b>72%</b><span>Your memory score</span></div></div></div>
-    <p class="good">Good news — your strongest area is Name recall.</p>
+    <p class="good">Good news — your strongest area is Logic.</p>
     <p class="center small muted" style="margin:0 0 12px">See how you compare with women 70–79 in your full report.</p>
-    <div class="areas"><b>2 areas to strengthen</b>Attention · Visual memory</div>
+    <div class="areas"><b>2 areas to strengthen</b>Memory · Focus</div>
     <p class="center small muted" style="margin:10px 0 0">Private. Not a medical diagnosis.</p>
   </section>
 
   <!-- 2. Offer -->
   <section class="tint">
-    <h2>Stay sharp as you age — with a 5-minute daily plan for Attention and Visual memory</h2>
+    <h2>Stay sharp as you age — with a 5-minute daily plan for Memory and Focus</h2>
     <ul class="check">
       <li>Your full memory report</li>
       <li>Large, clear games — no rushing</li>
@@ -103,19 +106,28 @@
   <!-- 3. Report -->
   <section>
     <h2>See exactly how your memory is doing</h2>
-    <div class="legend"><span style="--c:var(--blue)">You</span><span style="--c:#9AA3BD">Average for women 70–79</span></div>
-    <div class="blur">
-      <div class="skill"><p>Memory</p><div class="bar"><i style="width:74%;background:var(--blue)"></i></div><div class="bar"><i style="width:61%;background:#9AA3BD"></i></div></div>
-      <div class="skill"><p>Attention</p><div class="bar"><i style="width:52%;background:var(--blue)"></i></div><div class="bar"><i style="width:60%;background:#9AA3BD"></i></div></div>
-      <div class="skill"><p>Name recall</p><div class="bar"><i style="width:81%;background:var(--blue)"></i></div><div class="bar"><i style="width:58%;background:#9AA3BD"></i></div></div>
+    <div class="skill"><p>Logic</p>
+      <div class="row"><span>You</span><div class="bar"><i class="blur" style="width:78%;background:var(--blue)"></i></div></div>
+      <div class="row"><span>Women 70–79</span><div class="bar"><i class="blur" style="width:60%;background:#9AA3BD"></i></div></div>
     </div>
-    <div class="skill"><p>Focus · Speed · Problem-solving</p></div>
-    <p class="muted">Retake anytime and watch your score go up.</p>
+    <div class="skill"><p>Memory</p>
+      <div class="row"><span>You</span><div class="bar"><i class="blur" style="width:55%;background:var(--blue)"></i></div></div>
+      <div class="row"><span>Women 70–79</span><div class="bar"><i class="blur" style="width:62%;background:#9AA3BD"></i></div></div>
+    </div>
+    <div class="skill"><p>Math</p>
+      <div class="row"><span>You</span><div class="bar"><i class="blur" style="width:70%;background:var(--blue)"></i></div></div>
+      <div class="row"><span>Women 70–79</span><div class="bar"><i class="blur" style="width:58%;background:#9AA3BD"></i></div></div>
+    </div>
+    <div class="skill"><p>Focus</p>
+      <div class="row"><span>You</span><div class="bar"><i class="blur" style="width:50%;background:var(--blue)"></i></div></div>
+      <div class="row"><span>Women 70–79</span><div class="bar"><i class="blur" style="width:61%;background:#9AA3BD"></i></div></div>
+    </div>
+    <p class="muted" style="margin:10px 0 0">Retake anytime and watch your score go up.</p>
   </section>
 
   <!-- 4. Plan -->
   <section class="tint">
-    <h2>Your plan starts with Attention and Visual memory</h2>
+    <h2>Your plan starts with Memory and Focus</h2>
     <div class="days"><div><b>Day 1</b><span>5 min</span></div><div><b>Day 2</b><span>5 min</span></div><div><b>Day 3</b><span>5 min</span></div></div>
     <img class="wide" src="https://brainai-app.com/images/dementia/slide-1.webp" alt="">
     <p style="margin:14px 0 0;font-weight:600">Large, clear games. No rushing.</p>
