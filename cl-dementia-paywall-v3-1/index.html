@@ -50,14 +50,17 @@
   .bar i { position:absolute; inset:0 auto 0 0; border-radius:6px; }
   .row { display:grid; grid-template-columns:120px 1fr; align-items:center; gap:10px; font-size:15px; color:var(--muted); margin:6px 0; }
   .row .bar { margin:0; }
-  .bar i.blur { filter:blur(9px); }
+  .bar i.blur { filter:none; }
+  .row .bar { filter:blur(6px); }
   .legend { display:flex; gap:16px; font-size:15px; color:var(--muted); margin:6px 0 10px; }
   .legend span::before { content:""; display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px; background:var(--c); }
   /* plan */
   .days { display:flex; gap:10px; margin:0 0 16px; }
   .days div { flex:1; background:#fff; border-radius:14px; padding:14px 8px; text-align:center; box-shadow:0 2px 8px rgba(19,26,53,.08); }
   .days b { display:block; font-size:18px; }
-  .days span { font-size:16px; color:var(--muted); }
+  .days span { font-size:15px; color:var(--muted); display:block; }
+  .days em { font-style:normal; font-weight:600; font-size:15px; display:block; margin:4px 0; }
+  .crossword { margin:14px 0 0; background:#fff; border-radius:14px; padding:14px 16px; }
   img.wide { width:100%; border-radius:14px; display:block; }
   /* moments */
   .moment { display:flex; align-items:center; gap:14px; padding:10px 0; font-size:19px; font-weight:500; }
@@ -105,7 +108,7 @@
 
   <!-- 3. Report -->
   <section>
-    <h2>See exactly how your memory is doing</h2>
+    <h2>How do you compare with women your age?</h2>
     <div class="skill"><p>Logic</p>
       <div class="row"><span>You</span><div class="bar"><i class="blur" style="width:78%;background:var(--blue)"></i></div></div>
       <div class="row"><span>Women 70–79</span><div class="bar"><i class="blur" style="width:60%;background:#9AA3BD"></i></div></div>
@@ -125,18 +128,18 @@
     <p class="muted" style="margin:10px 0 0">Retake anytime and watch your score go up.</p>
   </section>
 
-  <!-- 4. Plan -->
+  <!-- 4. Plan in the app (merged with "Already doing crosswords") -->
   <section class="tint">
+    <p class="small" style="margin:0 0 6px;color:var(--blue);font-weight:600">Your plan in the Brain AI app</p>
     <h2>Your plan starts with Memory and Focus</h2>
-    <div class="days"><div><b>Day 1</b><span>5 min</span></div><div><b>Day 2</b><span>5 min</span></div><div><b>Day 3</b><span>5 min</span></div></div>
+    <div class="days">
+      <div><b>Day 1</b><span>Memory</span><em>[Memory game]</em><span>5 min</span></div>
+      <div><b>Day 2</b><span>Focus</span><em>Fruit Sort</em><span>5 min</span></div>
+      <div><b>Day 3</b><span>Logic</span><em>Sudoku</em><span>5 min</span></div>
+    </div>
     <img class="wide" src="https://brainai-app.com/images/dementia/slide-1.webp" alt="">
     <p style="margin:14px 0 0;font-weight:600">Large, clear games. No rushing.</p>
-  </section>
-
-  <!-- 5. Current way -->
-  <section>
-    <h2>Already doing crosswords? Keep going.</h2>
-    <p style="margin:0">They can't show if your memory is improving. Your plan tracks it every week.</p>
+    <p class="crossword">Already doing crosswords? Keep going — your plan shows if your memory is improving, week by week.</p>
   </section>
 
   <!-- 6. Moments -->
