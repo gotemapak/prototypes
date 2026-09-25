@@ -71,6 +71,26 @@
   details p { margin:10px 0 0; }
   .src { font-size:15px; color:#8A90A6; margin-top:8px; }
   .note { font-size:13px; color:#8A90A6; text-align:center; padding:6px 16px 0; }
+
+  .v2mark { background:#FFF4D6; color:#7A5A00; font-size:14px; font-weight:600; text-align:center; padding:8px 12px; }
+  .tp { background:var(--soft); border-radius:16px; padding:16px; text-align:center; margin-bottom:18px; }
+  .tp b { display:block; font-size:26px; margin:4px 0; }
+  .tp-l { color:#00B67A; font-weight:600; font-size:15px; }
+  .tp-s { color:#00B67A; font-size:26px; letter-spacing:2px; }
+  .rev { padding:14px 0; border-bottom:1px solid #E5E8F0; }
+  .rev-h { display:flex; align-items:center; gap:12px; }
+  .rev-h img { width:60px; height:60px; border-radius:50%; object-fit:cover; }
+  .rev-h div { flex:1; } .rev-h b { display:block; font-weight:500; } .rev-h span { color:var(--blue); font-size:14px; }
+  .rev-h i { font-style:normal; color:var(--blue); font-size:18px; }
+  .rev-t { font-weight:700; margin:12px 0 4px; } .rev-b { margin:0; color:#3B4260; }
+  .promo { background:#fff; border-radius:14px; padding:14px 16px; margin:4px 0 12px; }
+  .timer { background:#F25672; color:#fff; border-radius:14px; padding:12px; text-align:center; font-weight:700; }
+  .perks { background:#fff; border-radius:14px; padding:6px 16px; margin-top:14px; } .perks p { margin:10px 0; }
+  .guar { text-align:center; }
+  .seal { width:110px; height:110px; margin:0 auto; border-radius:50%; background:#1968FF; color:#fff; display:grid; place-content:center; line-height:1; border:6px solid #FFD24A; }
+  .seal b { font-size:40px; } .seal span { font-size:16px; font-weight:700; }
+  .payicons { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px; } .payicons img { height:28px; }
+  .foot { background:#131A35; color:#C9CEDD; font-size:14px; padding:24px 20px; line-height:1.6; } .foot b { color:#fff; font-size:18px; } .foot span { font-size:12px; color:#8A90A6; }
 </style>
 </head>
 <body>
@@ -158,13 +178,76 @@
     <div class="badges"><div style="background:var(--soft)">🛡 14-day money-back</div><div style="background:var(--soft)">🔒 Private</div></div>
   </section>
 
-  <!-- Below screen 5: unchanged v2 -->
-  <section style="background:#F6F7FB;border-top:2px dashed #B8C2DA">
-    <p class="center" style="font-weight:700;margin:0 0 6px">Ниже — без изменений, как в v2</p>
-    <p class="center small muted" style="margin:0">Just 5 minutes a day · Peace of mind · отзывы и Trustpilot · оплата · 14-Day Money-Back (срок меняем с 30 на 14)</p>
-    <p class="center small" style="margin:10px 0 0"><a href="https://brainai-app.com/test-8/result" style="color:var(--blue)">Живая версия v2</a></p>
+  <!-- ===== Below screen 5: v2 content, unchanged (only guarantee 30 -> 14 days) ===== -->
+  <div class="v2mark">Ниже — экраны v2 без изменений (кроме гарантии: 14 дней)</div>
+
+  <section>
+    <h2 class="center">Just 5 minutes a day</h2>
+    <p class="center" style="font-weight:600">“Even 5 minutes of brain training a day can help reduce the risk of developing dementia”</p>
+    <p class="center">“In a 20-year study, targeted brain training was linked to a 25% lower risk of being diagnosed with dementia later in life.”</p>
+    <p class="src center">Source: Johns Hopkins Medicine</p>
+    <img class="wide" src="https://brainai-app.com/images/dementia/graph.svg" alt="">
+    <p class="center small muted">Based on the data of users who log their progress in Brain AI</p>
+    <button class="btn">Get My Plan</button>
   </section>
-  <p class="note">Prototype v3.1 · WEB-305 · меняются только экраны 1–5 · значения брекетов условные</p>
+
+  <section class="tint">
+    <h2 class="center">Peace of mind today - Independence for years to come</h2>
+    <img class="wide" src="https://brainai-app.com/images/dementia/private-woman-2.webp" alt="">
+    <p class="center">Thanks to the training of your brain, you will live more independently, happily, do your favorite things, and confidently communicate with your family and friends.</p>
+  </section>
+
+  <section>
+    <h2 class="center">Thousand of people began exactly here</h2>
+    <div class="tp"><span class="tp-l">★ Trustpilot</span><b>Rated 4.5 · Excellent</b><span class="tp-s">★★★★★</span></div>
+    <div class="rev">
+      <div class="rev-h"><img src="https://brainai-app.com/images/dementia/review-1.webp" alt=""><div><b>Linda Martinez</b><span>✔ Verified review</span></div><i>★★★★★</i></div>
+      <p class="rev-t">Finally got a real answer</p><p class="rev-b">My mother had dementia, so I'd been too scared to even ask about my own risk. The report showed exactly where I stand, and the daily games are simple enough that I actually stick with them.</p>
+    </div>
+    <div class="rev">
+      <div class="rev-h"><img src="https://brainai-app.com/images/dementia/review-2.webp" alt=""><div><b>Robert Chen</b><span>✔ Verified review</span></div><i>★★★★★</i></div>
+      <p class="rev-t">Now I know if my crosswords are working</p><p class="rev-b">I've done crosswords for years but had no idea if it was enough. The games in the app feel like a step up - just a few minutes a day, and I can already tell my recall is quicker.</p>
+    </div>
+    <div class="rev">
+      <div class="rev-h"><img src="https://brainai-app.com/images/dementia/review-3.webp" alt=""><div><b>Patricia Adams</b><span>✔ Verified review</span></div><i>★★★★★</i></div>
+      <p class="rev-t">No doctor, no waiting room - just answers</p><p class="rev-b">I'd been putting this off because I didn't want to see a doctor over &quot;just forgetting things.&quot; This let me check privately, and now the games are just part of my morning coffee routine.</p>
+    </div>
+  </section>
+
+  <section class="tint">
+    <h2 class="center">Get My Dementia Risk Report &amp; Training Plan</h2>
+    <ul class="check">
+      <li>Complete Dementia Risk Score Report</li>
+      <li>Daily Training Plan</li>
+      <li>A set of simple games you can play anywhere, anytime</li>
+    </ul>
+    <div class="promo">🎁 <b>Promo Code BRAINAITODAY Applied</b><br><span style="color:var(--blue)">You save 85%</span></div>
+    <div class="timer">⏱ This offer ends in 05:53 min</div>
+    <div class="price"><span style="font-weight:600">Total due today:</span><span><s style="color:#9AA3BD;margin-right:8px">$48.99</s><b>$0.99</b></span></div>
+    <p class="small">Your 3-day trial will cost only $0.99. Afterwards, it will be $20.99/week.</p>
+    <p style="font-weight:700;margin:14px 0 8px">Payment method</p>
+    <div class="paym">
+      <div style="background:#FFC43A;color:#003087">PayPal</div>
+      <div style="background:#000;color:#fff">G Pay</div>
+      <div style="background:#00298F;color:#fff">Debit or Credit Card</div>
+    </div>
+    <div class="perks"><p><b>No commitment.</b> Cancel anytime</p><p><b>Money back</b></p><p>We will remind you 2 days before your trial ends</p></div>
+  </section>
+
+  <section>
+    <div class="guar"><div class="seal"><b>14</b><span>DAY</span></div>
+      <h2 class="center" style="margin:10px 0 8px">14-Day Money-Back Guarantee</h2>
+      <p class="center small">Your success is our priority. If you not completely satisfied with your results, simply let us know within 14 days from when you were charged, and we’ll provide a full refund - no questions asked. For more details, see our Terms &amp; Conditions.</p>
+      <div class="payicons"><img src="https://brainai-app.com/images/dementia/pay-1.png" alt=""><img src="https://brainai-app.com/images/dementia/pay-2.png" alt=""><img src="https://brainai-app.com/images/dementia/pay-3.png" alt=""><img src="https://brainai-app.com/images/dementia/pay-4.png" alt=""><img src="https://brainai-app.com/images/dementia/pay-5.png" alt=""><img src="https://brainai-app.com/images/dementia/pay-6.png" alt=""></div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <b>Brain AI</b><br>Access brain training solutions for skills and abilities improvement.<br>
+    Privacy Policy · Terms &amp; Conditions · Money back · Help<br>
+    <span>The test is for entertainment or educational purposes only and is not a substitute for professional evaluation.</span>
+  </footer>
+  <p class="note">Prototype v3.1 · WEB-305 · экраны 1–5 новые, ниже — v2 без изменений кроме гарантии 14 дней · значения брекетов условные</p>
 </div>
 </body>
 </html>
