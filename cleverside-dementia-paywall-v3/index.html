@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paywall v3 prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#131A35; --muted:#4A5170; --blue:#1968FF; --bg:#EDF3FE; --card:#FFFFFF; --soft:#EDF3FE; --green:#1E9E6A; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#fff; color:var(--ink); font-family:Inter, sans-serif; font-size:18px; line-height:1.45; }
+  .page { max-width:430px; margin:0 auto; }
+  header { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid #E5E8F0; font-weight:700; font-size:22px; }
+  header img { width:34px; }
+  section { padding:22px 20px; }
+  section.tint { background:var(--bg); }
+  h1 { font-size:30px; line-height:1.15; margin:0 0 8px; text-align:center; font-weight:700; }
+  h2 { font-size:28px; line-height:1.2; margin:0 0 16px; font-weight:700; }
+  .center { text-align:center; }
+  .muted { color:var(--muted); }
+  .small { font-size:16px; }
+  /* block 1 */
+  .score { width:170px; height:170px; margin:12px auto 12px; border-radius:50%;
+    background:conic-gradient(var(--green) 0 72%, #DCE6F7 72% 100%); display:grid; place-items:center; }
+  .score > div { width:132px; height:132px; border-radius:50%; background:#fff; display:grid; place-items:center; text-align:center; }
+  .score b { font-size:44px; line-height:1; display:block; }
+  .score span { font-size:16px; color:var(--muted); }
+  .good { background:#E6F6EE; color:#0F6B45; border-radius:14px; padding:14px 16px; font-weight:600; text-align:center; margin:0 0 12px; }
+  .areas { background:var(--soft); border-radius:14px; padding:14px 16px; }
+  .areas b { display:block; margin-bottom:6px; }
+  .blur { filter:blur(5px); user-select:none; }
+  .peek { height:12px; }
+  /* offer */
+  ul.check { list-style:none; padding:0; margin:0 0 20px; }
+  ul.check li { padding:8px 0 8px 38px; position:relative; font-size:19px; font-weight:500; }
+  ul.check li::before { content:"✓"; position:absolute; left:0; top:6px; width:28px; height:28px; border-radius:50%; background:var(--blue); color:#fff; font-size:16px; display:grid; place-items:center; }
+  .btn { display:block; width:100%; height:60px; border:0; border-radius:14px; background:var(--blue); color:#fff; font:600 20px Inter, sans-serif; }
+  .terms { font-size:17px; text-align:center; margin:12px 0 14px; color:var(--ink); }
+  .badges { display:flex; gap:10px; }
+  .badges div { flex:1; background:#fff; border-radius:12px; padding:12px 8px; text-align:center; font-size:16px; font-weight:600; }
+  .price { border:2px solid var(--blue); border-radius:16px; padding:16px; margin:20px 0 14px; background:#fff; display:flex; justify-content:space-between; align-items:center; }
+  .price b { font-size:30px; }
+  .paym { display:grid; gap:10px; }
+  .paym div { height:56px; border-radius:10px; display:grid; place-items:center; font-weight:700; font-size:19px; }
+  /* report */
+  .skill { padding:10px 0; border-bottom:1px solid #E5E8F0; }
+  .skill:last-child { border:0; }
+  .skill p { margin:0 0 6px; font-weight:600; }
+  .bar { height:10px; border-radius:6px; background:#DCE6F7; margin:4px 0; position:relative; overflow:hidden; }
+  .bar i { position:absolute; inset:0 auto 0 0; border-radius:6px; }
+  .legend { display:flex; gap:16px; font-size:15px; color:var(--muted); margin:6px 0 10px; }
+  .legend span::before { content:""; display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px; background:var(--c); }
+  /* plan */
+  .days { display:flex; gap:10px; margin:0 0 16px; }
+  .days div { flex:1; background:#fff; border-radius:14px; padding:14px 8px; text-align:center; box-shadow:0 2px 8px rgba(19,26,53,.08); }
+  .days b { display:block; font-size:18px; }
+  .days span { font-size:16px; color:var(--muted); }
+  img.wide { width:100%; border-radius:14px; display:block; }
+  /* moments */
+  .moment { display:flex; align-items:center; gap:14px; padding:10px 0; font-size:19px; font-weight:500; }
+  .moment img { width:64px; height:64px; border-radius:12px; object-fit:cover; }
+  /* faq */
+  details { background:var(--soft); border-radius:14px; padding:16px; margin-bottom:10px; }
+  summary { font-weight:600; font-size:19px; cursor:pointer; }
+  details p { margin:10px 0 0; }
+  .src { font-size:15px; color:#8A90A6; margin-top:8px; }
+  .note { font-size:13px; color:#8A90A6; text-align:center; padding:6px 16px 0; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header><img src="https://brainai-app.com/test-8/assets/logo-kKHvDc2W.svg" alt="">Brain AI</header>
+
+  <!-- 1. Result -->
+  <section>
+    <h1>Your results are ready</h1>
+    <div class="score"><div><div><b>72%</b><span>Your memory score</span></div></div></div>
+    <p class="good">Good news — your strongest area is Name recall.</p>
+    <p class="center small muted" style="margin:0 0 12px">See how you compare with women 70–79 in your full report.</p>
+    <div class="areas"><b>2 areas to strengthen</b>Attention · Visual memory</div>
+    <p class="center small muted" style="margin:10px 0 0">Private. Not a medical diagnosis.</p>
+  </section>
+
+  <!-- 2. Offer -->
+  <section class="tint">
+    <h2>Keep your mind sharp — 5 minutes a day</h2>
+    <ul class="check">
+      <li>Your full memory report</li>
+      <li>A daily plan for Attention and Visual memory</li>
+      <li>A certificate to share with family</li>
+    </ul>
+    <button class="btn">Get my report and plan</button>
+    <p class="terms">$0.99 today, then $20.99 every week. Cancel anytime.</p>
+    <div class="badges"><div>🛡 30-day money-back</div><div>🔒 Private</div></div>
+    <div class="price"><span style="font-weight:600">Total due today</span><b>$0.99</b></div>
+    <div class="paym">
+      <div style="background:#FFC43A;color:#003087">PayPal</div>
+      <div style="background:#000;color:#fff">G Pay</div>
+      <div style="background:#00298F;color:#fff">Debit or Credit Card</div>
+    </div>
+  </section>
+
+  <!-- 3. Report -->
+  <section>
+    <h2>See exactly how your memory is doing</h2>
+    <div class="legend"><span style="--c:var(--blue)">You</span><span style="--c:#9AA3BD">Average for women 70–79</span></div>
+    <div class="blur">
+      <div class="skill"><p>Memory</p><div class="bar"><i style="width:74%;background:var(--blue)"></i></div><div class="bar"><i style="width:61%;background:#9AA3BD"></i></div></div>
+      <div class="skill"><p>Attention</p><div class="bar"><i style="width:52%;background:var(--blue)"></i></div><div class="bar"><i style="width:60%;background:#9AA3BD"></i></div></div>
+      <div class="skill"><p>Name recall</p><div class="bar"><i style="width:81%;background:var(--blue)"></i></div><div class="bar"><i style="width:58%;background:#9AA3BD"></i></div></div>
+    </div>
+    <div class="skill"><p>Focus · Speed · Problem-solving</p></div>
+    <p class="muted">Retake anytime and watch your score go up.</p>
+  </section>
+
+  <!-- 4. Plan -->
+  <section class="tint">
+    <h2>Your plan starts with Attention and Visual memory</h2>
+    <div class="days"><div><b>Day 1</b><span>5 min</span></div><div><b>Day 2</b><span>5 min</span></div><div><b>Day 3</b><span>5 min</span></div></div>
+    <img class="wide" src="https://brainai-app.com/images/dementia/slide-1.webp" alt="">
+    <p style="margin:14px 0 0;font-weight:600">Large, clear games. No rushing.</p>
+  </section>
+
+  <!-- 5. Current way -->
+  <section>
+    <h2>Already doing crosswords? Keep going.</h2>
+    <p style="margin:0">They can't show if your memory is improving. Your plan tracks it every week.</p>
+  </section>
+
+  <!-- 6. Moments -->
+  <section class="tint">
+    <h2>Everyday moments that feel easier</h2>
+    <div class="moment"><img src="https://brainai-app.com/images/dementia/notice/n2.webp" alt="">Remembering names</div>
+    <div class="moment"><img src="https://brainai-app.com/images/dementia/notice/n4.webp" alt="">Finding your keys</div>
+    <div class="moment"><img src="https://brainai-app.com/images/dementia/notice/n6.webp" alt="">Following the conversation</div>
+  </section>
+
+  <!-- 7. Science -->
+  <section>
+    <h2>Just 5 minutes a day can help protect your memory</h2>
+    <img class="wide" src="https://brainai-app.com/images/dementia/graph.svg" alt="">
+    <p>In a long-term study, brain training was linked to a lower risk of dementia.</p>
+    <p class="src">Source: Johns Hopkins Medicine</p>
+  </section>
+
+  <!-- 8. Reviews: only real 55+ reviews; empty placeholder in prototype -->
+  <section class="tint">
+    <h2>People your age who started here</h2>
+    <p class="muted small" style="margin:0">[ Реальные отзывы наших пользователей 55+ ]</p>
+  </section>
+
+  <!-- 9. FAQ -->
+  <section>
+    <h2>Before you start</h2>
+    <details open><summary>Is this a subscription?</summary><p>Yes — $0.99 today, then $20.99 every week.</p></details>
+    <details><summary>How do I cancel?</summary><p>Anytime, in your account.</p></details>
+    <details><summary>Is this a medical test?</summary><p>No. It's not a diagnosis.</p></details>
+    <details><summary>Not happy?</summary><p>Full refund within 30 days.</p></details>
+  </section>
+
+  <!-- 10. Final -->
+  <section class="tint">
+    <img class="wide" src="https://brainai-app.com/images/dementia/private-woman-2.webp" alt="" style="margin-bottom:18px">
+    <h2 class="center">Stay sharp. Stay yourself.</h2>
+    <button class="btn">Get my report and plan</button>
+    <p class="terms">$0.99 today, then $20.99 every week. Cancel anytime.</p>
+    <img class="wide" src="https://brainai-app.com/images/dementia/30_days.webp" alt="" style="max-width:120px;margin:0 auto">
+  </section>
+  <p class="note">Prototype v3 · WEB-305 · значения брекетов условные</p>
+</div>
+</body>
+</html>
