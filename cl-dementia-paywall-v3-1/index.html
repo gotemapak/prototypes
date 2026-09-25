@@ -48,7 +48,7 @@
   .skill p { margin:0 0 6px; font-weight:600; }
   .bar { height:10px; border-radius:6px; background:#DCE6F7; margin:4px 0; position:relative; overflow:hidden; }
   .bar i { position:absolute; inset:0 auto 0 0; border-radius:6px; }
-  .row { display:grid; grid-template-columns:120px 1fr; align-items:center; gap:10px; font-size:15px; color:var(--muted); margin:6px 0; }
+  .row { display:grid; grid-template-columns:165px 1fr; align-items:center; gap:10px; font-size:15px; color:var(--muted); margin:6px 0; }
   .row .bar { margin:0; }
   .bar i.blur { filter:none; }
   .row .bar { filter:blur(6px); }
@@ -91,6 +91,17 @@
   .seal b { font-size:40px; } .seal span { font-size:16px; font-weight:700; }
   .payicons { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px; } .payicons img { height:28px; }
   .foot { background:#131A35; color:#C9CEDD; font-size:14px; padding:24px 20px; line-height:1.6; } .foot b { color:#fff; font-size:18px; } .foot span { font-size:12px; color:#8A90A6; }
+
+  .var { background:#FFF1B8; color:inherit; border-radius:4px; padding:0 3px; white-space:nowrap; }
+  .score b .var { font-size:inherit; color:inherit; }
+  .cert { background:#fff; border:2px solid #D8C27A; border-radius:14px; padding:20px 18px; text-align:center; box-shadow:0 2px 10px rgba(19,26,53,.08); }
+  .cert small { display:block; letter-spacing:2px; color:#9A7B1E; font-weight:700; font-size:13px; }
+  .cert h3 { font-size:22px; margin:6px 0 10px; }
+  .cert .line { border-bottom:2px solid #C9CEDD; width:70%; margin:14px auto 4px; height:22px; }
+  .cert .meta { display:flex; justify-content:space-around; margin-top:14px; font-size:15px; }
+  .cert .meta b { display:block; font-size:22px; }
+  .phone { width:250px; margin:16px auto 0; border:10px solid #131A35; border-radius:34px; overflow:hidden; background:#fff; }
+  .phone img { width:100%; display:block; }
 </style>
 </head>
 <body>
@@ -100,16 +111,16 @@
   <!-- 1. Result -->
   <section>
     <h1>Your results are ready</h1>
-    <div class="score"><div><div><b>72%</b><span>Your memory score</span></div></div></div>
-    <p class="good">Good news — your strongest area is Logic.</p>
-    <p class="center small muted" style="margin:0 0 12px">See how you compare with women 70–79 in your full report.</p>
-    <div class="areas"><b>2 areas to strengthen</b>Memory · Focus</div>
+    <div class="score"><div><div><b><span class="var">[72%]</span></b><span>Your memory score</span></div></div></div>
+    <p class="good">Good news — your strongest area is <span class="var">[Logic]</span>.</p>
+    <p class="center small muted" style="margin:0 0 12px">See how you compare with <span class="var">[women]</span> <span class="var">[70–79]</span> in your full report.</p>
+    <div class="areas"><b>2 areas to strengthen</b><span class="var">[Memory]</span> · <span class="var">[Focus]</span></div>
     <p class="center small muted" style="margin:10px 0 0">Private. Not a medical diagnosis.</p>
   </section>
 
-  <!-- 2. Offer -->
+  <!-- 2. Offer + payment -->
   <section class="tint">
-    <h2>Stay sharp as you age — with a 5-minute daily plan for Memory and Focus</h2>
+    <h2>Stay sharp as you age — with a 5-minute daily plan for <span class="var">[Memory and Focus]</span></h2>
     <ul class="check">
       <li>Your full memory report</li>
       <li>Large, clear games — no rushing</li>
@@ -118,7 +129,8 @@
     <button class="btn">Get my report and plan</button>
     <p class="terms">$0.99 today, then $20.99 every week. Cancel anytime.</p>
     <div class="badges"><div>🛡 14-day money-back</div><div>🔒 Private</div></div>
-    <div class="price"><span style="font-weight:600">Total due today</span><b>$0.99</b></div>
+    <div class="promo" style="margin-top:14px">🎁 <b>Promo Code BRAINAITODAY Applied</b><br><span style="color:var(--blue)">You save 85%</span></div>
+    <div class="price" style="margin-top:0"><span style="font-weight:600">Total due today</span><b>$0.99</b></div>
     <div class="paym">
       <div style="background:#FFC43A;color:#003087">PayPal</div>
       <div style="background:#000;color:#fff">G Pay</div>
@@ -126,77 +138,82 @@
     </div>
   </section>
 
-  <!-- 3. Report -->
+  <!-- 3. Compare with peers (inside the report) -->
   <section>
     <p class="small" style="margin:0 0 6px;color:var(--blue);font-weight:600">🔒 Inside your full report</p>
-    <h2>How do you compare with women your age?</h2>
+    <h2>Check how you compare with <span class="var">[women]</span> your age</h2>
     <div class="skill"><p>Logic</p>
-      <div class="row"><span>You</span><div class="bar"><i class="blur" style="width:78%;background:var(--blue)"></i></div></div>
-      <div class="row"><span>Women 70–79</span><div class="bar"><i class="blur" style="width:60%;background:#9AA3BD"></i></div></div>
+      <div class="row"><span>You</span><div class="bar"><i style="width:78%;background:var(--blue)"></i></div></div>
+      <div class="row"><span><span class="var">[Women]</span> <span class="var">[70–79]</span></span><div class="bar"><i style="width:60%;background:#9AA3BD"></i></div></div>
     </div>
     <div class="skill"><p>Memory</p>
-      <div class="row"><span>You</span><div class="bar"><i class="blur" style="width:55%;background:var(--blue)"></i></div></div>
-      <div class="row"><span>Women 70–79</span><div class="bar"><i class="blur" style="width:62%;background:#9AA3BD"></i></div></div>
+      <div class="row"><span>You</span><div class="bar"><i style="width:55%;background:var(--blue)"></i></div></div>
+      <div class="row"><span><span class="var">[Women]</span> <span class="var">[70–79]</span></span><div class="bar"><i style="width:62%;background:#9AA3BD"></i></div></div>
     </div>
     <div class="skill"><p>Math</p>
-      <div class="row"><span>You</span><div class="bar"><i class="blur" style="width:70%;background:var(--blue)"></i></div></div>
-      <div class="row"><span>Women 70–79</span><div class="bar"><i class="blur" style="width:58%;background:#9AA3BD"></i></div></div>
+      <div class="row"><span>You</span><div class="bar"><i style="width:70%;background:var(--blue)"></i></div></div>
+      <div class="row"><span><span class="var">[Women]</span> <span class="var">[70–79]</span></span><div class="bar"><i style="width:58%;background:#9AA3BD"></i></div></div>
     </div>
     <div class="skill"><p>Focus</p>
-      <div class="row"><span>You</span><div class="bar"><i class="blur" style="width:50%;background:var(--blue)"></i></div></div>
-      <div class="row"><span>Women 70–79</span><div class="bar"><i class="blur" style="width:61%;background:#9AA3BD"></i></div></div>
+      <div class="row"><span>You</span><div class="bar"><i style="width:50%;background:var(--blue)"></i></div></div>
+      <div class="row"><span><span class="var">[Women]</span> <span class="var">[70–79]</span></span><div class="bar"><i style="width:61%;background:#9AA3BD"></i></div></div>
     </div>
     <p class="muted" style="margin:10px 0 0">Unlock your full report to see your results. Retake anytime and watch your score go up.</p>
   </section>
 
-  <!-- 4. Plan in the app (merged with "Already doing crosswords") -->
+  <!-- 4. Certificate teaser -->
+  <section class="tint">
+    <h2>Your certificate — to keep or share with family</h2>
+    <div class="cert">
+      <small>BRAIN AI · CERTIFICATE</small>
+      <h3>Memory Check Certificate</h3>
+      <div>This certifies that</div>
+      <div class="line"></div>
+      <div class="small muted">completed the Brain AI memory assessment</div>
+      <div class="meta"><div><b class="blur">72%</b>Memory score</div><div><b><span class="var">[Logic]</span></b>Strongest area</div></div>
+    </div>
+  </section>
+
+  <!-- 5. Keep your mind fresh (moved from v2 "Just 5 minutes a day") -->
+  <section>
+    <h2 class="center">Keep your mind fresh</h2>
+    <p class="center">In a 20-year study, targeted brain training was linked to a 25% lower risk of brain issues.</p>
+    <p class="src center">Source: Johns Hopkins Medicine</p>
+    <img class="wide" src="https://brainai-app.com/images/dementia/graph.svg" alt="">
+    <p class="center small muted">Based on the data of users who log their progress in Brain AI</p>
+  </section>
+
+  <!-- 6. Plan in the app -->
   <section class="tint">
     <p class="small" style="margin:0 0 6px;color:var(--blue);font-weight:600">Your plan in the Brain AI app</p>
-    <h2>Your plan starts with Memory and Focus</h2>
+    <h2>Your plan starts with <span class="var">[Memory and Focus]</span></h2>
+    <p class="crossword" style="margin:0 0 16px">Love crosswords? They're in your plan — now with your progress tracked week by week.</p>
     <div class="days">
       <div><b>Day 1</b><span>Memory</span><em>Crossword</em><span>5 min</span></div>
       <div><b>Day 2</b><span>Logic</span><em>Sudoku</em><span>5 min</span></div>
       <div><b>Day 3</b><span>Memory</span><em>Memory Match</em><span>5 min</span></div>
     </div>
-    <img class="wide" src="https://brainai-app.com/images/dementia/slide-1.webp" alt="">
-    <p style="margin:14px 0 0;font-weight:600">Large, clear games. No rushing.</p>
-    <p class="crossword">Love crosswords? They're in your plan — now with your progress tracked week by week.</p>
+    <div class="phone"><img src="https://brainai-app.com/images/dementia/slide-1.webp" alt=""></div>
+    <p class="center" style="margin:14px 0 0;font-weight:600">Large, clear games. No rushing.</p>
   </section>
 
-  <!-- 6. Moments -->
-  <section class="tint">
+  <!-- 7. Everyday moments -->
+  <section>
     <h2>Everyday moments that feel easier</h2>
     <div class="moment"><img src="https://brainai-app.com/images/dementia/notice/n2.webp" alt="">Remembering names</div>
     <div class="moment"><img src="https://brainai-app.com/images/dementia/notice/n4.webp" alt="">Finding your keys</div>
     <div class="moment"><img src="https://brainai-app.com/images/dementia/notice/n6.webp" alt="">Following the conversation</div>
   </section>
 
-  <!-- State B + CTA (end of screen 5) -->
-  <section>
+  <!-- 8. State B + CTA -->
+  <section class="tint">
     <h2 class="center">Stay sharp. Stay yourself.</h2>
     <button class="btn">Get my report and plan</button>
     <p class="terms">$0.99 today, then $20.99 every week. Cancel anytime.</p>
-    <div class="badges"><div style="background:var(--soft)">🛡 14-day money-back</div><div style="background:var(--soft)">🔒 Private</div></div>
+    <div class="badges"><div>🛡 14-day money-back</div><div>🔒 Private</div></div>
   </section>
 
-  <!-- ===== Below screen 5: v2 content, unchanged (only guarantee 30 -> 14 days) ===== -->
-  <div class="v2mark">Ниже — экраны v2 без изменений (кроме гарантии: 14 дней)</div>
-
-  <section>
-    <h2 class="center">Just 5 minutes a day</h2>
-    <p class="center" style="font-weight:600">“Even 5 minutes of brain training a day can help reduce the risk of developing dementia”</p>
-    <p class="center">“In a 20-year study, targeted brain training was linked to a 25% lower risk of being diagnosed with dementia later in life.”</p>
-    <p class="src center">Source: Johns Hopkins Medicine</p>
-    <img class="wide" src="https://brainai-app.com/images/dementia/graph.svg" alt="">
-    <p class="center small muted">Based on the data of users who log their progress in Brain AI</p>
-    <button class="btn">Get My Plan</button>
-  </section>
-
-  <section class="tint">
-    <h2 class="center">Peace of mind today - Independence for years to come</h2>
-    <img class="wide" src="https://brainai-app.com/images/dementia/private-woman-2.webp" alt="">
-    <p class="center">Thanks to the training of your brain, you will live more independently, happily, do your favorite things, and confidently communicate with your family and friends.</p>
-  </section>
+  <div class="v2mark">Ниже — экраны v2: отзывы и Trustpilot без изменений, оплата — копия блока 2, гарантия 14 дней</div>
 
   <section>
     <h2 class="center">Thousand of people began exactly here</h2>
@@ -216,23 +233,22 @@
   </section>
 
   <section class="tint">
-    <h2 class="center">Get My Dementia Risk Report &amp; Training Plan</h2>
+    <h2>Stay sharp as you age — with a 5-minute daily plan for <span class="var">[Memory and Focus]</span></h2>
     <ul class="check">
-      <li>Complete Dementia Risk Score Report</li>
-      <li>Daily Training Plan</li>
-      <li>A set of simple games you can play anywhere, anytime</li>
+      <li>Your full memory report</li>
+      <li>Large, clear games — no rushing</li>
+      <li>A certificate to share with family</li>
     </ul>
-    <div class="promo">🎁 <b>Promo Code BRAINAITODAY Applied</b><br><span style="color:var(--blue)">You save 85%</span></div>
-    <div class="timer">⏱ This offer ends in 05:53 min</div>
-    <div class="price"><span style="font-weight:600">Total due today:</span><span><s style="color:#9AA3BD;margin-right:8px">$48.99</s><b>$0.99</b></span></div>
-    <p class="small">Your 3-day trial will cost only $0.99. Afterwards, it will be $20.99/week.</p>
-    <p style="font-weight:700;margin:14px 0 8px">Payment method</p>
+    <button class="btn">Get my report and plan</button>
+    <p class="terms">$0.99 today, then $20.99 every week. Cancel anytime.</p>
+    <div class="badges"><div>🛡 14-day money-back</div><div>🔒 Private</div></div>
+    <div class="promo" style="margin-top:14px">🎁 <b>Promo Code BRAINAITODAY Applied</b><br><span style="color:var(--blue)">You save 85%</span></div>
+    <div class="price" style="margin-top:0"><span style="font-weight:600">Total due today</span><b>$0.99</b></div>
     <div class="paym">
       <div style="background:#FFC43A;color:#003087">PayPal</div>
       <div style="background:#000;color:#fff">G Pay</div>
       <div style="background:#00298F;color:#fff">Debit or Credit Card</div>
     </div>
-    <div class="perks"><p><b>No commitment.</b> Cancel anytime</p><p><b>Money back</b></p><p>We will remind you 2 days before your trial ends</p></div>
   </section>
 
   <section>
@@ -248,7 +264,7 @@
     Privacy Policy · Terms &amp; Conditions · Money back · Help<br>
     <span>The test is for entertainment or educational purposes only and is not a substitute for professional evaluation.</span>
   </footer>
-  <p class="note">Prototype v3.1 · WEB-305 · экраны 1–5 новые, ниже — v2 без изменений кроме гарантии 14 дней · значения брекетов условные</p>
+  <p class="note">Prototype v3.1 · WEB-305 · [подсвечено] — переменные, значения условные</p>
 </div>
 </body>
 </html>
