@@ -79,6 +79,7 @@
 </style>
 </head>
 <body class="hide">
+<div class="ctrl"><button id="b-mark" class="on" onclick="toggleMark()">Подсветка изменений: вкл</button> · нажми, чтобы увидеть финальный вид</div>
 <div class="page">
   <header><img src="https://brainai-app.com/test-8/assets/logo-kKHvDc2W.svg" alt="">IQ Test by Brain AI<span class="av">👤</span></header>
   <div class="bar-timer"><span>Get 85% off your IQ score!</span> Offer ends in <b id="t">06:59</b></div>
@@ -157,6 +158,8 @@
   <p class="note">Prototype v2 · WEB-279 · меняются только 2 верхних блока · [подсвечено] — переменные</p>
 </div>
 <script>
+  function toggleMark(){ const c=document.body.classList.toggle('clean'); const b=document.getElementById('b-mark');
+    b.classList.toggle('on',!c); b.textContent='Подсветка изменений: '+(c?'выкл':'вкл'); }
   let s=419; const t=document.getElementById('t');
   setInterval(()=>{ s=s>0?s-1:0; t.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); },1000);
 </script>
