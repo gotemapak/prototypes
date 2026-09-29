@@ -90,6 +90,16 @@
   body.d-big [data-d="big"], body.d-cpn [data-d="cpn"] { display:block; }
   /* cert */
   .cert-img { display:block; width:100%; border-radius:14px; box-shadow:0 6px 24px rgba(25,104,255,.12); }
+
+  /* inside-report container */
+  .inside { border:2px solid #CFE0FF; border-radius:22px; background:#F7FAFF; overflow:hidden; }
+  .inside-h { background:var(--blue); color:#fff; font-weight:700; font-size:19px; text-align:center; padding:12px 16px; }
+  .inside-h span { display:block; font-weight:400; font-size:15px; opacity:.9; }
+  .inside-b { padding:20px 16px; }
+  .inside-b + .inside-b { border-top:2px dashed #CFE0FF; }
+  .inside h3 { font-size:24px; line-height:1.2; margin:0 0 14px; text-align:center; }
+  .inside .num { display:inline-grid; place-items:center; width:30px; height:30px; border-radius:50%; background:#DCE8FF; color:var(--blue); font-size:16px; font-weight:700; margin:0 auto 8px; }
+  .inside .ahead { background:#fff; }
   .var { background:#FFF1B8; color:inherit; border-radius:4px; padding:0 3px; white-space:nowrap; }
   .note { font-size:13px; color:#8A90A6; text-align:center; padding:10px 16px 24px; }
   .screen-label { background:#FFF4D6; color:#7A5A00; font-size:13px; font-weight:600; text-align:center; padding:6px 12px; }
@@ -145,11 +155,14 @@
     <p class="center small muted" style="margin:10px 0 0">Private. Not a medical diagnosis.</p>
   </section>
 
-  <!-- 3. Peers -->
+  <!-- 3. Inside your full report: compare + certificate -->
   <section style="padding-top:8px">
-    <span class="tag">🔒 Inside your full report</span>
-    <h2>Compare your results with <span class="var">[women]</span> your age</h2>
-    <p class="ahead">You're ahead of <em>most</em> <span class="var">[women]</span> <span class="var">[70–79]</span></p>
+    <div class="inside">
+      <div class="inside-h">🔒 Inside your full report<span>Unlocks right after payment</span></div>
+      <div class="inside-b">
+        <div class="center"><span class="num">1</span></div>
+        <h3>Compare your results with <span class="var">[women]</span> your age</h3>
+        <p class="ahead">You're ahead of <em>most</em> <span class="var">[women]</span> <span class="var">[70–79]</span></p>
     <div class="chart">
       <svg viewBox="0 0 360 200" aria-hidden="true" font-family="Inter">
         <g stroke="#DCE1EC" stroke-width="1" stroke-dasharray="5 5">
@@ -171,12 +184,13 @@
       </svg>
     </div>
     <p class="center small muted" style="margin:10px 0 0">Based on the data of users who log their progress in Brain AI</p>
-  </section>
-
-  <!-- 3b. Certificate -->
-  <section>
-    <h2>Your certificate — to keep or share with family</h2>
-    <img class="cert-img" src="cert.png" alt="Brain AI certificate">
+      </div>
+      <div class="inside-b">
+        <div class="center"><span class="num">2</span></div>
+        <h3>Your certificate — to keep or share with family</h3>
+        <img class="cert-img" src="cert.png" alt="Brain AI certificate">
+      </div>
+    </div>
   </section>
 
   <!-- 4. Payment -->
