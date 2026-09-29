@@ -79,11 +79,6 @@
 </style>
 </head>
 <body class="hide">
-<div class="ctrl">Число скора:
-  <button id="b-hide" class="on" onclick="setH(true)">Скрыто</button>
-  <button id="b-show" onclick="setH(false)">Открыто</button>
-  &nbsp;· <button id="b-mark" class="on" onclick="toggleMark()">Подсветка изменений</button>
-</div>
 <div class="page">
   <header><img src="https://brainai-app.com/test-8/assets/logo-kKHvDc2W.svg" alt="">IQ Test by Brain AI<span class="av">👤</span></header>
   <div class="bar-timer"><span>Get 85% off your IQ score!</span> Offer ends in <b id="t">06:59</b></div>
@@ -162,11 +157,6 @@
   <p class="note">Prototype v2 · WEB-279 · меняются только 2 верхних блока · [подсвечено] — переменные</p>
 </div>
 <script>
-  function setH(h){ document.body.classList.toggle('hide',h);
-    document.getElementById('b-hide').classList.toggle('on',h);
-    document.getElementById('b-show').classList.toggle('on',!h); }
-  function toggleMark(){ const c=document.body.classList.toggle('clean');
-    document.getElementById('b-mark').classList.toggle('on',!c); }
   let s=419; const t=document.getElementById('t');
   setInterval(()=>{ s=s>0?s-1:0; t.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); },1000);
 </script>
