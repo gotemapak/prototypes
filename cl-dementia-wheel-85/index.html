@@ -6,7 +6,7 @@
 <title>Dementia paywall after prize wheel — 85% prototype</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root { --ink:#131A35; --muted:#4A5170; --blue:#1968FF; --bg:#EDF3FE; --soft:#EDF3FE; --green:#1E9E6A; --red:#E5484D; }
+  :root { --ink:#131A35; --muted:#4A5170; --blue:#1968FF; --bg:#EDF3FE; --soft:#EDF3FE; --green:#1E9E6A; --yellow:#FFC43A; --red:#E5484D; }
   * { box-sizing:border-box; }
   html { scroll-behavior:smooth; }
   body { margin:0; background:#fff; color:var(--ink); font-family:Inter, sans-serif; font-size:18px; line-height:1.45; }
@@ -14,18 +14,18 @@
   .ctrl { background:#131A35; color:#fff; font-size:13px; padding:8px 12px; display:flex; gap:8px; align-items:center; justify-content:center; flex-wrap:wrap; }
   .ctrl button { background:#2B3456; color:#fff; border:0; border-radius:8px; padding:6px 10px; font:600 13px Inter, sans-serif; cursor:pointer; }
   .ctrl button.on { background:var(--blue); }
-  header { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid #E5E8F0; font-weight:700; font-size:22px; }
+  header { display:flex; align-items:center; gap:10px; padding:12px 16px; font-weight:700; font-size:22px; }
   header img { width:34px; }
-  .bar-timer { position:sticky; top:0; z-index:5; background:#fff; border-bottom:1px solid #E5E8F0; text-align:center; padding:10px 12px; font-size:17px; font-weight:600; }
-  .bar-timer span { color:var(--blue); }
+  .bar-timer { position:sticky; top:0; z-index:5; background:#fff; border-bottom:1px solid #E5E8F0; text-align:center; padding:10px 12px; font-size:16px; }
+  .bar-timer span { color:var(--blue); font-weight:600; }
   .bar-timer b { font-variant-numeric:tabular-nums; }
   section { padding:28px 20px; }
   section.tint { background:var(--bg); }
-  h2 { font-size:28px; line-height:1.2; margin:0 0 14px; font-weight:700; }
+  h2 { font-size:30px; line-height:1.2; margin:0 0 16px; font-weight:700; text-align:center; }
   .center { text-align:center; }
   .muted { color:var(--muted); }
   .small { font-size:16px; }
-  .tag { display:block; font-size:16px; font-weight:600; color:var(--blue); margin:0 0 6px; }
+  .tag { display:block; font-size:19px; font-weight:600; color:var(--blue); margin:0 0 6px; text-align:center; }
   .btn { display:flex; align-items:center; justify-content:center; gap:10px; width:100%; height:62px; border:0; border-radius:14px; background:var(--blue); color:#fff; font:600 21px Inter, sans-serif; cursor:pointer; text-decoration:none; }
 
   /* 1. discount */
@@ -35,53 +35,46 @@
   .save { font-size:22px; font-weight:700; margin:0 0 22px; }
   .applied { display:inline-flex; gap:8px; align-items:center; background:#E6F6EE; color:#0F6B45; border-radius:999px; padding:8px 14px; font-size:16px; font-weight:600; margin-bottom:22px; }
 
-  /* 2. score */
-  .score { width:190px; height:190px; margin:8px auto 14px; border-radius:50%;
-    background:conic-gradient(var(--green) 0 72%, #DCE6F7 72% 100%); display:grid; place-items:center; }
-  .score > div { width:150px; height:150px; border-radius:50%; background:#fff; display:grid; place-items:center; text-align:center; }
-  .score b { font-size:50px; line-height:1; display:block; }
-  .score span { font-size:16px; color:var(--muted); }
-  .scale { margin:10px 0 16px; }
-  .scale .track { height:14px; border-radius:8px; background:linear-gradient(90deg,#F4B740,#9BD27A 45%,var(--green)); position:relative; }
-  .scale .pin { position:absolute; top:-8px; width:4px; height:30px; background:var(--ink); border-radius:2px; transform:translateX(-50%); }
-  .scale .pin::after { content:"You"; position:absolute; top:-26px; left:50%; transform:translateX(-50%); font-weight:700; font-size:16px; }
-  .scale .lbl { display:flex; justify-content:space-between; font-size:15px; color:var(--muted); margin-top:8px; }
-  .good { background:#E6F6EE; color:#0F6B45; border-radius:14px; padding:14px 16px; font-weight:600; text-align:center; margin:0 0 10px; font-size:19px; }
-  .areas { background:#fff; border-radius:14px; padding:14px 16px; display:flex; justify-content:space-between; gap:10px; }
-  .areas div { flex:1; text-align:center; }
-  .areas b { display:block; font-size:20px; }
-  .areas span { font-size:15px; color:var(--muted); }
+  /* 2. score (as in Figma) */
+  .bubble { background:#E6F4EE; color:#0F7A55; font-weight:600; font-size:20px; line-height:1.25; text-align:center; border-radius:28px 28px 28px 28px; padding:16px 20px; margin:0 20px 10px; position:relative; }
+  .bubble::after { content:""; position:absolute; right:26px; bottom:-14px; width:28px; height:28px; background:#E6F4EE; border-radius:0 0 18px 0; transform:skewX(-20deg); }
+  .score { width:180px; height:180px; margin:10px auto 18px; border-radius:50%;
+    background:conic-gradient(var(--green) 0 var(--p), #EDF3FE var(--p) 100%); display:grid; place-items:center; }
+  .score > div { width:136px; height:136px; border-radius:50%; background:#fff; display:grid; place-items:center; text-align:center; }
+  .score b { font-size:46px; line-height:1; display:block; }
+  .score span { font-size:15px; color:var(--ink); }
+  .iq-lvl { text-align:center; margin:-6px 0 16px; font-size:17px; font-weight:600; color:var(--green); }
+  .areas { background:var(--soft); border-radius:14px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:14px; }
+  .areas b { display:block; font-size:19px; }
+  .mini { width:56px; height:56px; border-radius:50%; flex:none; background:conic-gradient(var(--yellow) 0 65%, #fff 65% 100%); display:grid; place-items:center; }
+  .mini div { width:42px; height:42px; border-radius:50%; background:var(--soft); display:grid; place-items:center; font-size:13px; font-weight:600; }
 
-  /* 3. peers */
-  .peer-big { font-size:26px; font-weight:700; line-height:1.25; margin:0 0 16px; }
-  .peer-big em { font-style:normal; color:var(--blue); }
-  .curve { background:var(--soft); border-radius:16px; padding:16px 12px 10px; }
-  .curve svg { display:block; width:100%; height:auto; }
-  .legend { display:flex; gap:18px; justify-content:center; font-size:15px; color:var(--muted); margin-top:8px; }
-  .legend span::before { content:""; display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-1px; background:var(--c); }
-  .locked { margin-top:14px; border:2px dashed #B8C2DA; border-radius:14px; padding:14px 16px; position:relative; }
-  .locked .rows { filter:blur(5px); user-select:none; }
-  .locked .rows p { margin:6px 0; display:flex; justify-content:space-between; }
-  .locked .lock { position:absolute; inset:0; display:grid; place-content:center; text-align:center; font-weight:700; font-size:18px; }
-  .locked .lock span { font-weight:500; font-size:15px; color:var(--muted); }
+  /* 3. peers (Figma line chart) */
+  .chart svg { display:block; width:100%; height:auto; }
+  .ahead { background:var(--soft); border-radius:14px; padding:12px 16px; text-align:center; font-weight:600; font-size:19px; margin:4px 0 12px; }
+  .ahead em { font-style:normal; color:var(--blue); }
 
-  /* 4. payment */
+  /* 4. payment (Figma block) */
   ul.check { list-style:none; padding:0; margin:0 0 18px; }
-  ul.check li { padding:8px 0 8px 40px; position:relative; font-size:19px; font-weight:500; }
-  ul.check li::before { content:"✓"; position:absolute; left:0; top:7px; width:28px; height:28px; border-radius:50%; background:var(--blue); color:#fff; font-size:16px; display:grid; place-items:center; }
-  .promo { background:#fff; border-radius:14px; padding:14px 16px; margin:0 0 12px; display:flex; gap:12px; align-items:center; }
-  .promo i { font-style:normal; font-size:28px; }
-  .promo span { color:var(--blue); display:block; }
-  .price { background:#fff; border:2px solid var(--blue); border-radius:16px; padding:16px; margin:0 0 8px; display:flex; justify-content:space-between; align-items:center; }
-  .price s { color:#9AA3BD; font-size:20px; margin-right:8px; }
-  .price b { font-size:32px; }
-  .price-save { text-align:right; margin:0 0 12px; }
-  .price-save span { background:#FDECEC; color:var(--red); border-radius:999px; padding:4px 10px; font-size:15px; font-weight:600; }
+  ul.check li { padding:6px 0 6px 40px; position:relative; font-size:19px; }
+  ul.check li::before { content:"✓"; position:absolute; left:0; top:6px; width:26px; height:26px; border-radius:50%; background:var(--blue); color:#fff; font-size:14px; font-weight:700; display:grid; place-items:center; }
+  .badges { display:flex; gap:10px; margin-bottom:12px; }
+  .badges div { flex:1; background:#fff; border-radius:12px; padding:12px 8px; display:flex; gap:8px; align-items:center; justify-content:center; font-size:16px; font-weight:600; line-height:1.15; }
+  .badges i { font-style:normal; font-size:24px; }
+  .promo { background:#fff; border-radius:14px; padding:14px 16px; margin:0 0 12px; display:flex; gap:12px; align-items:center; font-size:16px; }
+  .promo i { font-style:normal; font-size:30px; }
+  .promo b { font-weight:600; }
+  .promo span { color:var(--blue); font-weight:500; margin-left:auto; white-space:nowrap; }
+  .price { background:#fff; border:1.5px solid var(--blue); border-radius:14px; padding:14px 14px 10px; margin:0 0 14px; }
+  .price .r { display:flex; justify-content:space-between; align-items:center; }
+  .price .r > span { font-weight:600; }
+  .price s { color:#9AA3BD; font-size:16px; margin-right:8px; }
+  .price b { font-size:24px; }
+  .price .pill { text-align:right; margin-top:6px; }
+  .price .pill span { background:var(--blue); color:#fff; border-radius:999px; padding:3px 10px; font-size:13px; }
   .terms { font-size:17px; text-align:center; margin:0 0 16px; }
   .paym { display:grid; gap:10px; }
-  .paym div { height:58px; border-radius:10px; display:grid; place-items:center; font-weight:700; font-size:20px; }
-  .badges { display:flex; gap:10px; margin-top:14px; }
-  .badges div { flex:1; background:#fff; border-radius:12px; padding:12px 8px; text-align:center; font-size:16px; font-weight:600; }
+  .paym div { height:56px; border-radius:10px; display:grid; place-items:center; font-weight:700; font-size:19px; }
 
   .var { background:#FFF1B8; color:inherit; border-radius:4px; padding:0 3px; white-space:nowrap; }
   .note { font-size:13px; color:#8A90A6; text-align:center; padding:10px 16px 24px; }
@@ -97,7 +90,7 @@
 </div>
 <div class="page">
   <header><img src="https://brainai-app.com/test-8/assets/logo-kKHvDc2W.svg" alt="">Brain AI</header>
-  <div class="bar-timer"><span>Your 85% discount</span> is reserved for <b id="t">10:00</b></div>
+  <div class="bar-timer"><span>Get 85% off your program!</span> Offer ends in <b id="t">06:59</b></div>
 
   <!-- 1. Discount -->
   <div class="screen-label">Экран 1 — скидка (приз с колеса)</div>
@@ -111,90 +104,83 @@
 
   <!-- 2. Score -->
   <div class="screen-label">Экран 2 — скор: у человека всё хорошо</div>
-  <section class="tint">
-    <h2 class="center">Your results are ready</h2>
-
+  <section>
+    <h2>Your results are ready</h2>
+    <div class="bubble">Good news — your<br>strongest area is Logic.</div>
     <div data-v="pct">
-      <div class="score"><div><div><b>72%</b><span>Your memory<br>score</span></div></div></div>
+      <div class="score" style="--p:72%"><div><div><b>72%</b><span>Your memory<br>Score</span></div></div></div>
     </div>
     <div data-v="iq">
-      <div class="score" style="background:conic-gradient(var(--green) 0 78%, #DCE6F7 78% 100%)"><div><div><b>112</b><span>Your IQ<br>score</span></div></div></div>
-      <div class="scale">
-        <div class="track"><div class="pin" style="left:68%"></div></div>
-        <div class="lbl"><span>Below average</span><span>Average</span><span>Above</span></div>
-      </div>
+      <div class="score" style="--p:78%"><div><div><b>112</b><span>Your IQ<br>Score</span></div></div></div>
+      <p class="iq-lvl">Above average</p>
     </div>
-
-    <p class="good">Good news — you're above average.<br>Your strongest area is Logic.</p>
     <div class="areas">
-      <div><b>Logic</b><span>Strong</span></div>
-      <div><b>Memory</b><span>Can improve</span></div>
-      <div><b>Focus</b><span>Can improve</span></div>
+      <div><b>2 areas to strengthen</b>Memory · Focus</div>
+      <div class="mini"><div>65%</div></div>
     </div>
-    <p class="center small muted" style="margin:12px 0 0">Private. Not a medical diagnosis.</p>
+    <a class="btn" href="#pay">Get my report and plan</a>
+    <p class="center small muted" style="margin:10px 0 0">Private. Not a medical diagnosis.</p>
   </section>
 
   <!-- 3. Peers -->
   <div class="screen-label">Экран 3 — сравнение со сверстниками (тизер)</div>
-  <section>
+  <section style="padding-top:8px">
     <span class="tag">🔒 Inside your full report</span>
-    <p class="peer-big">You did better than <em>68%</em> of <span class="var">[women]</span> aged <span class="var">[70–79]</span></p>
-    <div class="curve">
-      <svg viewBox="0 0 340 170" aria-hidden="true">
-        <defs>
-          <linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#C9D6F2"/><stop offset="1" stop-color="#9DB8F5"/></linearGradient>
-        </defs>
-        <path d="M10 150 C 80 150, 110 20, 170 20 C 230 20, 260 150, 330 150 Z" fill="url(#g)" opacity=".7"/>
-        <path d="M10 150 C 80 150, 110 20, 170 20 C 230 20, 260 150, 330 150" fill="none" stroke="#6F8FD8" stroke-width="2"/>
-        <line x1="170" y1="20" x2="170" y2="150" stroke="#9AA3BD" stroke-width="2" stroke-dasharray="4 4"/>
-        <text x="170" y="165" text-anchor="middle" font-size="13" fill="#4A5170" font-family="Inter">Average</text>
-        <line x1="232" y1="10" x2="232" y2="150" stroke="#1968FF" stroke-width="4"/>
-        <circle cx="232" cy="52" r="9" fill="#1968FF" stroke="#fff" stroke-width="3"/>
-        <rect x="244" y="4" width="46" height="26" rx="8" fill="#1968FF"/>
-        <text x="267" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#fff" font-family="Inter">You</text>
-        <line x1="10" y1="150" x2="330" y2="150" stroke="#C9CEDD" stroke-width="2"/>
+    <h2>Compare your results with <span class="var">[women]</span> your age</h2>
+    <p class="ahead">You're ahead of <em>most</em> <span class="var">[women]</span> <span class="var">[70–79]</span></p>
+    <div class="chart">
+      <svg viewBox="0 0 360 200" aria-hidden="true" font-family="Inter">
+        <g stroke="#DCE1EC" stroke-width="1" stroke-dasharray="5 5">
+          <line x1="30" y1="30" x2="330" y2="30"/><line x1="30" y1="58" x2="330" y2="58"/><line x1="30" y1="86" x2="330" y2="86"/>
+          <line x1="30" y1="114" x2="330" y2="114"/><line x1="30" y1="142" x2="330" y2="142"/>
+          <line x1="100" y1="20" x2="100" y2="170"/><line x1="170" y1="20" x2="170" y2="170"/><line x1="240" y1="20" x2="240" y2="170"/><line x1="300" y1="20" x2="300" y2="170"/>
+        </g>
+        <line x1="30" y1="170" x2="340" y2="170" stroke="#DCE1EC" stroke-width="1.5"/>
+        <line x1="30" y1="170" x2="30" y2="15" stroke="#DCE1EC" stroke-width="1.5"/>
+        <text x="18" y="70" font-size="11" fill="#131A35" transform="rotate(-90 18 70)" text-anchor="middle">Results</text>
+        <text x="335" y="186" font-size="11" fill="#131A35" text-anchor="end">Characteristic</text>
+        <path d="M32 168 C 90 160, 110 110, 170 75 C 210 52, 230 40, 262 36" fill="none" stroke="#1E8BF0" stroke-width="4" stroke-linecap="round"/>
+        <path d="M36 169 C 100 160, 140 120, 200 98 C 225 90, 240 86, 262 84" fill="none" stroke="#8E99B8" stroke-width="4" stroke-linecap="round"/>
+        <rect x="248" y="20" width="98" height="30" rx="15" fill="#1E8BF0"/>
+        <text x="297" y="41" font-size="15" font-weight="700" fill="#fff" text-anchor="middle">You</text>
+        <rect x="248" y="64" width="98" height="40" rx="20" fill="#8E99B8"/>
+        <text x="297" y="81" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">[Women]</text>
+        <text x="297" y="97" font-size="13" font-weight="700" fill="#fff" text-anchor="middle">[70–79]</text>
       </svg>
-      <div class="legend"><span style="--c:#9DB8F5">People your age</span><span style="--c:#1968FF">You</span></div>
     </div>
-    <div class="locked">
-      <div class="rows">
-        <p><span>Logic</span><b>Top 20%</b></p>
-        <p><span>Memory</span><b>Top 45%</b></p>
-        <p><span>Math</span><b>Top 30%</b></p>
-        <p><span>Focus</span><b>Top 50%</b></p>
-      </div>
-      <div class="lock">🔒 See your score in each skill<span>Unlock your full report below</span></div>
-    </div>
+    <p class="center small muted" style="margin:10px 0 0">Based on the data of users who log their progress in Brain AI</p>
   </section>
 
   <!-- 4. Payment -->
-  <div class="screen-label">Блок оплаты — стандартный, упрощён</div>
+  <div class="screen-label">Блок оплаты — как в Figma</div>
   <section class="tint" id="pay">
-    <h2>Get your full report and 5-minute daily plan</h2>
+    <h2>Your full report, certificate and 5-minute daily plan</h2>
     <ul class="check">
-      <li>Your full results — compared with <span class="var">[women]</span> your age</li>
-      <li>5-minute daily plan for Memory and Focus</li>
-      <li>A certificate to share with family</li>
+      <li>Compare your results with <span class="var">[women]</span> <span class="var">[70–79]</span></li>
+      <li>Share your certificate with family</li>
+      <li>5-minute Memory and Focus training in the mobile app</li>
     </ul>
-    <div class="promo"><i>🎁</i><div><b>Promo Code BRAINAITODAY Applied</b><span>You save 85%</span></div></div>
-    <div class="price"><span style="font-weight:600">Total due today</span><span><s>$48.99</s><b>$0.99</b></span></div>
-    <div class="price-save"><span>You save 85%</span></div>
-    <p class="terms">$0.99 for 7 days, then $20.99 every week.<br>Cancel anytime.</p>
-    <div class="paym">
-      <div style="background:#FFC43A;color:#003087">PayPal</div>
-      <div style="background:#000;color:#fff">G Pay</div>
-      <div style="background:#00298F;color:#fff">💳 Debit or Credit Card</div>
+    <div class="badges"><div><i>💸</i>14-day<br>money-back</div><div><i>🪪</i>Certificate</div></div>
+    <div class="promo"><i>🎁</i><b>Promo Code BRAINAITODAY Applied</b><span>You save 85%</span></div>
+    <div class="price">
+      <div class="r"><span>Total due today:</span><span><s>$48.99</s><b>$0.99</b></span></div>
+      <div class="pill"><span>You save 85%</span></div>
     </div>
-    <div class="badges"><div>🛡 14-day money-back</div><div>🔔 Reminder 2 days before trial ends</div></div>
+    <p class="terms">$0.99 today, then $20.99 every week.<br>Cancel anytime.</p>
+    <div class="paym">
+      <div style="background:#FFC43A;color:#003087;font-style:italic;font-weight:800">PayPal</div>
+      <div style="background:#000;color:#fff">G Pay</div>
+      <div style="background:#00298F;color:#fff">Debit or Credit Card</div>
+    </div>
   </section>
 
-  <p class="note">Prototype · WEB-279 × dementia v3.1 · [подсвечено] — переменные, значения условные</p>
+  <p class="note">Prototype · WEB-279 × dementia (Figma) · [подсвечено] — переменные, значения условные</p>
 </div>
 <script>
   function setV(v){ document.body.className='v-'+v;
     document.getElementById('b-pct').classList.toggle('on',v==='pct');
     document.getElementById('b-iq').classList.toggle('on',v==='iq'); }
-  let s=600; const t=document.getElementById('t');
+  let s=419; const t=document.getElementById('t');
   setInterval(()=>{ s=s>0?s-1:0; t.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); },1000);
 </script>
 </body>
