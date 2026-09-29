@@ -45,6 +45,9 @@
   .ring { width:58px; height:58px; border-radius:50%; background:conic-gradient(var(--green) 0 78%, #DCE6F7 78% 100%); display:grid; place-items:center; }
   .ring div { width:44px; height:44px; border-radius:50%; background:#fff; display:grid; place-items:center; font-weight:800; font-size:16px; }
   body.hide .ring div span, body.hide .num { filter:blur(4px); }
+  .ring.y { background:conic-gradient(#FFC43A 0 65%, #DCE6F7 65% 100%); }
+  .ring.y div { font-size:13px; font-weight:700; }
+  .row .app { display:block; color:var(--blue); font-weight:600; margin-top:2px; }
   .thumb img { width:100%; height:100%; object-fit:cover; }
   .up { color:var(--green); font-weight:600; }
 
@@ -102,6 +105,10 @@
       <p><b>Your IQ score: <span class="num">112</span></b><span class="up">Above average</span> — your strongest area is Logic</p>
     </div>
     <div class="row">
+      <div class="thumb"><div class="ring y"><div>65%</div></div></div>
+      <p><b>2 areas to improve: Memory · Focus</b>Train them with brain games in our app — <span class="up" style="color:var(--blue)">5 min a day</span></p>
+    </div>
+    <div class="row">
       <div class="thumb">
         <svg viewBox="0 0 72 72" width="72" height="72" aria-hidden="true">
           <path d="M10 60 C 24 56, 30 36, 44 26 C 52 20, 56 18, 62 17" fill="none" stroke="#1E8BF0" stroke-width="4" stroke-linecap="round"/>
@@ -112,7 +119,19 @@
       <p><b>You vs <span class="var">[women]</span> <span class="var">[70–79]</span></b>You did better than most people your age</p>
     </div>
     <div class="row">
-      <div class="thumb"><img src="cert.png" alt=""></div>
+      <div class="thumb">
+        <svg viewBox="0 0 72 72" width="72" height="72" aria-hidden="true" font-family="Inter">
+          <rect x="8" y="14" width="56" height="40" rx="4" fill="#fff" stroke="#1968FF" stroke-width="2.5"/>
+          <rect x="12" y="18" width="48" height="32" rx="2" fill="none" stroke="#BFD3FF" stroke-width="1"/>
+          <text x="36" y="28" text-anchor="middle" font-size="8" font-weight="800" fill="#1968FF">CERTIFICATE</text>
+          <line x1="20" y1="35" x2="52" y2="35" stroke="#9AA3BD" stroke-width="1.5"/>
+          <line x1="24" y1="41" x2="48" y2="41" stroke="#C9CEDD" stroke-width="1.5"/>
+          <path d="M44 50 L41 64 L47 60 L51 65 L52 51 Z" fill="#E5484D"/>
+          <path d="M52 50 L55 64 L49 60 L45 65 L44 51 Z" fill="#C0303A"/>
+          <circle cx="48" cy="49" r="7" fill="#FFC43A" stroke="#fff" stroke-width="1.5"/>
+          <text x="48" y="52" text-anchor="middle" font-size="8" font-weight="800" fill="#7A5A00">IQ</text>
+        </svg>
+      </div>
       <p><b>Your IQ certificate</b>To keep or share with family</p>
     </div>
   </div>
