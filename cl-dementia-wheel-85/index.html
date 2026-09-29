@@ -76,6 +76,20 @@
   .paym { display:grid; gap:10px; }
   .paym div { height:56px; border-radius:10px; display:grid; place-items:center; font-weight:700; font-size:19px; }
 
+
+  /* 1b. compact coupon */
+  .cpn-wrap { padding-top:22px; padding-bottom:22px; }
+  .coupon { position:relative; background:#FFF8E6; border:2px dashed #F0B429; border-radius:18px; padding:14px 16px; text-align:center; margin-bottom:14px; }
+  .coupon::before, .coupon::after { content:""; position:absolute; top:50%; width:22px; height:22px; margin-top:-11px; border-radius:50%; background:#fff; border:2px dashed #F0B429; }
+  .coupon::before { left:-13px; clip-path:inset(0 0 0 50%); } .coupon::after { right:-13px; clip-path:inset(0 50% 0 0); }
+  .c-top { font-size:17px; font-weight:600; }
+  .c-off { font-size:52px; line-height:1.05; font-weight:800; color:var(--blue); letter-spacing:-1px; }
+  .c-save { font-size:17px; color:var(--muted); }
+  .c-save b { color:var(--ink); }
+  [data-d] { display:none; }
+  body.d-big [data-d="big"], body.d-cpn [data-d="cpn"] { display:block; }
+  /* cert */
+  .cert-img { display:block; width:100%; border-radius:14px; box-shadow:0 6px 24px rgba(25,104,255,.12); }
   .var { background:#FFF1B8; color:inherit; border-radius:4px; padding:0 3px; white-space:nowrap; }
   .note { font-size:13px; color:#8A90A6; text-align:center; padding:10px 16px 24px; }
   .screen-label { background:#FFF4D6; color:#7A5A00; font-size:13px; font-weight:600; text-align:center; padding:6px 12px; }
@@ -83,21 +97,33 @@
   body.v-pct [data-v="pct"], body.v-iq [data-v="iq"] { display:block; }
 </style>
 </head>
-<body class="v-pct">
-<div class="ctrl">Прототип · скор:
-  <button id="b-pct" class="on" onclick="setV('pct')">В процентах (72%)</button>
-  <button id="b-iq" onclick="setV('iq')">Числом (IQ 112)</button>
+<body class="v-pct d-cpn">
+<div class="ctrl">Скидка:
+  <button id="b-cpn" class="on" onclick="setD('cpn')">Купон</button>
+  <button id="b-big" onclick="setD('big')">Крупно</button>
+  &nbsp;· Скор:
+  <button id="b-pct" class="on" onclick="setV('pct')">72%</button>
+  <button id="b-iq" onclick="setV('iq')">IQ 112</button>
 </div>
 <div class="page">
   <header><img src="https://brainai-app.com/test-8/assets/logo-kKHvDc2W.svg" alt="">Brain AI</header>
   <div class="bar-timer"><span>Get 85% off your program!</span> Offer ends in <b id="t">06:59</b></div>
 
   <!-- 1. Discount -->
-  <section class="hero">
+  <section class="hero" data-d="big">
     <p class="lead">Your prize from the wheel:</p>
     <div class="off">85% OFF</div>
     <p class="save">Save $47 today</p>
     <div class="applied">✓ Applied to your plan</div>
+    <a class="btn" href="#pay">Get my report and plan →</a>
+  </section>
+
+  <section class="cpn-wrap" data-d="cpn">
+    <div class="coupon">
+      <div class="c-top">🎁 Your prize from the wheel</div>
+      <div class="c-off">85% OFF</div>
+      <div class="c-save"><b>Save $47 today</b> · applied to your plan</div>
+    </div>
     <a class="btn" href="#pay">Get my report and plan →</a>
   </section>
 
@@ -147,6 +173,12 @@
     <p class="center small muted" style="margin:10px 0 0">Based on the data of users who log their progress in Brain AI</p>
   </section>
 
+  <!-- 3b. Certificate -->
+  <section>
+    <h2>Your certificate — to keep or share with family</h2>
+    <img class="cert-img" src="cert.png" alt="Brain AI certificate">
+  </section>
+
   <!-- 4. Payment -->
   <section class="tint" id="pay">
     <h2>Your full report, certificate and 5-minute daily plan</h2>
@@ -172,9 +204,11 @@
   <p class="note">Prototype · WEB-279 × dementia (Figma) · [подсвечено] — переменные, значения условные</p>
 </div>
 <script>
-  function setV(v){ document.body.className='v-'+v;
-    document.getElementById('b-pct').classList.toggle('on',v==='pct');
-    document.getElementById('b-iq').classList.toggle('on',v==='iq'); }
+  const st={v:'pct',d:'cpn'};
+  function draw(){ document.body.className='v-'+st.v+' d-'+st.d;
+    ['pct','iq','cpn','big'].forEach(k=>document.getElementById('b-'+k).classList.toggle('on',k===st.v||k===st.d)); }
+  function setV(v){ st.v=v; draw(); }
+  function setD(d){ st.d=d; draw(); }
   let s=419; const t=document.getElementById('t');
   setInterval(()=>{ s=s>0?s-1:0; t.textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); },1000);
 </script>
