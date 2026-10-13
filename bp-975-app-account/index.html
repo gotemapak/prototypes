@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Brain AI app — Settings and My account (BP-975)</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#163A5F; --muted:#5D7089; --blue:#2F80ED; --card:#EEF1FA; --bg:#fff; --line:#E3E8F2;
+          --green:#1E9E6A; --greenbg:#E3F6EC; --red:#D64545; --redbg:#FDECEC; --gray:#8A97A8; --graybg:#EEF0F4; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#DDE3EE; font-family:Nunito, sans-serif; color:var(--ink); }
+  .ctrl { background:#131A35; color:#fff; font:13px Inter, sans-serif; padding:10px 12px; display:flex; gap:8px 12px; align-items:center; justify-content:center; flex-wrap:wrap; }
+  .ctrl label { display:flex; gap:6px; align-items:center; }
+  .ctrl select, .ctrl button { background:#2B3456; color:#fff; border:0; border-radius:8px; padding:6px 10px; font:600 13px Inter, sans-serif; cursor:pointer; max-width:100%; }
+  .ctrl button.on { background:#3A6BF5; }
+  .wrap { display:flex; gap:24px; justify-content:center; align-items:flex-start; flex-wrap:wrap; padding:20px 16px 40px; }
+  .phone { width:390px; max-width:100%; height:800px; background:var(--bg); border-radius:36px; overflow:hidden; position:relative; box-shadow:0 10px 40px rgba(19,26,53,.18); }
+  .notes { width:420px; max-width:100%; background:#fff; border-radius:16px; padding:18px 20px; font:14px/1.5 Inter, sans-serif; color:#1E2A3B; }
+  .notes h3 { margin:0 0 8px; font-size:16px; } .notes h4 { margin:16px 0 6px; font-size:14px; }
+  .notes ul { margin:0; padding-left:18px; } .notes li { margin:4px 0; }
+  .screen { position:absolute; inset:0; display:none; flex-direction:column; background:var(--bg); }
+  .screen.show { display:flex; }
+  .status { height:44px; flex:none; display:flex; align-items:center; justify-content:space-between; padding:0 26px; font:600 15px Inter, sans-serif; }
+  .top { display:flex; align-items:center; justify-content:center; position:relative; padding:6px 20px 14px; flex:none; }
+  .top h1 { margin:0; font-size:26px; font-weight:800; }
+  .ib { position:absolute; top:4px; width:40px; height:40px; border-radius:50%; border:0; background:var(--card); color:var(--ink); font-size:20px; display:grid; place-items:center; cursor:pointer; }
+  .ib.l { left:16px; } .ib.r { right:16px; }
+  .body { flex:1; overflow-y:auto; padding:0 16px 24px; }
+  .group { background:var(--card); border-radius:20px; padding:4px 0; margin-bottom:14px; }
+  .item { display:flex; align-items:center; gap:14px; padding:14px 18px; font-size:17px; font-weight:700; cursor:pointer; }
+  .item + .item { border-top:1px solid #DFE4F0; }
+  .item i { font-style:normal; width:26px; text-align:center; font-size:20px; }
+  .item .sub { display:block; font-size:14px; font-weight:600; color:var(--muted); margin-top:2px; }
+  .item .chev { margin-left:auto; color:var(--gray); font-size:20px; }
+  .ver { text-align:center; color:var(--muted); font-size:13px; font-weight:600; margin-top:6px; }
+  .btn { width:100%; height:56px; border-radius:28px; border:0; background:var(--blue); color:#fff; font:800 18px Nunito, sans-serif; cursor:pointer; }
+  .btn.out { background:#fff; color:var(--blue); border:2px solid var(--blue); }
+  .btn.soft { background:var(--redbg); color:var(--red); }
+  .btn.ghost { background:none; color:var(--muted); height:44px; font-size:16px; }
+  .btn + .btn { margin-top:10px; }
+  .card { background:var(--card); border-radius:20px; padding:16px 18px; margin-bottom:14px; }
+  .card .lbl { font-size:14px; font-weight:700; color:var(--muted); margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+  .kv { display:flex; justify-content:space-between; gap:12px; font-size:16px; font-weight:600; padding:6px 0; }
+  .kv span:first-child { color:var(--muted); }
+  .kv b { text-align:right; }
+  .chip { font-size:13px; font-weight:800; border-radius:999px; padding:2px 10px; }
+  .chip.active { background:var(--greenbg); color:var(--green); }
+  .chip.cancelled { background:var(--redbg); color:var(--red); }
+  .chip.none { background:var(--graybg); color:var(--gray); }
+  s { color:var(--gray); font-weight:500; }
+  .save { color:var(--red); font-size:14px; font-weight:700; text-align:right; }
+  .card .btn { margin-top:12px; height:48px; font-size:16px; }
+  .hint { font-size:14px; color:var(--muted); font-weight:600; margin:2px 0 0; }
+  .field { border:2px solid #D6DDEA; border-radius:16px; padding:16px; font-size:17px; font-weight:600; margin:8px 0 22px; }
+  .codes { display:flex; gap:8px; justify-content:center; margin:22px 0 30px; }
+  .codes div { width:48px; height:58px; border:2px solid #D6DDEA; border-radius:14px; display:grid; place-items:center; font-size:22px; font-weight:800; }
+  .center { text-align:center; } .muted { color:var(--muted); font-weight:600; }
+  .tabbar { flex:none; display:flex; justify-content:space-around; border-top:1px solid var(--line); padding:8px 0 22px; font-size:12px; font-weight:700; color:var(--gray); }
+  .tabbar div { text-align:center; } .tabbar div.on { color:var(--blue); } .tabbar i { font-style:normal; display:block; font-size:22px; }
+  .stat2 { display:flex; gap:10px; } .stat2 div { flex:1; background:var(--card); border-radius:18px; padding:14px; font-weight:700; color:var(--muted); }
+  .stat2 b { display:block; font-size:28px; color:var(--ink); }
+  /* modals */
+  .ov { position:absolute; inset:0; background:rgba(22,58,95,.45); display:none; align-items:center; justify-content:center; padding:18px; z-index:10; }
+  .ov.show { display:flex; }
+  .modal { background:#fff; border-radius:26px; padding:24px 20px 20px; width:100%; position:relative; max-height:100%; overflow-y:auto; }
+  .modal h2 { margin:0 0 6px; font-size:23px; font-weight:800; text-align:center; }
+  .modal p { margin:0 0 16px; text-align:center; color:var(--muted); font-weight:600; font-size:15px; }
+  .modal .x { position:absolute; top:12px; right:12px; width:34px; height:34px; border-radius:50%; border:0; background:var(--card); font-size:18px; cursor:pointer; color:var(--ink); }
+  .opt { display:flex; gap:12px; align-items:center; padding:12px 4px; font-size:16px; font-weight:700; cursor:pointer; }
+  .opt span { width:22px; height:22px; border-radius:50%; border:2px solid #C3CCDB; flex:none; }
+  .opt.sel span { border:7px solid var(--blue); }
+  .gift { font-size:64px; text-align:center; margin:4px 0 8px; }
+  /* system sheet mock */
+  .sys { position:absolute; inset:0; background:rgba(0,0,0,.35); display:none; align-items:flex-end; z-index:20; }
+  .sys.show { display:flex; }
+  .sheet { background:#F2F2F7; width:100%; border-radius:14px 14px 0 0; padding:14px 16px 30px; font-family:-apple-system, Inter, sans-serif; color:#000; }
+  .sheet .hd { display:flex; justify-content:space-between; align-items:center; font-weight:600; font-size:17px; margin-bottom:14px; }
+  .sheet .hd a { color:#0A84FF; cursor:pointer; font-weight:600; }
+  .sheet .box { background:#fff; border-radius:12px; padding:12px 14px; margin-bottom:12px; font-size:15px; }
+  .sheet .box b { display:block; font-size:16px; }
+  .sheet .cancel { color:#FF3B30; text-align:center; font-weight:600; cursor:pointer; }
+  .sheet.android { font-family:Roboto, Inter, sans-serif; background:#fff; border-radius:20px 20px 0 0; }
+  .sheet.android .cancel { color:#fff; background:#01875F; border-radius:20px; padding:10px; }
+  .sysnote { font:12px Inter, sans-serif; color:#6B7280; text-align:center; margin-top:10px; }
+  .toast { position:absolute; left:16px; right:16px; bottom:100px; background:#163A5F; color:#fff; border-radius:16px; padding:14px 16px; font-weight:700; font-size:15px; display:none; z-index:30; }
+  .toast.show { display:block; }
+  /* change marks */
+  .chg { position:relative; outline:2px dashed #F0B429; outline-offset:2px; }
+  .chg::before { content:attr(data-chg); position:absolute; top:-10px; right:10px; background:#F0B429; color:#3A2A00; font:700 10px Inter, sans-serif; padding:2px 6px; border-radius:6px; z-index:3; }
+  .chg::before { white-space:nowrap; }
+  .top h1.chg::before { top:-14px; right:auto; left:100%; margin-left:8px; }
+  .top { padding-top:14px; }
+  body.clean .chg { outline:0; } body.clean .chg::before { display:none; }
+</style>
+</head>
+<body>
+<div class="ctrl">
+  <label>Сценарий
+    <select id="sc" onchange="setScenario(this.value)">
+      <option value="web_active">1. Веб активна, стора нет</option>
+      <option value="web_discount">2. Веб активна со скидкой 50%</option>
+      <option value="web_cancelled">3. Веб отменена (доступ до даты), стора нет</option>
+      <option value="web_none">4. Вошёл, веб-подписки не было, стора нет</option>
+      <option value="both_active">5. Активны обе: веб + стор</option>
+      <option value="web_cancelled_store">6. Веб отменена, стор активна</option>
+      <option value="web_active_store_cancelled">7. Веб активна, стор отменена</option>
+      <option value="logged_out_store">8. Не вошёл в веб-аккаунт, есть подписка в сторе</option>
+      <option value="logged_out">9. Не вошёл, подписок нет</option>
+    </select>
+  </label>
+  <label>Платформа
+    <select id="pf" onchange="setPlatform(this.value)"><option value="ios">iOS (App Store)</option><option value="android">Android (Google Play)</option></select>
+  </label>
+  <button id="b-mark" class="on" onclick="toggleMark()">Подсветка изменений: вкл</button>
+</div>
+
+<div class="wrap">
+<div class="phone" id="phone">
+
+  <!-- Home -->
+  <section class="screen show" id="s-home">
+    <div class="status"><span>9:41</span><span>●●●</span></div>
+    <div class="top"><h1>Progress</h1><button class="ib r" onclick="go('settings')" title="Settings">⚙️</button></div>
+    <div class="body">
+      <div class="stat2"><div><b>0</b>Current streak</div><div><b>0</b>Best streak</div></div>
+      <p class="muted center" style="margin-top:28px">Tap ⚙️ to open Settings</p>
+    </div>
+    <div class="tabbar"><div><i>✓</i>Daily</div><div><i>🎮</i>Games</div><div><i>?</i>Quiz</div><div><i>🎓</i>Tests</div><div class="on"><i>📊</i>Progress</div></div>
+  </section>
+
+  <!-- Settings: new full page -->
+  <section class="screen" id="s-settings">
+    <div class="status"><span>9:41</span><span>●●●</span></div>
+    <div class="top"><h1 class="chg" data-chg="НОВОЕ: страница вместо поп-апа">Settings</h1><button class="ib r" onclick="go('home')" title="Close">✕</button></div>
+    <div class="body">
+      <div class="group chg" data-chg="НОВОЕ" id="g-account"></div>
+      <div class="group chg" data-chg="НОВОЕ" id="g-manage">
+        <div class="item" onclick="openSystem(false)"><i>💳</i><span>Manage subscription<span class="sub" id="manage-sub">App Store</span></span><span class="chev">›</span></div>
+      </div>
+      <div class="group"><div class="item"><i>↻</i>Restore purchases</div></div>
+      <div class="group">
+        <div class="item"><i>💬</i>Contact us</div>
+        <div class="item"><i>🛡️</i>Privacy policy</div>
+        <div class="item"><i>📄</i>Terms of use</div>
+      </div>
+      <div class="ver">version: 1.25.0 build: 900</div>
+    </div>
+  </section>
+
+  <!-- Login: email -->
+  <section class="screen" id="s-email">
+    <div class="status"><span>9:41</span><span>●●●</span></div>
+    <div class="top"><button class="ib l" onclick="go('settings')">‹</button></div>
+    <div class="body">
+      <h1 class="center" style="font-size:28px;margin:10px 0 26px">Log in to your account</h1>
+      <div class="muted">Email</div>
+      <div class="field">mary.smith@gmail.com</div>
+      <button class="btn" onclick="go('code')">Send code</button>
+      <p class="center muted">No account? <b style="color:var(--ink)">Create account</b></p>
+    </div>
+  </section>
+
+  <!-- Login: code -->
+  <section class="screen" id="s-code">
+    <div class="status"><span>9:41</span><span>●●●</span></div>
+    <div class="top"><button class="ib l" onclick="go('email')">‹</button></div>
+    <div class="body">
+      <h1 class="center" style="font-size:28px;margin:10px 0 8px">Enter the code</h1>
+      <p class="center muted">We sent a 6-digit code to mary.smith@gmail.com</p>
+      <div class="codes"><div>4</div><div>8</div><div>1</div><div>9</div><div>0</div><div>2</div></div>
+      <button class="btn chg" data-chg="ИЗМЕНЕНО: после входа — сразу My account" onclick="login()">Verify</button>
+      <p class="center muted">Didn't get the code? Resend 00:24</p>
+    </div>
+  </section>
+
+  <!-- My account -->
+  <section class="screen" id="s-account">
+    <div class="status"><span>9:41</span><span>●●●</span></div>
+    <div class="top"><button class="ib l" onclick="go('settings')">‹</button><h1 class="chg" data-chg="НОВОЕ">My account</h1></div>
+    <div class="body" id="acc-body"></div>
+  </section>
+
+  <!-- Modals -->
+  <div class="ov" id="m-survey"><div class="modal">
+    <button class="x" onclick="closeM()">✕</button>
+    <h2>Why did you decide to cancel?</h2>
+    <p>Your feedback helps us improve.</p>
+    <div id="opts"></div>
+    <button class="btn" style="margin-top:12px" onclick="afterSurvey()">Continue →</button>
+  </div></div>
+
+  <div class="ov" id="m-offer"><div class="modal">
+    <button class="x" onclick="closeM()">✕</button>
+    <div class="gift">🎁</div>
+    <h2>Before you go – here's 50% off!</h2>
+    <p>We'd hate to see you leave. Stay on your plan and get 50% off your next billing cycle.</p>
+    <button class="btn" onclick="claim()">Claim 50% off</button>
+    <button class="btn ghost" onclick="cancelWeb()">No thanks, cancel subscription</button>
+  </div></div>
+
+  <div class="ov" id="m-claimed"><div class="modal">
+    <div class="gift">🎉</div>
+    <h2>You're all set – your discount is applied!</h2>
+    <p>Your subscription continues as before, and 50% off has been applied to your next payment. Thanks for staying with us!</p>
+    <button class="btn" onclick="closeM();renderAccount()">Continue →</button>
+  </div></div>
+
+  <div class="ov" id="m-cancelled"><div class="modal">
+    <div class="gift">🧠</div>
+    <h2>Your subscription has been cancelled!</h2>
+    <p>You'll keep access until the end of your current billing period (<b id="until-d">March 13, 2026</b>). No further charges after that. You can resubscribe anytime.</p>
+    <button class="btn" onclick="closeM();renderAccount()">Back to account</button>
+  </div></div>
+
+  <div class="ov" id="m-simple"><div class="modal chg" data-chg="НОВОЕ: отмена, когда остаётся вторая подписка">
+    <button class="x" onclick="closeM()">✕</button>
+    <h2>Cancel web subscription?</h2>
+    <p>You also have a subscription in the <span class="storename">App Store</span>. Premium stays active through it — you won't lose access.</p>
+    <button class="btn soft" onclick="cancelWebSimple()">Cancel web subscription</button>
+    <button class="btn ghost" onclick="closeM()">Keep it</button>
+  </div></div>
+
+  <!-- System store sheet mock -->
+  <div class="sys" id="sys"><div class="sheet" id="sheet">
+    <div class="hd"><span id="sys-title">Edit Subscription</span><a onclick="closeSystem()">Done</a></div>
+    <div class="box"><b>Brain AI Premium</b>Weekly · $9.99 · Renews March 20, 2026</div>
+    <div class="box cancel" id="sys-cancel" onclick="storeCancel()">Cancel Subscription</div>
+    <div class="sysnote">Системное окно Apple / Google — не рисуем, только показываем, куда ведёт кнопка.</div>
+  </div></div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<div class="notes">
+  <h3>BP-975 — Настройки и личный кабинет в приложении</h3>
+  <p>Кликабельный прототип логики, не финальный визуал. Сценарий и платформа — в панели сверху. Жёлтый пунктир — новое или изменённое, кнопка «Подсветка изменений» показывает финальный вид.</p>
+  <h4>Настройки</h4>
+  <ul>
+    <li>Отдельная страница вместо поп-апа: открывается по шестерёнке, закрывается крестиком.</li>
+    <li>Сверху — аккаунт: «Log in with web account», если не вошёл; «My account» с email, если вошёл.</li>
+    <li>«Manage subscription» — только если есть подписка в App Store / Google Play; открывает системное окно стора.</li>
+    <li>Текущие пункты (Restore purchases, Contact us, Privacy, Terms, версия) остаются.</li>
+  </ul>
+  <h4>My account</h4>
+  <ul>
+    <li>Открывается сразу после входа по коду и из Настроек.</li>
+    <li>Подписки — отдельными блоками: сверху веб, под ней подписка в приложении. Блок показываем, только если такая подписка есть или была; одна подписка — один блок. У каждого активного блока своя кнопка отмены.</li>
+    <li>Подписок нет совсем — один блок «Subscription: None» и кнопка Subscribe.</li>
+    <li>Subscribe — только если активной подписки нет нигде; ведёт на пейволл приложения.</li>
+    <li>Log out — внизу.</li>
+  </ul>
+  <h4>Отмена</h4>
+  <ul>
+    <li>Опрос и оффер 50% — только когда человек отменяет <b>последнюю</b> активную подписку.</li>
+    <li>Веб, а стор активен — короткое подтверждение без оффера (сценарий 5).</li>
+    <li>Веб последняя — как на вебе: опрос → оффер 50% → подтверждение (сценарии 1, 7).</li>
+    <li>Стор последняя — опрос → системное окно стора (сценарий 6). Оффер для подписки в сторе — во второй версии.</li>
+    <li>Стор, а веб активна — сразу системное окно стора (сценарий 5).</li>
+    <li>Отменить подписку в сторе за пользователя нельзя — только открыть окно стора, кнопку «Cancel» нажимает он сам.</li>
+  </ul>
+</div>
+</div>
+
+<script>
+const SC = {
+  web_active:{logged:true, web:'active', store:null},
+  web_discount:{logged:true, web:'active', disc:true, store:null},
+  web_cancelled:{logged:true, web:'cancelled', store:null},
+  web_none:{logged:true, web:'none', store:null},
+  both_active:{logged:true, web:'active', store:'active'},
+  web_cancelled_store:{logged:true, web:'cancelled', store:'active'},
+  web_active_store_cancelled:{logged:true, web:'active', store:'cancelled'},
+  logged_out_store:{logged:false, web:null, store:'active'},
+  logged_out:{logged:false, web:null, store:null},
+};
+let st = {}, pf = 'ios', cancelTarget = 'web';
+const REASONS = ['Too expensive','Not using it enough',"Didn't get the results I expected",'Found a better alternative','Technical issues','Other'];
+const storeName = () => pf === 'ios' ? 'App Store' : 'Google Play';
+const $ = id => document.getElementById(id);
+
+function setScenario(v){ $('sc').value = v; st = JSON.parse(JSON.stringify(SC[v])); renderSettings(); renderAccount(); closeM(); closeSystem(); go(st.logged ? 'account' : 'settings'); }
+function setPlatform(v){ pf = v; document.querySelectorAll('.storename').forEach(e => e.textContent = storeName()); renderSettings(); renderAccount();
+  const sh = $('sheet'); sh.classList.toggle('android', pf === 'android'); $('sys-title').textContent = pf === 'ios' ? 'Edit Subscription' : 'Google Play · Subscriptions'; }
+function go(s){ document.querySelectorAll('.screen').forEach(e => e.classList.remove('show')); $('s-' + s).classList.add('show'); }
+function toast(t){ const e = $('toast'); e.textContent = t; e.classList.add('show'); setTimeout(() => e.classList.remove('show'), 2600); }
+function toggleMark(){ const c = document.body.classList.toggle('clean'); const b = $('b-mark'); b.classList.toggle('on', !c); b.textContent = 'Подсветка изменений: ' + (c ? 'выкл' : 'вкл'); }
+const active = x => x === 'active';
+const anyActive = () => active(st.web) || active(st.store);
+
+function renderSettings(){
+  $('g-account').innerHTML = st.logged
+    ? `<div class="item" onclick="go('account')"><i>👤</i><span>My account<span class="sub">mary.smith@gmail.com</span></span><span class="chev">›</span></div>`
+    : `<div class="item" onclick="go('email')"><i>🔑</i><span>Log in with web account<span class="sub">Bought on our website? Log in here</span></span><span class="chev">›</span></div>`;
+  $('g-manage').style.display = st.store ? '' : 'none';
+  $('manage-sub').textContent = storeName();
+}
+
+function webCard(){
+  if (!st.web || st.web === 'none') return '';   // блок только если веб-подписка есть или была
+  const chip = {active:'Active', cancelled:'Cancelled', none:'None'}[st.web];
+  let rows = '';
+  if (st.web === 'active') rows = st.disc
+    ? `<div class="kv"><span>Plan</span><b><s>4 week / $39.98</s> $19.99</b></div><div class="save">You save 50% on your next payment</div><div class="kv"><span>Next payment</span><b>March 13, 2026</b></div>`
+    : `<div class="kv"><span>Plan</span><b>4 week / $39.98</b></div><div class="kv"><span>Next payment</span><b>March 13, 2026</b></div>`;
+  if (st.web === 'cancelled') rows = `<div class="kv"><span>Plan</span><b>4 week / $39.98</b></div><div class="kv"><span>Access until</span><b>March 13, 2026</b></div>`;
+  const btn = st.web === 'active' ? `<button class="btn soft" onclick="startCancel('web')">Cancel subscription</button>` : '';
+  return `<div class="card"><div class="lbl">Web subscription <span class="chip ${st.web}">${chip}</span></div>${rows}${btn}</div>`;
+}
+function storeCard(){
+  if (!st.store) return '';
+  const chip = st.store === 'active' ? 'Active' : 'Cancelled';
+  const rows = st.store === 'active'
+    ? `<div class="kv"><span>Plan</span><b>Weekly / $9.99</b></div><div class="kv"><span>Renews on</span><b>March 20, 2026</b></div>`
+    : `<div class="kv"><span>Plan</span><b>Weekly / $9.99</b></div><div class="kv"><span>Access until</span><b>March 20, 2026</b></div>`;
+  const btn = st.store === 'active' ? `<button class="btn soft" onclick="startCancel('store')">Cancel in ${storeName()}</button><p class="hint center" style="margin-top:8px">Managed by ${storeName()}</p>` : '';
+  return `<div class="card chg" data-chg="НОВОЕ: подписка в приложении"><div class="lbl">App subscription · ${storeName()} <span class="chip ${st.store}">${chip}</span></div>${rows}${btn}</div>`;
+}
+function renderAccount(){
+  if (!st.logged) { $('acc-body').innerHTML = ''; return; }
+  $('acc-body').innerHTML =
+    `<div class="card"><div class="kv"><span>Email</span><b>mary.smith@gmail.com</b></div></div>` +
+    webCard() + storeCard() +
+    (st.web === 'none' && !st.store ? `<div class="card"><div class="lbl">Subscription <span class="chip none">None</span></div><p class="hint">You don't have an active subscription.</p></div>` : '') +
+    (anyActive() ? '' : `<button class="btn" onclick="toast('→ Пейволл приложения (inapp_paywall_shown, source = account_page)')">Subscribe</button>`) +
+    `<button class="btn out" style="margin-top:10px" onclick="logout()">Log out</button>`;
+}
+
+function login(){ st.logged = true; st.web = st.web || 'active'; renderSettings(); renderAccount(); go('account'); toast('Вход успешен → сразу My account (source = after_login)'); }
+function logout(){ st.logged = false; st.web = null; renderSettings(); renderAccount(); go('settings'); }
+
+function startCancel(t){
+  cancelTarget = t;
+  const other = t === 'web' ? active(st.store) : active(st.web);
+  if (other) { if (t === 'web') return show('m-simple'); return openSystem(true); }   // не последняя — без опроса и оффера
+  $('opts').innerHTML = REASONS.map((r, i) => `<div class="opt${i === 2 ? ' sel' : ''}" onclick="document.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));this.classList.add('sel')"><span></span>${r}</div>`).join('');
+  show('m-survey');
+}
+function afterSurvey(){ closeM(); if (cancelTarget === 'web') show('m-offer'); else openSystem(true); }
+function claim(){ st.disc = true; closeM(); show('m-claimed'); }
+function cancelWeb(){ st.web = 'cancelled'; st.disc = false; closeM(); show('m-cancelled'); }
+function cancelWebSimple(){ st.web = 'cancelled'; st.disc = false; closeM(); renderAccount(); toast('Web subscription cancelled. Premium stays active through ' + storeName() + '.'); }
+
+function show(id){ document.querySelectorAll('.ov').forEach(o => o.classList.remove('show')); $(id).classList.add('show'); }
+function closeM(){ document.querySelectorAll('.ov').forEach(o => o.classList.remove('show')); }
+function openSystem(){ closeM(); $('sys-cancel').style.display = active(st.store) ? '' : 'none'; $('sys').classList.add('show'); }
+function closeSystem(){ $('sys').classList.remove('show'); renderAccount(); renderSettings(); }
+function storeCancel(){ st.store = 'cancelled'; $('sys-cancel').style.display = 'none'; toast('Пользователь отменил в сторе → приложение видит, что автопродление выключено'); }
+
+setScenario('web_active');
+</script>
+</body>
+</html>
