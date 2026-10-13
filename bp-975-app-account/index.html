@@ -105,8 +105,8 @@
       <option value="web_cancelled_store">5. Веб отменена (доступ идёт), App Store активна</option>
       <option value="store_only_logged">6. Вошёл, веба нет, App Store активна</option>
       <option value="web_active_store_cancelled">7. Веб активна, App Store отменена</option>
-      <option value="logged_out_store">8. Не вошёл в веб-аккаунт, App Store активна</option>
-      <option value="logged_out">9. Не вошёл, подписок нет</option>
+      <option value="logged_out_store">8. Гость: не вошёл в веб-аккаунт, App Store активна</option>
+      <option value="logged_out">9. Гость: подписок нет</option>
     </select>
   </label>
   <span>Первая версия — только iOS</span>
@@ -133,9 +133,6 @@
     <div class="top"><h1 class="chg" data-chg="НОВОЕ: страница вместо поп-апа">Settings</h1><button class="ib r" onclick="go('home')" title="Close">✕</button></div>
     <div class="body">
       <div class="group chg" data-chg="НОВОЕ" id="g-account"></div>
-      <div class="group chg" data-chg="НОВОЕ" id="g-manage">
-        <div class="item" onclick="manageSub()"><i>💳</i><span>Manage subscription<span class="sub">App Store</span></span><span class="chev">›</span></div>
-      </div>
       <div class="group"><div class="item"><i>↻</i>Restore purchases</div></div>
       <div class="group">
         <div class="item"><i>💬</i>Contact us</div>
@@ -149,7 +146,7 @@
   <!-- Login: email -->
   <section class="screen" id="s-email">
     <div class="status"><span>9:41</span><span>●●●</span></div>
-    <div class="top"><button class="ib l" onclick="go('settings')">‹</button></div>
+    <div class="top"><button class="ib l" onclick="go('account')">‹</button></div>
     <div class="body">
       <h1 class="center" style="font-size:28px;margin:10px 0 26px">Log in to your account</h1>
       <div class="muted">Email</div>
@@ -244,13 +241,13 @@
   <h4>Настройки</h4>
   <ul>
     <li>Отдельная страница вместо поп-апа: открывается по шестерёнке, закрывается крестиком.</li>
-    <li>Сверху — аккаунт: «Log in with web account», если не вошёл; «My account» с email, если вошёл.</li>
-    <li>«Manage subscription» — только если есть подписка в App Store, в том числе без входа в веб-аккаунт. Работает как отмена подписки App Store в кабинете.</li>
+    <li>Сверху одна строка «My account»: у вошедшего — с email, у гостя — «Log in or manage your subscription». Отдельных строк «Log in with web account» и «Manage subscription» нет — всё на одном экране, без дублей.</li>
     <li>Текущие пункты (Restore purchases, Contact us, Privacy, Terms, версия) остаются.</li>
   </ul>
   <h4>My account</h4>
   <ul>
-    <li>Открывается сразу после входа по коду и из Настроек.</li>
+    <li>Один экран, два режима. <b>Гость</b> (не вошёл в веб-аккаунт): карточка «Bought on our website? Log in with web account» и блок App Store. <b>Вошёл</b>: Email, блок веба, блок App Store, Log out, Delete account.</li>
+    <li>Открывается из Настроек и сразу после входа по коду (возвращает на тот же экран, уже в режиме «вошёл»).</li>
     <li><b>Блок веб-подписки</b> — только пока есть доступ: Active с кнопкой Cancel subscription или Cancelled с датой «Access until». Доступ закончился или был рефанд — блок исчезает.</li>
     <li><b>Блок App Store</b> — всегда: Active с кнопкой Cancel, Cancelled с «Access until» или None с кнопкой Subscribe (пейволл приложения). Subscribe не показываем, пока есть доступ по веб-подписке.</li>
     <li>Внизу Log out и Delete account (требование Apple: раз можно создать аккаунт, его можно и удалить).</li>
@@ -282,17 +279,14 @@ const REASONS = ['Too expensive','Not using it enough',"Didn't get the results I
 const $ = id => document.getElementById(id);
 const active = x => x === 'active';
 
-function setScenario(v){ $('sc').value = v; st = JSON.parse(JSON.stringify(SC[v])); closeM(); closeSystem(); go(st.logged ? 'account' : 'settings'); }
+function setScenario(v){ $('sc').value = v; st = JSON.parse(JSON.stringify(SC[v])); closeM(); closeSystem(); go('account'); }
 function go(s){ renderAll(); document.querySelectorAll('.screen').forEach(e => e.classList.remove('show')); $('s-' + s).classList.add('show'); }
 function renderAll(){ renderSettings(); renderAccount(); }
 function toast(t){ const e = $('toast'); e.textContent = t; e.classList.add('show'); setTimeout(() => e.classList.remove('show'), 2800); }
 function toggleMark(){ const c = document.body.classList.toggle('clean'); const b = $('b-mark'); b.classList.toggle('on', !c); b.textContent = 'Подсветка изменений: ' + (c ? 'выкл' : 'вкл'); }
 
 function renderSettings(){
-  $('g-account').innerHTML = st.logged
-    ? `<div class="item" onclick="go('account')"><i>👤</i><span>My account<span class="sub">mary.smith@gmail.com</span></span><span class="chev">›</span></div>`
-    : `<div class="item" onclick="go('email')"><i>🔑</i><span>Log in with web account<span class="sub">Bought on our website? Log in here</span></span><span class="chev">›</span></div>`;
-  $('g-manage').style.display = st.store ? '' : 'none';
+  $('g-account').innerHTML = `<div class="item" onclick="go('account')"><i>👤</i><span>My account<span class="sub">${st.logged ? 'mary.smith@gmail.com' : 'Log in or manage your subscription'}</span></span><span class="chev">›</span></div>`;
 }
 
 function webCard(){
@@ -319,7 +313,11 @@ function storeCard(){
   return `<div class="card chg" data-chg="НОВОЕ: блок App Store — всегда"><div class="lbl">App Store subscription <span class="chip ${s}">${chip}</span></div>${rows}${btn}</div>`;
 }
 function renderAccount(){
-  if (!st.logged) { $('acc-body').innerHTML = ''; return; }
+  if (!st.logged) {
+    $('acc-body').innerHTML =
+      `<div class="card chg" data-chg="НОВОЕ: вход для гостя"><div class="lbl">Bought on our website?</div><p class="hint" style="margin-bottom:4px">Log in with the email you used to buy — your web subscription will appear here.</p><button class="btn" onclick="go('email')">Log in with web account</button></div>` + storeCard();
+    return;
+  }
   $('acc-body').innerHTML =
     `<div class="card"><div class="kv"><span>Email</span><b>mary.smith@gmail.com</b></div></div>` +
     webCard() + storeCard() +
@@ -336,7 +334,6 @@ function startCancel(t){
   $('opts').innerHTML = REASONS.map((r, i) => `<div class="opt${i === 2 ? ' sel' : ''}" onclick="document.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));this.classList.add('sel')"><span></span>${r}</div>`).join('');
   show('m-survey');
 }
-function manageSub(){ if (active(st.store)) startCancel('store'); else openSystem(); }
 function afterSurvey(){
   closeM();
   if (cancelTarget === 'store') return show('m-offer');
