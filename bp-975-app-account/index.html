@@ -196,7 +196,7 @@
     <h2>Before you go – here's 50% off!</h2>
     <p>We'd hate to see you leave. Stay on your plan and get 50% off your next billing cycle.</p>
     <button class="btn" onclick="claim()">Claim 50% off</button>
-    <button class="btn ghost" onclick="cancelWeb()">No thanks, cancel subscription</button>
+    <button class="btn ghost" onclick="decline()">No thanks, cancel subscription</button>
   </div></div>
 
   <div class="ov" id="m-claimed"><div class="modal">
@@ -252,10 +252,10 @@
   </ul>
   <h4>Отмена</h4>
   <ul>
-    <li>Опрос и оффер 50% — только когда человек отменяет <b>последнюю</b> активную подписку.</li>
+    <li>Опрос и оффер 50% — только когда человек отменяет <b>последнюю</b> активную подписку, и для веба, и для стора.</li>
     <li>Веб, а стор активен — короткое подтверждение без оффера (сценарий 5).</li>
     <li>Веб последняя — как на вебе: опрос → оффер 50% → подтверждение (сценарии 1, 7).</li>
-    <li>Стор последняя — опрос → системное окно стора (сценарий 6). Оффер для подписки в сторе — во второй версии.</li>
+    <li>Стор последняя — опрос → оффер 50% (скидка через стор: промо-оффер App Store / оффер Google Play) → «скидка применена» ИЛИ отказ → системное окно стора (сценарий 6).</li>
     <li>Стор, а веб активна — сразу системное окно стора (сценарий 5).</li>
     <li>Отменить подписку в сторе за пользователя нельзя — только открыть окно стора, кнопку «Cancel» нажимает он сам.</li>
   </ul>
@@ -311,7 +311,7 @@ function storeCard(){
   if (!st.store) return '';
   const chip = st.store === 'active' ? 'Active' : 'Cancelled';
   const rows = st.store === 'active'
-    ? `<div class="kv"><span>Plan</span><b>Weekly / $9.99</b></div><div class="kv"><span>Renews on</span><b>March 20, 2026</b></div>`
+    ? (st.storeDisc ? `<div class="kv"><span>Plan</span><b><s>Weekly / $9.99</s> $4.99</b></div><div class="save">You save 50% on your next payment</div>` : `<div class="kv"><span>Plan</span><b>Weekly / $9.99</b></div>`) + `<div class="kv"><span>Renews on</span><b>March 20, 2026</b></div>`
     : `<div class="kv"><span>Plan</span><b>Weekly / $9.99</b></div><div class="kv"><span>Access until</span><b>March 20, 2026</b></div>`;
   const btn = st.store === 'active' ? `<button class="btn soft" onclick="startCancel('store')">Cancel in ${storeName()}</button><p class="hint center" style="margin-top:8px">Managed by ${storeName()}</p>` : '';
   return `<div class="card chg" data-chg="НОВОЕ: подписка в приложении"><div class="lbl">App subscription · ${storeName()} <span class="chip ${st.store}">${chip}</span></div>${rows}${btn}</div>`;
@@ -336,8 +336,9 @@ function startCancel(t){
   $('opts').innerHTML = REASONS.map((r, i) => `<div class="opt${i === 2 ? ' sel' : ''}" onclick="document.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));this.classList.add('sel')"><span></span>${r}</div>`).join('');
   show('m-survey');
 }
-function afterSurvey(){ closeM(); if (cancelTarget === 'web') show('m-offer'); else openSystem(true); }
-function claim(){ st.disc = true; closeM(); show('m-claimed'); }
+function afterSurvey(){ closeM(); show('m-offer'); }
+function claim(){ if (cancelTarget === 'web') st.disc = true; else st.storeDisc = true; closeM(); show('m-claimed'); }
+function decline(){ if (cancelTarget === 'web') cancelWeb(); else openSystem(true); }
 function cancelWeb(){ st.web = 'cancelled'; st.disc = false; closeM(); show('m-cancelled'); }
 function cancelWebSimple(){ st.web = 'cancelled'; st.disc = false; closeM(); renderAccount(); toast('Web subscription cancelled. Premium stays active through ' + storeName() + '.'); }
 
