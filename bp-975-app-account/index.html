@@ -136,7 +136,7 @@
     <div class="body">
       <div class="group chg" data-chg="НОВОЕ" id="g-account"></div>
       <div class="group chg" data-chg="НОВОЕ" id="g-manage">
-        <div class="item" onclick="openSystem(false)"><i>💳</i><span>Manage subscription<span class="sub" id="manage-sub">App Store</span></span><span class="chev">›</span></div>
+        <div class="item" onclick="manageSub()"><i>💳</i><span>Manage subscription<span class="sub" id="manage-sub">App Store</span></span><span class="chev">›</span></div>
       </div>
       <div class="group"><div class="item"><i>↻</i>Restore purchases</div></div>
       <div class="group">
@@ -239,7 +239,7 @@
   <ul>
     <li>Отдельная страница вместо поп-апа: открывается по шестерёнке, закрывается крестиком.</li>
     <li>Сверху — аккаунт: «Log in with web account», если не вошёл; «My account» с email, если вошёл.</li>
-    <li>«Manage subscription» — только если есть подписка в App Store / Google Play; открывает системное окно стора.</li>
+    <li>«Manage subscription» — только если есть подписка в App Store / Google Play. Работает как отмена подписки в приложении в кабинете: если она последняя — опрос (ответ сохраняем) → оффер 50% → отказ → системное окно стора; если веб активна — сразу окно стора. Так и для тех, кто не вошёл в веб-аккаунт (сценарий 8).</li>
     <li>Текущие пункты (Restore purchases, Contact us, Privacy, Terms, версия) остаются.</li>
   </ul>
   <h4>My account</h4>
@@ -336,6 +336,7 @@ function startCancel(t){
   $('opts').innerHTML = REASONS.map((r, i) => `<div class="opt${i === 2 ? ' sel' : ''}" onclick="document.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));this.classList.add('sel')"><span></span>${r}</div>`).join('');
   show('m-survey');
 }
+function manageSub(){ if (active(st.store)) startCancel('store'); else openSystem(); }
 function afterSurvey(){ closeM(); show('m-offer'); }
 function claim(){ if (cancelTarget === 'web') st.disc = true; else st.storeDisc = true; closeM(); show('m-claimed'); }
 function decline(){ if (cancelTarget === 'web') cancelWeb(); else openSystem(true); }
