@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Brain AI app — Settings and My account (BP-975)</title>
+<title>Brain AI app — Settings and My account v1 iOS (BP-975)</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;600;700;800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
   :root { --ink:#163A5F; --muted:#5D7089; --blue:#2F80ED; --card:#EEF1FA; --bg:#fff; --line:#E3E8F2;
@@ -98,20 +98,18 @@
 <div class="ctrl">
   <label>Сценарий
     <select id="sc" onchange="setScenario(this.value)">
-      <option value="web_active">1. Веб активна, стора нет</option>
-      <option value="web_discount">2. Веб активна со скидкой 50%</option>
-      <option value="web_cancelled">3. Веб отменена (доступ до даты), стора нет</option>
-      <option value="web_none">4. Вошёл, веб-подписки не было, стора нет</option>
-      <option value="both_active">5. Активны обе: веб + стор</option>
-      <option value="web_cancelled_store">6. Веб отменена, стор активна</option>
-      <option value="web_active_store_cancelled">7. Веб активна, стор отменена</option>
-      <option value="logged_out_store">8. Не вошёл в веб-аккаунт, есть подписка в сторе</option>
+      <option value="web_active">1. Веб активна, в App Store нет</option>
+      <option value="web_cancelled">2. Веб отменена, доступ ещё идёт, в App Store нет</option>
+      <option value="web_gone">3. Веб закончилась или рефанд, в App Store нет</option>
+      <option value="both_active">4. Активны обе: веб + App Store</option>
+      <option value="web_cancelled_store">5. Веб отменена (доступ идёт), App Store активна</option>
+      <option value="store_only_logged">6. Вошёл, веба нет, App Store активна</option>
+      <option value="web_active_store_cancelled">7. Веб активна, App Store отменена</option>
+      <option value="logged_out_store">8. Не вошёл в веб-аккаунт, App Store активна</option>
       <option value="logged_out">9. Не вошёл, подписок нет</option>
     </select>
   </label>
-  <label>Платформа
-    <select id="pf" onchange="setPlatform(this.value)"><option value="ios">iOS (App Store)</option><option value="android">Android (Google Play)</option></select>
-  </label>
+  <span>Первая версия — только iOS</span>
   <button id="b-mark" class="on" onclick="toggleMark()">Подсветка изменений: вкл</button>
 </div>
 
@@ -136,7 +134,7 @@
     <div class="body">
       <div class="group chg" data-chg="НОВОЕ" id="g-account"></div>
       <div class="group chg" data-chg="НОВОЕ" id="g-manage">
-        <div class="item" onclick="manageSub()"><i>💳</i><span>Manage subscription<span class="sub" id="manage-sub">App Store</span></span><span class="chev">›</span></div>
+        <div class="item" onclick="manageSub()"><i>💳</i><span>Manage subscription<span class="sub">App Store</span></span><span class="chev">›</span></div>
       </div>
       <div class="group"><div class="item"><i>↻</i>Restore purchases</div></div>
       <div class="group">
@@ -190,74 +188,79 @@
     <button class="btn" style="margin-top:12px" onclick="afterSurvey()">Continue →</button>
   </div></div>
 
+  <div class="ov" id="m-confirm"><div class="modal chg" data-chg="НОВОЕ: веб — без оффера">
+    <button class="x" onclick="closeM()">✕</button>
+    <h2>Cancel web subscription?</h2>
+    <p id="confirm-text">You'll keep access until the end of your current billing period (March 13, 2026). No further charges after that.</p>
+    <button class="btn soft" onclick="cancelWeb()">Cancel subscription</button>
+    <button class="btn ghost" onclick="closeM()">Keep my subscription</button>
+  </div></div>
+
   <div class="ov" id="m-offer"><div class="modal">
     <button class="x" onclick="closeM()">✕</button>
     <div class="gift">🎁</div>
     <h2>Before you go – here's 50% off!</h2>
     <p>We'd hate to see you leave. Stay on your plan and get 50% off your next billing cycle.</p>
-    <button class="btn" onclick="claim()">Claim 50% off</button>
-    <button class="btn ghost" onclick="decline()">No thanks, cancel subscription</button>
+    <button class="btn chg" data-chg="App Store: код оффера или промо-оффер" onclick="claim()">Claim 50% off</button>
+    <button class="btn ghost" onclick="openSystem()">No thanks, cancel subscription</button>
   </div></div>
 
   <div class="ov" id="m-claimed"><div class="modal">
     <div class="gift">🎉</div>
     <h2>You're all set – your discount is applied!</h2>
     <p>Your subscription continues as before, and 50% off has been applied to your next payment. Thanks for staying with us!</p>
-    <button class="btn" onclick="closeM();renderAccount()">Continue →</button>
+    <button class="btn" onclick="closeM();renderAll()">Continue →</button>
   </div></div>
 
   <div class="ov" id="m-cancelled"><div class="modal">
     <div class="gift">🧠</div>
     <h2>Your subscription has been cancelled!</h2>
-    <p>You'll keep access until the end of your current billing period (<b id="until-d">March 13, 2026</b>). No further charges after that. You can resubscribe anytime.</p>
-    <button class="btn" onclick="closeM();renderAccount()">Back to account</button>
+    <p id="cancelled-text">You'll keep access until the end of your current billing period (March 13, 2026). No further charges after that. You can resubscribe anytime.</p>
+    <button class="btn" onclick="closeM();renderAll()">Back to account</button>
   </div></div>
 
-  <div class="ov" id="m-simple"><div class="modal chg" data-chg="НОВОЕ: отмена, когда остаётся вторая подписка">
+  <div class="ov" id="m-delete"><div class="modal chg" data-chg="НОВОЕ: требование Apple">
     <button class="x" onclick="closeM()">✕</button>
-    <h2>Cancel web subscription?</h2>
-    <p>You also have a subscription in the <span class="storename">App Store</span>. Premium stays active through it — you won't lose access.</p>
-    <button class="btn soft" onclick="cancelWebSimple()">Cancel web subscription</button>
-    <button class="btn ghost" onclick="closeM()">Keep it</button>
+    <h2>Delete account?</h2>
+    <p>We'll delete your account and personal data. This doesn't cancel subscriptions — cancel them first. Our support team will confirm by email.</p>
+    <button class="btn soft" onclick="closeM();toast('Запрос на удаление аккаунта отправлен в поддержку')">Delete account</button>
+    <button class="btn ghost" onclick="closeM()">Keep my account</button>
   </div></div>
 
-  <!-- System store sheet mock -->
-  <div class="sys" id="sys"><div class="sheet" id="sheet">
-    <div class="hd"><span id="sys-title">Edit Subscription</span><a onclick="closeSystem()">Done</a></div>
+  <!-- System App Store sheet mock -->
+  <div class="sys" id="sys"><div class="sheet">
+    <div class="hd"><span>Edit Subscription</span><a onclick="closeSystem()">Done</a></div>
     <div class="box"><b>Brain AI Premium</b>Weekly · $9.99 · Renews March 20, 2026</div>
     <div class="box cancel" id="sys-cancel" onclick="storeCancel()">Cancel Subscription</div>
-    <div class="sysnote">Системное окно Apple / Google — не рисуем, только показываем, куда ведёт кнопка.</div>
+    <div class="sysnote">Системное окно Apple — не рисуем, только показываем, куда ведёт кнопка.</div>
   </div></div>
 
   <div class="toast" id="toast"></div>
 </div>
 
 <div class="notes">
-  <h3>BP-975 — Настройки и личный кабинет в приложении</h3>
-  <p>Кликабельный прототип логики, не финальный визуал. Сценарий и платформа — в панели сверху. Жёлтый пунктир — новое или изменённое, кнопка «Подсветка изменений» показывает финальный вид.</p>
+  <h3>BP-975 — Настройки и личный кабинет, первая версия (iOS)</h3>
+  <p>Кликабельный прототип логики, не финальный визуал. Сценарий — в панели сверху. Жёлтый пунктир — новое или изменённое, кнопка «Подсветка изменений» показывает финальный вид.</p>
   <h4>Настройки</h4>
   <ul>
     <li>Отдельная страница вместо поп-апа: открывается по шестерёнке, закрывается крестиком.</li>
     <li>Сверху — аккаунт: «Log in with web account», если не вошёл; «My account» с email, если вошёл.</li>
-    <li>«Manage subscription» — только если есть подписка в App Store / Google Play. Работает как отмена подписки в приложении в кабинете: если она последняя — опрос (ответ сохраняем) → оффер 50% → отказ → системное окно стора; если веб активна — сразу окно стора. Так и для тех, кто не вошёл в веб-аккаунт (сценарий 8).</li>
+    <li>«Manage subscription» — только если есть подписка в App Store, в том числе без входа в веб-аккаунт. Работает как отмена подписки App Store в кабинете.</li>
     <li>Текущие пункты (Restore purchases, Contact us, Privacy, Terms, версия) остаются.</li>
   </ul>
   <h4>My account</h4>
   <ul>
     <li>Открывается сразу после входа по коду и из Настроек.</li>
-    <li>Подписки — отдельными блоками: сверху веб, под ней подписка в приложении. Блок показываем, только если такая подписка есть или была; одна подписка — один блок. У каждого активного блока своя кнопка отмены.</li>
-    <li>Подписок нет совсем — один блок «Subscription: None» и кнопка Subscribe.</li>
-    <li>Subscribe — только если активной подписки нет нигде; ведёт на пейволл приложения.</li>
-    <li>Log out — внизу.</li>
+    <li><b>Блок веб-подписки</b> — только пока есть доступ: Active с кнопкой Cancel subscription или Cancelled с датой «Access until». Доступ закончился или был рефанд — блок исчезает.</li>
+    <li><b>Блок App Store</b> — всегда: Active с кнопкой Cancel, Cancelled с «Access until» или None с кнопкой Subscribe (пейволл приложения). Subscribe не показываем, пока есть доступ по веб-подписке.</li>
+    <li>Внизу Log out и Delete account (требование Apple: раз можно создать аккаунт, его можно и удалить).</li>
   </ul>
   <h4>Отмена</h4>
   <ul>
-    <li>Опрос и оффер 50% — только когда человек отменяет <b>последнюю</b> активную подписку, и для веба, и для стора.</li>
-    <li>Веб, а стор активен — короткое подтверждение без оффера (сценарий 5).</li>
-    <li>Веб последняя — как на вебе: опрос → оффер 50% → подтверждение (сценарии 1, 7).</li>
-    <li>Стор последняя — опрос → оффер 50% (скидка через стор: промо-оффер App Store / оффер Google Play) → «скидка применена» ИЛИ отказ → системное окно стора (сценарий 6).</li>
-    <li>Стор, а веб активна — сразу системное окно стора (сценарий 5).</li>
-    <li>Отменить подписку в сторе за пользователя нельзя — только открыть окно стора, кнопку «Cancel» нажимает он сам.</li>
+    <li><b>Веб-подписка</b>: опрос → подтверждение «Cancel web subscription?» → «Your subscription has been cancelled!». Оффера в приложении нет — скидку на веб-подписку внутри iOS-приложения не даём (правила Apple).</li>
+    <li><b>App Store, последняя активная</b>: опрос → оффер 50% → Claim (скидка через App Store) ИЛИ отказ → системное окно отмены.</li>
+    <li><b>App Store, веб активна</b>: сразу системное окно, без опроса и оффера — премиум остаётся через веб.</li>
+    <li>Отменить подписку App Store за пользователя нельзя — только открыть системное окно, Cancel нажимает он сам.</li>
   </ul>
 </div>
 </div>
@@ -265,89 +268,91 @@
 <script>
 const SC = {
   web_active:{logged:true, web:'active', store:null},
-  web_discount:{logged:true, web:'active', disc:true, store:null},
   web_cancelled:{logged:true, web:'cancelled', store:null},
-  web_none:{logged:true, web:'none', store:null},
+  web_gone:{logged:true, web:null, store:null},
   both_active:{logged:true, web:'active', store:'active'},
   web_cancelled_store:{logged:true, web:'cancelled', store:'active'},
+  store_only_logged:{logged:true, web:null, store:'active'},
   web_active_store_cancelled:{logged:true, web:'active', store:'cancelled'},
   logged_out_store:{logged:false, web:null, store:'active'},
   logged_out:{logged:false, web:null, store:null},
 };
-let st = {}, pf = 'ios', cancelTarget = 'web';
+let st = {}, cancelTarget = 'web';
 const REASONS = ['Too expensive','Not using it enough',"Didn't get the results I expected",'Found a better alternative','Technical issues','Other'];
-const storeName = () => pf === 'ios' ? 'App Store' : 'Google Play';
 const $ = id => document.getElementById(id);
-
-function setScenario(v){ $('sc').value = v; st = JSON.parse(JSON.stringify(SC[v])); renderSettings(); renderAccount(); closeM(); closeSystem(); go(st.logged ? 'account' : 'settings'); }
-function setPlatform(v){ pf = v; document.querySelectorAll('.storename').forEach(e => e.textContent = storeName()); renderSettings(); renderAccount();
-  const sh = $('sheet'); sh.classList.toggle('android', pf === 'android'); $('sys-title').textContent = pf === 'ios' ? 'Edit Subscription' : 'Google Play · Subscriptions'; }
-function go(s){ document.querySelectorAll('.screen').forEach(e => e.classList.remove('show')); $('s-' + s).classList.add('show'); }
-function toast(t){ const e = $('toast'); e.textContent = t; e.classList.add('show'); setTimeout(() => e.classList.remove('show'), 2600); }
-function toggleMark(){ const c = document.body.classList.toggle('clean'); const b = $('b-mark'); b.classList.toggle('on', !c); b.textContent = 'Подсветка изменений: ' + (c ? 'выкл' : 'вкл'); }
 const active = x => x === 'active';
-const anyActive = () => active(st.web) || active(st.store);
+
+function setScenario(v){ $('sc').value = v; st = JSON.parse(JSON.stringify(SC[v])); closeM(); closeSystem(); go(st.logged ? 'account' : 'settings'); }
+function go(s){ renderAll(); document.querySelectorAll('.screen').forEach(e => e.classList.remove('show')); $('s-' + s).classList.add('show'); }
+function renderAll(){ renderSettings(); renderAccount(); }
+function toast(t){ const e = $('toast'); e.textContent = t; e.classList.add('show'); setTimeout(() => e.classList.remove('show'), 2800); }
+function toggleMark(){ const c = document.body.classList.toggle('clean'); const b = $('b-mark'); b.classList.toggle('on', !c); b.textContent = 'Подсветка изменений: ' + (c ? 'выкл' : 'вкл'); }
 
 function renderSettings(){
   $('g-account').innerHTML = st.logged
     ? `<div class="item" onclick="go('account')"><i>👤</i><span>My account<span class="sub">mary.smith@gmail.com</span></span><span class="chev">›</span></div>`
     : `<div class="item" onclick="go('email')"><i>🔑</i><span>Log in with web account<span class="sub">Bought on our website? Log in here</span></span><span class="chev">›</span></div>`;
   $('g-manage').style.display = st.store ? '' : 'none';
-  $('manage-sub').textContent = storeName();
 }
 
 function webCard(){
-  if (!st.web || st.web === 'none') return '';   // блок только если веб-подписка есть или была
-  const chip = {active:'Active', cancelled:'Cancelled', none:'None'}[st.web];
-  let rows = '';
-  if (st.web === 'active') rows = st.disc
-    ? `<div class="kv"><span>Plan</span><b><s>4 week / $39.98</s> $19.99</b></div><div class="save">You save 50% on your next payment</div><div class="kv"><span>Next payment</span><b>March 13, 2026</b></div>`
-    : `<div class="kv"><span>Plan</span><b>4 week / $39.98</b></div><div class="kv"><span>Next payment</span><b>March 13, 2026</b></div>`;
-  if (st.web === 'cancelled') rows = `<div class="kv"><span>Plan</span><b>4 week / $39.98</b></div><div class="kv"><span>Access until</span><b>March 13, 2026</b></div>`;
+  if (!st.web) return '';                       // нет доступа (не было, закончилась, рефанд) — блока нет
+  const rows = st.web === 'active'
+    ? (st.disc ? `<div class="kv"><span>Plan</span><b><s>4 week / $39.98</s> $19.99</b></div><div class="save">You save 50% on your next payment</div>` : `<div class="kv"><span>Plan</span><b>4 week / $39.98</b></div>`) + `<div class="kv"><span>Next payment</span><b>March 13, 2026</b></div>`
+    : `<div class="kv"><span>Plan</span><b>4 week / $39.98</b></div><div class="kv"><span>Access until</span><b>March 13, 2026</b></div>`;
   const btn = st.web === 'active' ? `<button class="btn soft" onclick="startCancel('web')">Cancel subscription</button>` : '';
-  return `<div class="card"><div class="lbl">Web subscription <span class="chip ${st.web}">${chip}</span></div>${rows}${btn}</div>`;
+  return `<div class="card chg" data-chg="только пока есть доступ"><div class="lbl">Web subscription <span class="chip ${st.web}">${st.web === 'active' ? 'Active' : 'Cancelled'}</span></div>${rows}${btn}</div>`;
 }
 function storeCard(){
-  if (!st.store) return '';
-  const chip = st.store === 'active' ? 'Active' : 'Cancelled';
-  const rows = st.store === 'active'
-    ? (st.storeDisc ? `<div class="kv"><span>Plan</span><b><s>Weekly / $9.99</s> $4.99</b></div><div class="save">You save 50% on your next payment</div>` : `<div class="kv"><span>Plan</span><b>Weekly / $9.99</b></div>`) + `<div class="kv"><span>Renews on</span><b>March 20, 2026</b></div>`
-    : `<div class="kv"><span>Plan</span><b>Weekly / $9.99</b></div><div class="kv"><span>Access until</span><b>March 20, 2026</b></div>`;
-  const btn = st.store === 'active' ? `<button class="btn soft" onclick="startCancel('store')">Cancel in ${storeName()}</button><p class="hint center" style="margin-top:8px">Managed by ${storeName()}</p>` : '';
-  return `<div class="card chg" data-chg="НОВОЕ: подписка в приложении"><div class="lbl">App subscription · ${storeName()} <span class="chip ${st.store}">${chip}</span></div>${rows}${btn}</div>`;
+  const s = st.store || 'none';
+  let rows = '', btn = '';
+  if (s === 'active') {
+    rows = (st.storeDisc ? `<div class="kv"><span>Plan</span><b><s>Weekly / $9.99</s> $4.99</b></div><div class="save">You save 50% on your next payment</div>` : `<div class="kv"><span>Plan</span><b>Weekly / $9.99</b></div>`) + `<div class="kv"><span>Renews on</span><b>March 20, 2026</b></div>`;
+    btn = `<button class="btn soft" onclick="startCancel('store')">Cancel subscription</button><p class="hint center" style="margin-top:8px">Managed by the App Store</p>`;
+  } else if (s === 'cancelled') {
+    rows = `<div class="kv"><span>Plan</span><b>Weekly / $9.99</b></div><div class="kv"><span>Access until</span><b>March 20, 2026</b></div>`;
+  } else {
+    rows = st.web ? `<p class="hint">Premium is active through your web subscription${st.web === 'cancelled' ? ' until March 13, 2026' : ''}.</p>` : `<p class="hint">You don't have an App Store subscription.</p>`;
+    if (!st.web) btn = `<button class="btn" onclick="toast('→ Пейволл приложения (inapp_paywall_shown, source = account_page)')">Subscribe</button>`;
+  }
+  const chip = {active:'Active', cancelled:'Cancelled', none:'None'}[s];
+  return `<div class="card chg" data-chg="НОВОЕ: блок App Store — всегда"><div class="lbl">App Store subscription <span class="chip ${s}">${chip}</span></div>${rows}${btn}</div>`;
 }
 function renderAccount(){
   if (!st.logged) { $('acc-body').innerHTML = ''; return; }
   $('acc-body').innerHTML =
     `<div class="card"><div class="kv"><span>Email</span><b>mary.smith@gmail.com</b></div></div>` +
     webCard() + storeCard() +
-    (st.web === 'none' && !st.store ? `<div class="card"><div class="lbl">Subscription <span class="chip none">None</span></div><p class="hint">You don't have an active subscription.</p></div>` : '') +
-    (anyActive() ? '' : `<button class="btn" onclick="toast('→ Пейволл приложения (inapp_paywall_shown, source = account_page)')">Subscribe</button>`) +
-    `<button class="btn out" style="margin-top:10px" onclick="logout()">Log out</button>`;
+    `<button class="btn out" style="margin-top:4px" onclick="logout()">Log out</button>` +
+    `<button class="btn ghost chg" data-chg="НОВОЕ" style="margin-top:6px" onclick="show('m-delete')">Delete account</button>`;
 }
 
-function login(){ st.logged = true; st.web = st.web || 'active'; renderSettings(); renderAccount(); go('account'); toast('Вход успешен → сразу My account (source = after_login)'); }
-function logout(){ st.logged = false; st.web = null; renderSettings(); renderAccount(); go('settings'); }
+function login(){ st.logged = true; if (!st.web && !st.store) st.web = 'active'; go('account'); toast('Вход успешен → сразу My account (source = after_login)'); }
+function logout(){ st.logged = false; st.web = null; go('settings'); }
 
 function startCancel(t){
   cancelTarget = t;
-  const other = t === 'web' ? active(st.store) : active(st.web);
-  if (other) { if (t === 'web') return show('m-simple'); return openSystem(true); }   // не последняя — без опроса и оффера
+  if (t === 'store' && active(st.web)) return openSystem();       // App Store не последняя — сразу системное окно
   $('opts').innerHTML = REASONS.map((r, i) => `<div class="opt${i === 2 ? ' sel' : ''}" onclick="document.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));this.classList.add('sel')"><span></span>${r}</div>`).join('');
   show('m-survey');
 }
 function manageSub(){ if (active(st.store)) startCancel('store'); else openSystem(); }
-function afterSurvey(){ closeM(); show('m-offer'); }
-function claim(){ if (cancelTarget === 'web') st.disc = true; else st.storeDisc = true; closeM(); show('m-claimed'); }
-function decline(){ if (cancelTarget === 'web') cancelWeb(); else openSystem(true); }
+function afterSurvey(){
+  closeM();
+  if (cancelTarget === 'store') return show('m-offer');
+  $('confirm-text').textContent = active(st.store)
+    ? "Premium stays active through your App Store subscription. You'll keep web access until March 13, 2026, with no further charges."
+    : "You'll keep access until the end of your current billing period (March 13, 2026). No further charges after that.";
+  show('m-confirm');
+}
+function claim(){ st.storeDisc = true; closeM(); toast('→ Окно App Store: подтверждение скидки (код оффера или промо-оффер — решает Антон)'); setTimeout(() => show('m-claimed'), 900); }
 function cancelWeb(){ st.web = 'cancelled'; st.disc = false; closeM(); show('m-cancelled'); }
-function cancelWebSimple(){ st.web = 'cancelled'; st.disc = false; closeM(); renderAccount(); toast('Web subscription cancelled. Premium stays active through ' + storeName() + '.'); }
 
 function show(id){ document.querySelectorAll('.ov').forEach(o => o.classList.remove('show')); $(id).classList.add('show'); }
 function closeM(){ document.querySelectorAll('.ov').forEach(o => o.classList.remove('show')); }
 function openSystem(){ closeM(); $('sys-cancel').style.display = active(st.store) ? '' : 'none'; $('sys').classList.add('show'); }
-function closeSystem(){ $('sys').classList.remove('show'); renderAccount(); renderSettings(); }
-function storeCancel(){ st.store = 'cancelled'; $('sys-cancel').style.display = 'none'; toast('Пользователь отменил в сторе → приложение видит, что автопродление выключено'); }
+function closeSystem(){ $('sys').classList.remove('show'); renderAll(); }
+function storeCancel(){ st.store = 'cancelled'; st.storeDisc = false; $('sys-cancel').style.display = 'none'; toast('Пользователь отменил в App Store → приложение видит, что автопродление выключено'); }
 
 setScenario('web_active');
 </script>
