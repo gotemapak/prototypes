@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dementia Risk Report — [Company]</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Отчёт v4. Параметры: ?level=low|mild|moderate|elevated&gender=female|male&age=70-79 или ?a=<JSON ответов из прототипа>. Тексты и подсчёт — ../prototype/scoring.js -->
+<style>
+  :root {
+    --accent: #2168ff; --accent-soft: #eaf1ff; --accent-soft-2: #f4f8ff;
+    --text: #131a35; --title: #17213a; --text-2: #26314b; --muted: #596179; --faint: #8b90a0;
+    --line: #e3e8f2; --page-bg: #edf3fe;
+    --lv: #1e9e6a; --lv-soft: #e6f6ee; --lv-ink: #0f6b45;
+  }
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body { background: var(--page-bg); color: var(--text); font-family: "Inter", Arial, sans-serif; font-size: 12.5pt; line-height: 1.5;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .page { width: 210mm; height: 297mm; margin: 10mm auto; background: #fff; position: relative; overflow: hidden;
+    padding: 16mm 17mm 20mm; box-shadow: 0 4px 40px #00126f1a; display: flex; flex-direction: column; }
+  @media print {
+    body { background: #fff; }
+    .page { margin: 0; box-shadow: none; break-after: page; page-break-after: always; }
+    .page:last-child { break-after: auto; page-break-after: auto; }
+  }
+  .foot { position: absolute; left: 17mm; right: 17mm; bottom: 9mm; display: flex; justify-content: space-between;
+    font-size: 9.5pt; color: var(--faint); border-top: 1px solid var(--line); padding-top: 3mm; }
+  .eyebrow { font-size: 10.5pt; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin: 0 0 2mm; }
+  h1 { font-size: 30pt; line-height: 1.12; margin: 0; color: var(--title); font-weight: 800; }
+  h2 { font-size: 22pt; line-height: 1.18; margin: 0 0 5mm; color: var(--title); font-weight: 800; }
+  h3 { font-size: 14.5pt; line-height: 1.3; margin: 0 0 1.5mm; color: var(--title); font-weight: 700; }
+  p { margin: 0 0 3.5mm; color: var(--text-2); }
+  .lead { font-size: 14pt; line-height: 1.45; color: var(--text-2); }
+  .small { font-size: 10.5pt; color: var(--muted); }
+  .card { background: var(--accent-soft-2); border: 1px solid var(--line); border-radius: 5mm; padding: 5mm 6mm; margin-bottom: 4mm; }
+  .row { display: flex; gap: 5mm; }
+  .row > * { flex: 1; }
+  .num { display: inline-flex; width: 9mm; height: 9mm; border-radius: 50%; background: var(--accent); color: #fff; font-weight: 800;
+    align-items: center; justify-content: center; font-size: 13pt; flex: none; }
+
+  /* обложка */
+  .cover { padding: 0; }
+  .cover .band { background: var(--accent); color: #fff; padding: 11mm 17mm 9mm; }
+  .cover .logo { display: flex; align-items: center; gap: 3mm; font-weight: 800; font-size: 14pt; margin-bottom: 8mm; }
+  .cover .logo img { height: 9mm; filter: brightness(0) invert(1); }
+  .cover .band .eyebrow { color: #cfe0ff; }
+  .cover h1 { color: #fff; font-size: 34pt; }
+  .cover .who { margin-top: 4mm; font-size: 12pt; color: #dfe9ff; }
+  .cover .body { padding: 6mm 17mm 0; }
+  .gauge { width: 96mm; margin: 0 auto; position: relative; }
+  .gauge svg { width: 100%; display: block; }
+  .gauge .v { position: absolute; left: 0; right: 0; top: 42%; text-align: center; font-size: 40pt; font-weight: 800; color: var(--title); line-height: 1; }
+  .gauge .l { position: absolute; left: 0; right: 0; top: 66%; text-align: center; font-size: 12pt; color: var(--muted); }
+  .level { display: flex; justify-content: center; margin: -1mm 0 5mm; }
+  .level span { display: inline-flex; align-items: center; gap: 2.5mm; background: var(--lv-soft); color: var(--lv-ink); font-weight: 800; font-size: 13pt; border-radius: 99px; padding: 2mm 6mm; }
+  .level i { width: 3.5mm; height: 3.5mm; border-radius: 50%; background: var(--lv); }
+  .verdict { margin-top: 7mm !important; text-align: center; font-size: 20pt; font-weight: 800; color: var(--title); line-height: 1.2; margin: 0 0 3mm; }
+  .intro { text-align: center; font-size: 13pt; margin: 0 6mm 6mm; }
+  .duo .card h3 { font-size: 12pt; color: var(--muted); font-weight: 600; margin: 0 0 1mm; }
+  .duo .card b { font-size: 16pt; color: var(--title); }
+
+  /* шкала уровней */
+  .levels { display: flex; gap: 2mm; margin: 2mm 0 2mm; }
+  .levels div { flex: 1; border-radius: 3mm; padding: 2.5mm 2mm; text-align: center; font-size: 10pt; color: var(--muted); background: #f3f5fa; border: 2px solid transparent; }
+  .levels div b { display: block; font-size: 11pt; color: var(--title); }
+  .levels div.on { border-color: var(--lv); background: var(--lv-soft); color: var(--lv-ink); }
+  .levels div.on b { color: var(--lv-ink); }
+
+  /* области */
+  .card.area { margin-bottom: 2.5mm; padding: 3.5mm 5.5mm; }
+  .area .top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 1.5mm; }
+  .area .top b { font-size: 13.5pt; color: var(--title); }
+  .area .top .st { font-weight: 700; font-size: 11pt; border-radius: 99px; padding: .6mm 3mm; }
+  .st.strength { background: #e6f6ee; color: #0f6b45; } .st.solid { background: var(--accent-soft); color: var(--accent); } .st.grow { background: #fff4e0; color: #8a5600; }
+  .bar { position: relative; height: 4mm; background: #e6ebf5; border-radius: 99px; overflow: hidden; margin-bottom: 2mm; }
+  .bar i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 99px; }
+  .area p { margin: 0; font-size: 11pt; line-height: 1.4; }
+  .pct { color: var(--accent); font-weight: 800; margin-left: 2mm; }
+
+  .habit { display: flex; gap: 4mm; align-items: flex-start; }
+  .habit .ic { font-size: 18pt; line-height: 1; }
+  .habit h3 { margin: 0 0 1mm; font-size: 13pt; }
+  .card.habit { padding: 3.5mm 5.5mm; margin-bottom: 3mm; } .habit p { margin: 0; font-size: 11pt; line-height: 1.4; }
+
+  .steps li { display: flex; gap: 4mm; align-items: flex-start; margin-bottom: 4mm; font-size: 13pt; color: var(--title); }
+  .steps { list-style: none; padding: 0; margin: 0 0 4mm; }
+  .days { display: flex; gap: 4mm; margin-bottom: 5mm; }
+  .days div { flex: 1; border: 1px solid var(--line); border-radius: 4mm; padding: 4mm; text-align: center; background: #fff; }
+  .days b { display: block; font-size: 13pt; color: var(--title); }
+  .days span { display: block; color: var(--muted); font-size: 10.5pt; }
+  .days em { display: block; font-style: normal; font-weight: 700; color: var(--accent); margin: 1.5mm 0; }
+  .app { background: var(--accent); color: #fff; border-radius: 5mm; padding: 6mm; display: flex; gap: 6mm; align-items: center; }
+  .app h3 { color: #fff; font-size: 15pt; } .app p { color: #dfe9ff; margin: 0; font-size: 11.5pt; }
+  .app .btn { background: #fff; color: var(--accent); font-weight: 800; border-radius: 3mm; padding: 3mm 5mm; white-space: nowrap; font-size: 12pt; }
+  .disc { font-size: 10pt; color: var(--muted); border-top: 1px solid var(--line); padding-top: 4mm; margin-top: auto; }
+  .note { border-left: 4px solid var(--lv); padding: 1mm 0 1mm 4mm; color: var(--title); font-weight: 600; margin: 0 0 5mm; }
+  .gauge .v.lv { top: 50%; font-size: 26pt; line-height: 1.05; color: var(--lv-ink); }
+  .gauge .v.lv small { font-size: 14pt; font-weight: 600; color: var(--muted); }
+  .habit .top { display: flex; justify-content: space-between; align-items: baseline; gap: 3mm; }
+  .habit .st { font-weight: 700; font-size: 10pt; border-radius: 99px; padding: .4mm 2.5mm; white-space: nowrap; }
+  .plan { border: 1px solid var(--line); border-radius: 4mm; overflow: hidden; margin-bottom: 5mm; }
+  .pday { display: flex; gap: 4mm; align-items: baseline; padding: 2.4mm 5mm; border-bottom: 1px solid var(--line); font-size: 11.5pt; }
+  .pday:last-child { border-bottom: 0; } .pday:nth-child(odd) { background: var(--accent-soft-2); }
+  .pday b { width: 13mm; flex: none; color: var(--title); } .pday .pa { width: 24mm; flex: none; color: var(--accent); font-weight: 600; }
+  .pday .pt { color: var(--text-2); } .pday .pt strong { color: var(--title); }
+  .page > * { flex-shrink: 0; }
+  .cmp { display: grid; gap: 3mm; margin: 2mm 0 3mm; }
+  .cmp div { display: grid; grid-template-columns: 26mm 1fr 14mm; grid-template-rows: auto 3.5mm; column-gap: 4mm; row-gap: 1.5mm; align-items: center; background: var(--accent-soft-2); border: 1px solid var(--line); border-radius: 4mm; padding: 3.5mm 5mm; }
+  .cmp b { grid-row: 1 / 3; font-size: 18pt; color: var(--accent); } .cmp span { font-size: 11.5pt; color: var(--title); }
+  .cmp i { grid-column: 2; grid-row: 2; height: 3.5mm; background: var(--accent); border-radius: 99px; display: block; }
+  .cmp em { grid-column: 3; grid-row: 1 / 3; font-style: normal; font-weight: 800; color: var(--title); text-align: right; }
+  .nrm { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); border-radius: 4mm; overflow: hidden; font-size: 10.5pt; line-height: 1.35; margin-bottom: 2mm; }
+  .nrm > div { padding: 2.2mm 4mm; border-top: 1px solid var(--line); color: var(--text-2); }
+  .nrm > div:nth-child(4n+3), .nrm > div:nth-child(4n+4) { background: #fafbfe; }
+  .nrm .nrm-h { border-top: 0; font-weight: 800; font-size: 11pt; } .nrm .ok { background: #e6f6ee; color: #0f6b45; } .nrm .warn { background: #fff4e0; color: #8a5600; }
+  .fac { border: 1px solid var(--line); border-radius: 4mm; overflow: hidden; margin: 2mm 0 3mm; }
+  .fac div { display: grid; grid-template-columns: 46mm 30mm 10mm 1fr; gap: 3mm; align-items: center; padding: 2mm 4mm; border-top: 1px solid var(--line); font-size: 10.5pt; }
+  .fac div:first-child { border-top: 0; } .fac div.act { background: var(--accent-soft-2); }
+  .fac .fn { font-weight: 700; color: var(--title); } .fac .fb { height: 3mm; background: #e6ebf5; border-radius: 99px; overflow: hidden; } .fac .fb i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+  .fac .fp { font-weight: 800; color: var(--accent); } .fac .ft { color: var(--muted); font-size: 10pt; line-height: 1.3; }
+  .trk { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; } .trk .card { margin: 0; }
+  .trk ul { margin: 1mm 0 0; padding-left: 5mm; } .trk li { font-size: 11pt; margin-bottom: 2mm; color: var(--text-2); line-height: 1.4; }
+</style>
+</head>
+<body>
+<div id="r"></div>
+<script src="../prototype/scoring.js"></script>
+<script>
+(function () {
+  var D = window.DEM, P = {};
+  try { new URLSearchParams(location.search).forEach(function (v, k) { P[k] = v; }); } catch (e) {}
+  var A;
+  try { A = P.a ? JSON.parse(P.a) : null; } catch (e) { A = null; }
+  if (!A) A = D.answersForLevel(P.level || 'low', P.gender || 'female', P.age || '70-79');
+  var r = D.scoring(A), L = D.LEVELS[r.level], T = D.REPORT[r.level], PL = D.PLAN[r.level];
+  if (P.name) r.name = P.name;
+  var css = document.documentElement.style;
+  css.setProperty('--lv', L.color); css.setProperty('--lv-soft', L.soft); css.setProperty('--lv-ink', L.ink);
+
+  function fill(s) { return s.replace(/\{top\}/g, r.topArea).replace(/\{focus\}/g, r.focusAreas); }
+  var date = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  var TOTAL = 6, foot = function (n) { return '<div class="foot"><span>[Company] · Dementia Risk Report</span><span>' + n + ' / ' + TOTAL + '</span></div>'; };
+
+  // Шкала без числа: заполнение по середине уровня, в центре — название уровня
+  var FILL = { low: 2, mild: 4.5, moderate: 6.5, elevated: 9 };
+  function gauge() {
+    var segs = 28, out = '', v = FILL[r.level];
+    for (var k = 0; k < segs; k++) {
+      var a = Math.PI * (1 - k / (segs - 1)) * 1.2 - Math.PI * 0.1, cx = 130, cy = 130;
+      var x1 = cx + 92 * Math.cos(a), y1 = cy - 92 * Math.sin(a), x2 = cx + 116 * Math.cos(a), y2 = cy - 116 * Math.sin(a);
+      var t = k / (segs - 1), col = t <= v / 10 ? 'hsl(' + Math.round(220 - t * 175) + ',85%,55%)' : '#dfe6f5';
+      out += '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '" stroke="' + col + '" stroke-width="8" stroke-linecap="round"/>';
+    }
+    return '<div class="gauge"><svg viewBox="0 0 260 175">' + out + '</svg><div class="v lv">' + L.label.replace(' risk', '<br><small>risk</small>') + '</div></div>';
+  }
+
+  // страница 1 — обложка и итог
+  var p1 = '<section class="page cover"><div class="band"><div class="logo">[Company]</div>' +
+    '<p class="eyebrow">Private dementia check-in</p><h1>Your Dementia Risk Report</h1>' +
+    '<div class="who">Based on your answers to the [Company] dementia check-in</div></div>' +
+    '<div class="body">' + gauge() +
+    '<p class="verdict">' + T.title + '</p><p class="intro">' + fill(T.intro) + '</p>' +
+    '<div class="row duo"><div class="card"><h3>Your strongest area</h3><b>' + r.topArea + '</b></div>' +
+    '<div class="card"><h3>2 areas to strengthen</h3><b>' + r.focusAreas + '</b></div></div>' +
+    '<p class="small" style="margin-top:2mm">Your result today, on 4 levels:</p>' +
+    '<div class="levels">' + [['low', 'Low'], ['mild', 'Mild'], ['moderate', 'Moderate'], ['elevated', 'Elevated']].map(function (x) {
+      return '<div class="' + (x[0] === r.level ? 'on' : '') + '"><b>' + x[1] + '</b>' + (x[0] === r.level ? 'You are here' : '&nbsp;') + '</div>'; }).join('') + '</div>' +
+    '</div>' + foot(1) + '</section>';
+
+  // страница 2 — области (без процентов) и привычки (всегда 4 карточки)
+  var areasHtml = r.areas.map(function (a) {
+    var s = D.areaStatus(a.pct, r.focusIds.indexOf(a.id) > -1), cls = { 'to strengthen': 'grow', 'keep sharp': 'solid' }[s] || s;
+    var line = s === 'to strengthen' ? D.AREA_TEXT[a.id].grow : D.AREA_TEXT[a.id].strong;
+    return '<div class="card area"><div class="top"><b>' + a.icon + ' ' + a.name + '</b><span class="st ' + cls + '">' + s.charAt(0).toUpperCase() + s.slice(1) + '</span></div><p>' + line + '</p></div>';
+  }).join('');
+  var habitsHtml = r.habits.map(function (h) {
+    return '<div class="card habit"><span class="ic">' + h.icon + '</span><div style="flex:1"><div class="top"><h3>' + h.title + '</h3><span class="st ' + (h.ok ? 'strength' : 'grow') + '">' + h.status + '</span></div><p>' + h.text + '</p></div></div>';
+  }).join('');
+  var p2 = '<section class="page"><p class="eyebrow">Your results</p><h2>Your 4 areas</h2>' +
+    '<p class="small" style="margin-top:-3mm">Based on your answers about memory, focus, logic, and language.</p>' + areasHtml +
+    '<h2 style="margin:3mm 0 3mm">Everyday habits</h2>' + habitsHtml + foot(2) + '</section>';
+
+
+  /* ---------- общие страницы: одинаковые во всех 4 отчётах ---------- */
+  // Сравнение с возрастом: Manly et al., JAMA Neurology, 2022 (HRS-HCAP, США, 65+): деменция 10%, MCI 22%
+  var compare = '<h2>Compare to your age</h2><p>How common are memory and thinking changes among Americans aged 65 and older?</p>' +
+    '<div class="cmp">' +
+      '<div><b>2 in 3</b><span>have no memory or thinking problems</span><i style="width:68%"></i><em>68%</em></div>' +
+      '<div><b>1 in 5</b><span>have mild changes in memory or thinking that don’t stop everyday life</span><i style="width:22%"></i><em>22%</em></div>' +
+      '<div><b>1 in 10</b><span>live with dementia</span><i style="width:10%"></i><em>10%</em></div>' +
+    '</div><p class="small">Your check-in is not a diagnosis and does not place you in any of these groups. Source: Manly et al., JAMA Neurology, 2022 — a national study of U.S. adults 65+.</p>';
+  // Нормальное старение и поводы сказать врачу: пересказ «10 Early Signs and Symptoms» Alzheimer’s Association
+  var NORMAL = [
+    ['Forgetting a name or an appointment, then remembering it later', 'Forgetting recent events and asking the same questions again and again'],
+    ['Losing your glasses or keys, then retracing your steps to find them', 'Putting things in unusual places and being unable to retrace your steps'],
+    ['Sometimes struggling to find the right word', 'Stopping in the middle of a conversation with no idea how to go on'],
+    ['Losing track of the day of the week, then figuring it out', 'Losing track of dates, seasons, or where you are'],
+    ['Making an occasional mistake with a bill', 'Trouble following a familiar recipe or keeping track of monthly bills'],
+    ['Feeling tired of social plans now and then', 'Pulling away from hobbies, friends, and activities you used to enjoy']
+  ];
+  var normal = '<h2 style="margin-top:6mm">Normal with age, or worth a doctor’s visit?</h2>' +
+    '<div class="nrm"><div class="nrm-h ok">✓ Common with age</div><div class="nrm-h warn">! Worth mentioning to your doctor</div>' +
+    NORMAL.map(function (x) { return '<div>' + x[0] + '</div><div>' + x[1] + '</div>'; }).join('') + '</div>' +
+    '<p class="small">Adapted from the Alzheimer’s Association, “10 Early Signs and Symptoms of Alzheimer’s”.</p>';
+  var p3 = '<section class="page"><p class="eyebrow">Your age group</p>' + compare + normal + foot(3) + '</section>';
+
+  // Факторы риска: Lancet Commission 2024 (Livingston et al.) — 14 факторов, вместе ≈45% случаев
+  var FACTORS = [
+    ['Hearing loss', 7, 'Check your hearing; use hearing aids if needed', true], ['High LDL cholesterol', 7, 'Check cholesterol with your doctor', true],
+    ['Less education early in life', 5, 'Keep learning — it’s never too late', false], ['Social isolation', 5, 'Stay in touch with people every week', true],
+    ['Depression', 3, 'Talk to someone if you feel low for weeks', true], ['Head injury', 3, 'Wear a seatbelt, prevent falls at home', true],
+    ['Air pollution', 3, 'Avoid smoke and heavy traffic when you can', false], ['Physical inactivity', 2, 'Walk 20 minutes most days', true],
+    ['Smoking', 2, 'It’s worth quitting at any age', true], ['Diabetes', 2, 'Keep blood sugar in range', true],
+    ['High blood pressure', 2, 'Check it once a year', true], ['Untreated vision loss', 2, 'Have your eyes checked', true],
+    ['Obesity', 1, 'Small changes in diet and activity', true], ['Too much alcohol', 1, 'Keep it to a few drinks a week', true]
+  ];
+  var p4 = '<section class="page"><p class="eyebrow">What you can change</p><h2>14 things linked to dementia</h2>' +
+    '<p>Experts estimate that <b>nearly half of dementia cases (45%)</b> are linked to these 14 factors. Many of them can be changed at any age.</p>' +
+    '<div class="fac">' + FACTORS.map(function (f) {
+      return '<div class="' + (f[3] ? 'act' : '') + '"><span class="fn">' + f[0] + '</span><span class="fb"><i style="width:' + (f[1] / 7 * 100) + '%"></i></span><span class="fp">' + f[1] + '%</span><span class="ft">' + f[2] + '</span></div>';
+    }).join('') + '</div>' +
+    '<p class="small">% — share of dementia cases worldwide linked to each factor. Highlighted rows are the ones you can act on after 60. Source: Lancet Commission on dementia prevention, 2024.</p>' + foot(4) + '</section>';
+
+  // Приёмы на каждый день — по всем 4 областям
+  var TRICKS = {
+    memory: ['Say a new name out loud and link it to a picture: “Rose — red scarf”.', 'Give your keys, glasses, and phone one home spot, and always put them back there.', 'Write it down at once: keep one small notebook or one note on your phone.'],
+    focus: ['Do one thing at a time: turn off the TV when you talk on the phone.', 'Before a task, say out loud what you are about to do.', 'Break big jobs into short steps and tick each one off.'],
+    logic: ['Plan your day the evening before: three things, in order.', 'Try a new route on your walk or a new recipe each week.', 'Play a strategy game — cards, chess, or sudoku — with someone else.'],
+    language: ['Read aloud for a few minutes a day.', 'When a word slips away, describe it — the word often comes back.', 'Tell someone about your day or a book you read.']
+  };
+  var p5 = '<section class="page"><p class="eyebrow">Everyday tips</p><h2>Simple tricks for everyday life</h2>' +
+    '<p>Small habits that make names, keys, and conversations easier — for all 4 areas.</p><div class="trk">' +
+    r.areas.map(function (a) { return '<div class="card"><h3>' + a.icon + ' ' + a.name + '</h3><ul>' + TRICKS[a.id].map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul></div>'; }).join('') +
+    '</div>' + foot(5) + '</section>';
+
+  // последняя страница — шаги и план на неделю
+  var days = D.planDays(r).map(function (d) {
+    return '<div class="pday"><b>Day ' + d.day + '</b><span class="pa">' + (d.area || '—') + '</span><span class="pt"><strong>' + d.title + '</strong> · ' + d.text + '</span></div>';
+  }).join('');
+  var p6 = '<section class="page"><p class="eyebrow">What to do next</p><h2>Your next steps</h2>' +
+    '<ul class="steps">' + T.steps.map(function (s, i) { return '<li><span class="num">' + (i + 1) + '</span><span>' + fill(s) + '</span></li>'; }).join('') + '</ul>' +
+    '<h2 style="margin-top:1mm">Your first week: ' + PL.title.toLowerCase() + '</h2><p><b>' + PL.minutes + '.</b> ' + fill(PL.intro) + ' Large, clear games. No rushing.</p>' +
+    '<div class="plan">' + days + '</div>' +
+    '<div class="app"><div style="flex:1"><h3>Your plan is ready in the [Company] app</h3><p>Play your daily games, track your progress every week, and retake this check-in anytime.</p></div><a class="btn" href="#" style="text-decoration:none">Open the app</a></div><p class="small" style="margin-top:2mm">Install [Company] from the App Store or Google Play and sign in with the same email you used here.</p>' +
+    '<p class="disc">' + D.DISCLAIMER + '</p>' + foot(6) + '</section>';
+
+  document.getElementById('r').innerHTML = p1 + p2 + p3 + p4 + p5 + p6;
+  document.title = 'Dementia Risk Report — ' + L.label;
+  window.REPORT_READY = true;
+})();
+</script>
+</body>
+</html>

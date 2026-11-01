@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Деменция v4 — предпросмотр</title>
+<style>
+  body { margin: 0; font-family: Inter, -apple-system, Arial, sans-serif; background: #edf3fe; color: #17213a; }
+  .wrap { display: flex; gap: 24px; padding: 20px; align-items: flex-start; flex-wrap: wrap; }
+  .side { flex: 1; min-width: 300px; max-width: 560px; }
+  h1 { font-size: 22px; margin: 0 0 6px; } p { color: #596179; font-size: 14px; line-height: 1.45; margin: 0 0 14px; }
+  .seg { display: inline-flex; background: #fff; border-radius: 10px; padding: 3px; box-shadow: 0 1px 4px #00126f14; margin: 0 8px 10px 0; }
+  .seg button { border: 0; background: transparent; padding: 8px 14px; border-radius: 8px; font: inherit; font-size: 14px; cursor: pointer; color: #17213a; }
+  .seg button.on { background: #2168ff; color: #fff; }
+  .links a { display: inline-block; margin: 0 8px 8px 0; background: #fff; color: #2168ff; padding: 8px 12px; border-radius: 10px; text-decoration: none; font-size: 14px; font-weight: 600; }
+  iframe { width: 390px; height: 844px; border: 0; border-radius: 24px; background: #fff; box-shadow: 0 4px 40px #00126f22; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="side">
+    <h1>Деменция v4 — квиз, пейволл, PDF</h1>
+    <p>Справа пейволл. После оплаты на пейволле (любая кнопка оплаты) — success-страница. с ответами под выбранный уровень (риск 2, 4, 6 и 8). Квиз целиком — «Пройти квиз с начала». На пейволле кнопка «Подсветка изменений» обводит отличия от живого v3, «PDF-отчёт ↗» открывает отчёт по текущим ответам.</p>
+    <div class="seg" id="level"><button data-v="low" class="on">Low</button><button data-v="mild">Mild</button><button data-v="moderate">Moderate</button><button data-v="elevated">Elevated</button></div>
+    <div class="seg" id="gender"><button data-v="female" class="on">Woman</button><button data-v="male">Man</button></div>
+    <div class="links">
+      <a href="index.html" target="_blank">Пройти квиз с начала ↗</a>
+      <a id="rep" href="#" target="_blank">Отчёт этого уровня ↗</a>
+      <a id="succ" href="#" target="_blank">Success-страница ↗</a>
+      <a href="../certificate/certificate.html?name=Linda%20Smith" target="_blank">Сертификат ↗</a>
+      <a href="../report/samples/report-low.pdf" target="_blank">PDF Low</a>
+      <a href="../report/samples/report-mild.pdf" target="_blank">PDF Mild</a>
+      <a href="../report/samples/report-moderate.pdf" target="_blank">PDF Moderate</a>
+      <a href="../report/samples/report-elevated.pdf" target="_blank">PDF Elevated</a>
+    </div>
+  </div>
+  <iframe id="f" title="paywall"></iframe>
+</div>
+<script>
+  var st = { level: 'low', gender: 'female' };
+  function render() {
+    ['level', 'gender'].forEach(function (id) { [].forEach.call(document.getElementById(id).children, function (b) { b.classList.toggle('on', b.dataset.v === st[id]); }); });
+    var q = 'level=' + st.level + '&gender=' + st.gender + '&age=70-79';
+    document.getElementById('f').src = 'index.html?' + q;
+    document.getElementById('rep').href = '../report/report.html?' + q;
+    document.getElementById('succ').href = 'index.html?' + q + '&screen=success';
+  }
+  ['level', 'gender'].forEach(function (id) { document.getElementById(id).addEventListener('click', function (e) { if (e.target.dataset.v) { st[id] = e.target.dataset.v; render(); } }); });
+  render();
+</script>
+</body>
+</html>
