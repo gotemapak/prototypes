@@ -290,11 +290,10 @@
     var z3 = goalZones[0] || ZONES.filter(function (z) { return z !== z1 && z !== z2; })[0];
     var minutes = answers.daily_time || '10';
 
-    // редкость
-    var prev = PREVALENCE[code];
-    var combo = prev * strengthShare(top.pct);              // % людей с тем же типом и такой же или большей выраженностью сильнейшей шкалы
-    var oneIn = Math.max(2, Math.round(100 / combo));
-    var in100 = Math.max(1, Math.round(prev));
+    // редкость: в v1 одно значение для всех типов — 12 из 100 (решение 1 ноября 2026, упрощает разработку).
+    // Расчёт по распространённости типов (PREVALENCE × strengthShare) оставлен в scoring.md на будущее.
+    var RARITY_IN_100 = 12;
+    var prev = RARITY_IN_100, combo = prev, oneIn = Math.round(100 / prev), in100 = RARITY_IN_100;
     var seed = code.split('').reduce(function (a, ch) { return a * 31 + ch.charCodeAt(0); }, 7) % 100000;
 
     var classic = code.split('').map(function (ch) { return CLASSIC[ch]; }).join('');
@@ -321,17 +320,15 @@
       nameOwn: name ? name + '’s' : 'Your', nameComma: name ? name + ', ' : '',
       ageLabel: ageLabel, peopleWord: gender === 'man' ? 'men' : 'women',
       peersLine: ageLabel ? (gender === 'man' ? 'men' : 'women') + ' aged ' + ageLabel : 'people your age',
-      typePct: prev, typePctLabel: (prev < 10 ? prev.toFixed(1) : Math.round(prev)) + '%', typeIn100: in100,
+      typePct: prev, typePctLabel: in100 + ' in 100', typeIn100: in100,
       comboPct: combo < 1 ? combo.toFixed(2) + '%' : combo.toFixed(1) + '%', rarityOneIn: oneIn,
       // «only» — только для действительно редких профилей; «1 in 16» без пояснения читается как «один из 16 типов»
       rarityShort: (oneIn >= 20 ? 'only 1 in ' : 'about 1 in ') + oneIn + ' people share your exact profile',
       rarityImg: rarityGridSvg(in100, gender, seed),
       // редкий тип (< 5%) — крупно доля типа; частый — крупно «1 in N» по точному профилю, без натяжки «only»
-      rarityStat: prev < 5 ? (prev < 10 ? prev.toFixed(1) : Math.round(prev)) + '%' : '1 in ' + oneIn,
+      rarityStat: in100 + ' in 100',
       // подтекст «Add how strong your … side» убран (раунд 2): экран с кнопкой должен помещаться в 390×844
-      rarityTitle: prev < 5
-        ? (name ? name + ', only' : 'Only') + ' about <span>' + in100 + ' in 100</span> people share your personality type'
-        : (name ? name + ', about' : 'About') + ' <span>' + in100 + ' in 100</span> people share your type. Your exact profile is much rarer'
+      rarityTitle: (name ? name + ', about' : 'About') + ' <span>' + in100 + ' in 100</span> people share your personality type'
     });
   }
 
@@ -502,7 +499,6 @@
         stat: '{{rarityStat}}',
         title: '{{rarityTitle}}',
         image: '{{rarityImg}}', imageStyle: 'plain',
-        source: 'Source: U.S. estimates, Myers et al., 1998',
         cta: 'See my report' },
 
       // раунд 2: экран-тизер удалён — после редкости сразу пейволл, тип раскрыт по имени
