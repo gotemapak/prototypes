@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Personality Certificate</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800;900&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+  /* Прототип сертификата по образцу IQ-сертификата test-1. Параметры: ?email=linda.smith@gmail.com&blur=1&type=The Keeper&sides=Quiet · Grounded · Heart · Planner&serial=622771&date=November 2, 2026 */
+  @page { size: 297mm 210mm; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #edf3fe; font-family: Inter, Arial, sans-serif; color: #131a35;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cert { width: 1123px; height: 794px; margin: 20px auto; background: #fff; position: relative; overflow: hidden; border-radius: 24px; box-shadow: 0 4px 40px #00126f1a; }
+  @media print { body { background: #fff; } .cert { margin: 0; border-radius: 0; box-shadow: none; } }
+  .sw { position: absolute; border-radius: 50%; }
+  .tr1 { width: 520px; height: 520px; right: -230px; top: -330px; background: linear-gradient(200deg, #2168ff, #58a3ff); }
+  .tr2 { width: 420px; height: 420px; right: -60px; top: -330px; background: linear-gradient(160deg, #7fd3ff, #4aa8ff); opacity: .85; }
+  .bl1 { width: 560px; height: 560px; left: -320px; bottom: -330px; background: linear-gradient(20deg, #2168ff, #58a3ff); }
+  .bl2 { width: 420px; height: 420px; left: -80px; bottom: -340px; background: linear-gradient(-20deg, #7fd3ff, #4aa8ff); opacity: .85; }
+  .dots { position: absolute; display: grid; grid-template-columns: repeat(4, 14px); gap: 16px; }
+  .dots i { width: 14px; height: 14px; border-radius: 50%; background: #1a3cff; display: block; }
+  .d1 { left: 40px; top: 40px; } .d2 { right: 40px; bottom: 40px; }
+  .body { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 80px 140px 0; text-align: center; }
+  h1 { font-size: 92px; line-height: 1; margin: 0; font-weight: 900; color: #1a3cff; letter-spacing: .02em; }
+  .pill { margin-top: 18px; background: #1a3cff; color: #fff; font-weight: 800; letter-spacing: .06em; font-size: 22px; padding: 12px 34px; border-radius: 16px; }
+  .awd { margin-top: 34px; font-size: 22px; }
+  .name { font-family: Inter, Arial, sans-serif; font-weight: 600; font-size: 36px; line-height: 1.6; margin-top: 10px; min-width: 560px; border-bottom: 2px solid #cdd5e3; padding-bottom: 6px; }
+  .conf { margin-top: 16px; font-size: 18px; color: #26314b; }
+  .type { margin-top: 8px; font-size: 34px; font-weight: 800; color: #131a35; }
+  .sides { margin-top: 4px; font-size: 17px; font-weight: 600; color: #2168ff; letter-spacing: .02em; }
+  .meta { position: absolute; left: 190px; right: 190px; bottom: 96px; display: flex; justify-content: space-between; font-size: 14px; color: #596179; }
+  .meta b { color: #131a35; font-size: 18px; display: block; margin-top: 4px; }
+  .brand { position: absolute; left: 0; right: 0; bottom: 36px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 800; font-size: 20px; }
+  .brand img { height: 30px; }
+</style>
+</head>
+<body>
+<div class="cert">
+  <div class="sw tr2"></div><div class="sw tr1"></div><div class="sw bl2"></div><div class="sw bl1"></div>
+  <div class="dots d1"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="dots d2"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <div class="body">
+    <h1>CERTIFICATE</h1>
+    <div class="pill">PERSONALITY TYPE EVALUATION</div>
+    <div class="awd">This certificate was awarded to</div>
+    <div class="name" id="name">linda.smith@gmail.com</div>
+    <div class="conf">Confirmation that after taking our personality test the recipient’s personality type is:</div>
+    <div class="type" id="type">The Keeper</div>
+    <div class="sides" id="sides">Quiet · Grounded · Heart · Planner</div>
+  </div>
+  <div class="meta"><div>CERTIFICATE SERIAL NUMBER<b id="serial">622771</b></div><div style="text-align:right">DATE<b id="date">November 2, 2026</b></div></div>
+  <div class="brand"><img src="../../kit/assets/logo.svg" alt="">Personality Test by [Company]</div>
+</div>
+<script>
+  var P = {}; new URLSearchParams(location.search).forEach(function (v, k) { P[k] = v; });
+  if (P.email) P.name = P.email; // на сертификате — email покупателя
+  ['name', 'type', 'sides', 'serial', 'date'].forEach(function (k) { if (P[k]) document.getElementById(k).textContent = P[k]; });
+  if (P.blur === '1') document.getElementById('name').style.filter = 'blur(9px)'; // на пейволле email скрыт
+</script>
+</body>
+</html>
