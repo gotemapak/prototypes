@@ -158,3 +158,10 @@ footer small { color: var(--dark-muted); font-size: 14px; }
 .card > * { min-width: 0; }
 .flows { scrollbar-width: thin; scrollbar-color: #c7c7cc transparent; }
 .dark .flows { scrollbar-color: #3a3a3c transparent; }
+@media (max-width: 400px) { h1 { font-size: 38px; } .hero p.lead { font-size: 17px; } }
+.applinks { color: var(--muted); font-size: 15px; margin: -10px 0 22px; } .applinks a { color: var(--ink); }
+.card { align-items: start; }
+.side ul { margin-top: 0; }
+.bignums .note { color: var(--muted); font-size: 15px; margin: 0; }
+.dark .bignums .note { color: var(--dark-muted); }
+@media (min-width: 861px) { .side { padding-top: 34px; } }
