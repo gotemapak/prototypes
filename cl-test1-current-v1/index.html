@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>test-1 — текущая воронка</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#0f172a;--mute:#64748b;--line:#e2e8f0;
+--intro:#7c3aed;--qtext:#2563eb;--qimg:#06b6d4;--statement:#16a34a;--info:#f59e0b;--profile:#db2777;--loader:#94a3b8;--popup:#ea580c;--email:#dc2626;--paywall:#111827}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+header{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:12px 20px 10px}
+h1{font-size:17px;margin:0 0 2px}
+.sub{color:var(--mute);font-size:12.5px;margin-bottom:10px}
+.sub a{color:var(--qtext)}
+.scale{display:flex;gap:2px;height:30px;align-items:stretch}
+.seg{flex:1;border-radius:3px;cursor:pointer;opacity:.85;transition:transform .12s,opacity .12s;position:relative}
+.seg:hover{opacity:1;transform:scaleY(1.15)}
+.seg.gap{margin-left:7px}
+.seg.on{opacity:1;outline:2px solid var(--ink);outline-offset:1px}
+.blocks{display:flex;gap:2px;margin-top:5px}
+.blk{font-size:11.5px;font-weight:600;color:var(--mute);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-top:2px solid var(--line);padding-top:3px}
+.blk.gap{margin-left:7px}
+.blk:hover,.blk.on{color:var(--ink);border-color:var(--ink)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:8px;font-size:12px;color:var(--mute)}
+.legend span{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.legend span:hover{color:var(--ink)}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.legend span.off{opacity:.35}
+#tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;padding:4px 8px;border-radius:6px;display:none;z-index:30;max-width:280px}
+main{padding:8px 20px 80px}
+section{margin-top:22px;scroll-margin-top:150px}
+section h2{font-size:15px;margin:0 0 10px;display:flex;gap:10px;align-items:baseline}
+section h2 small{color:var(--mute);font-weight:400;font-size:12.5px}
+.grid{display:flex;flex-wrap:wrap;gap:14px}
+.card{width:206px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;scroll-margin-top:160px;transition:box-shadow .2s}
+.card.hl{box-shadow:0 0 0 3px var(--ink)}
+.card.hide{display:none}
+.card img{width:100%;display:block;cursor:zoom-in;border-bottom:1px solid var(--line);background:#eef2f7;aspect-ratio:1170/1992;object-fit:cover;object-position:top}
+.meta{padding:8px 10px 10px;border-top:4px solid}
+.meta b{display:block;font-size:13px}
+.meta .t{color:var(--mute);font-size:11.5px;margin-top:2px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.meta .n{float:right;color:var(--mute);font-size:11px;font-weight:600}
+#lb{position:fixed;inset:0;background:rgba(15,23,42,.88);display:none;z-index:40;align-items:center;justify-content:center;gap:18px}
+#lb.open{display:flex}
+#lb img{max-height:92vh;max-width:min(460px,80vw);border-radius:14px;background:#fff}
+#lb .cap{position:absolute;top:14px;left:0;right:0;text-align:center;color:#fff;font-size:13px}
+#lb button{background:rgba(255,255,255,.15);color:#fff;border:0;width:44px;height:44px;border-radius:50%;font-size:22px;cursor:pointer}
+#lb button:hover{background:rgba(255,255,255,.3)}
+@media (max-width:640px){header{padding:10px 16px}main{padding:8px 16px 60px}.card{width:calc(50% - 7px)}.blk{font-size:10px}.seg.gap,.blk.gap{margin-left:4px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>test-1 — текущая воронка (старая версия)</h1>
+  <div class="sub">Проход <a href="https://brainai-app.com/test-1" target="_blank">brainai-app.com/test-1</a> 5 ноября 2026, iPhone 13, 60 экранов до пейволла включительно. Шкала — экраны по порядку, цвет — тип экрана. Клик по шкале или блоку — переход, клик по картинке — крупно, стрелки ← → листают.</div>
+  <div class="scale" id="scale"></div>
+  <div class="blocks" id="blocks"></div>
+  <div class="legend" id="legend"></div>
+</header>
+<main id="main"></main>
+<div id="tip"></div>
+<div id="lb"><div class="cap" id="lbcap"></div><button id="prev" aria-label="Назад">‹</button><img id="lbimg" alt=""><button id="next" aria-label="Вперёд">›</button></div>
+<script src="data.js"></script>
+<script>
+const TYPES = {
+  intro: 'Старт', qtext: 'Вопрос текстом', qimg: 'Вопрос-картинка', statement: 'Утверждение (шкала согласия)',
+  info: 'Информационный', profile: 'Профиль', loader: 'Загрузка', popup: 'Поп-ап', email: 'Email', paywall: 'Пейволл'
+};
+const BLOCKS = [
+  ['start', 'Старт', 'лоадер и выбор пола'],
+  ['q1', 'Вопросы 1–10', 'текстовые, утверждения, подбадривание после 4-го'],
+  ['q2', 'Вопросы 11–35', 'матрицы-картинки'],
+  ['q3', 'Вопросы 36–38', 'число наоборот и два утверждения'],
+  ['profile', 'Профиль', 'возраст, образование, соцдоказательство, кумир'],
+  ['calc', 'Calculating', 'загрузка и три поп-апа поверх неё'],
+  ['email', 'Email', ''],
+  ['paywall', 'Пейволл', '8 экранов сверху вниз'],
+];
+const $ = id => document.getElementById(id);
+const col = t => `var(--${t})`;
+const hidden = new Set();
+
+// шкала и подписи блоков
+let html = '', bhtml = '';
+SCREENS.forEach((s, i) => {
+  s.i = i;
+  const gap = i && SCREENS[i - 1].block !== s.block ? ' gap' : '';
+  html += `<div class="seg${gap}" data-i="${i}" style="background:${col(s.type)}"></div>`;
+});
+BLOCKS.forEach(([id, name], k) => {
+  const n = SCREENS.filter(s => s.block === id).length;
+  bhtml += `<div class="blk${k ? ' gap' : ''}" data-b="${id}" style="flex:${n} 1 0;min-width:0" title="${name}">${name}</div>`;
+});
+$('scale').innerHTML = html; $('blocks').innerHTML = bhtml;
+$('legend').innerHTML = Object.entries(TYPES).filter(([t]) => SCREENS.some(s => s.type === t)).map(([t, name]) =>
+  `<span data-t="${t}"><i style="background:${col(t)}"></i>${name} · ${SCREENS.filter(s => s.type === t).length}</span>`).join('');
+
+// блоки с карточками
+$('main').innerHTML = BLOCKS.map(([id, name, note]) => {
+  const list = SCREENS.filter(s => s.block === id);
+  return `<section id="b-${id}"><h2>${name} <small>${list.length} экр.${note ? ' · ' + note : ''}</small></h2><div class="grid">` +
+    list.map(s => `<div class="card" id="s-${s.i}" data-i="${s.i}">
+      <img loading="lazy" src="${s.img}" alt="${s.title}" data-i="${s.i}">
+      <div class="meta" style="border-color:${col(s.type)}"><span class="n">#${s.i + 1}</span><b>${s.title}</b>
+      <div class="t">${TYPES[s.type]}${s.text && s.type !== 'paywall' ? ' · ' + s.text.replace(/</g, '&lt;') : ''}</div></div></div>`).join('') +
+    `</div></section>`;
+}).join('');
+
+// переходы
+function go(i) {
+  const el = $('s-' + i);
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  el.classList.add('hl'); setTimeout(() => el.classList.remove('hl'), 1400);
+}
+$('scale').addEventListener('click', e => { const i = e.target.dataset.i; if (i) go(+i); });
+$('blocks').addEventListener('click', e => { const b = e.target.dataset.b; if (b) $('b-' + b).scrollIntoView({ behavior: 'smooth' }); });
+$('legend').addEventListener('click', e => {
+  const t = e.target.closest('span')?.dataset.t; if (!t) return;
+  hidden.has(t) ? hidden.delete(t) : hidden.add(t);
+  e.target.closest('span').classList.toggle('off', hidden.has(t));
+  SCREENS.forEach(s => $('s-' + s.i).classList.toggle('hide', hidden.has(s.type)));
+});
+
+// подсказка над шкалой
+const tip = $('tip');
+$('scale').addEventListener('mousemove', e => {
+  const i = e.target.dataset.i; if (!i) { tip.style.display = 'none'; return; }
+  const s = SCREENS[i];
+  tip.textContent = `#${+i + 1} · ${s.title} · ${TYPES[s.type]}`;
+  tip.style.display = 'block';
+  tip.style.left = Math.min(e.clientX + 12, innerWidth - 290) + 'px'; tip.style.top = e.clientY + 16 + 'px';
+});
+$('scale').addEventListener('mouseleave', () => tip.style.display = 'none');
+
+// текущий экран и блок при скролле
+const segs = [...document.querySelectorAll('.seg')], blks = [...document.querySelectorAll('.blk')];
+const vis = new Set();
+const io = new IntersectionObserver(es => {
+  es.forEach(e => e.isIntersecting ? vis.add(+e.target.dataset.i) : vis.delete(+e.target.dataset.i));
+  segs.forEach((g, i) => g.classList.toggle('on', vis.has(i)));
+  const first = Math.min(...vis);
+  if (isFinite(first)) blks.forEach(b => b.classList.toggle('on', b.dataset.b === SCREENS[first].block));
+}, { rootMargin: '-160px 0px -20% 0px' });
+document.querySelectorAll('.card').forEach(c => io.observe(c));
+</script>
+<script>
+// лайтбокс
+let cur = 0;
+const lb = $('lb');
+function show(i) {
+  cur = (i + SCREENS.length) % SCREENS.length; const s = SCREENS[cur];
+  $('lbimg').src = s.img; $('lbcap').textContent = `#${cur + 1} из ${SCREENS.length} · ${s.title} · ${TYPES[s.type]}`;
+  lb.classList.add('open');
+}
+$('main').addEventListener('click', e => { if (e.target.tagName === 'IMG') show(+e.target.dataset.i); });
+$('prev').onclick = e => { e.stopPropagation(); show(cur - 1); };
+$('next').onclick = e => { e.stopPropagation(); show(cur + 1); };
+lb.addEventListener('click', e => { if (e.target === lb) lb.classList.remove('open'); });
+addEventListener('keydown', e => {
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'ArrowRight') show(cur + 1);
+  else if (e.key === 'ArrowLeft') show(cur - 1);
+  else if (e.key === 'Escape') lb.classList.remove('open');
+});
+</script>
+</body>
+</html>
