@@ -156,3 +156,5 @@ footer small { color: var(--dark-muted); font-size: 14px; }
 .product figure { margin: 0; flex: 0 0 auto; scroll-snap-align: start; }
 .product img, .flow img { max-width: none; }
 .card > * { min-width: 0; }
+.flows { scrollbar-width: thin; scrollbar-color: #c7c7cc transparent; }
+.dark .flows { scrollbar-color: #3a3a3c transparent; }
