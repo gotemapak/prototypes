@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paywall 4-week plan — WEB-389</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --ink:#131A35; --muted:#4A5170; --grey:#8A90A6; --blue:#1968FF; --bg:#EDF3FE; --line:#E5E8F0; --green:#1E9E6A; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#F4F6FA; color:var(--ink); font-family:Inter, sans-serif; font-size:17px; line-height:1.4; }
+  .ctl { position:sticky; top:0; z-index:20; background:#131A35; color:#fff; padding:10px 12px; display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; font-size:14px; }
+  .ctl button { border:1px solid #4A5170; background:transparent; color:#fff; border-radius:8px; padding:7px 12px; font:500 14px Inter, sans-serif; cursor:pointer; }
+  .ctl button.on { background:#fff; color:#131A35; border-color:#fff; }
+  .page { max-width:430px; margin:0 auto; background:#fff; min-height:100vh; }
+  header { display:flex; align-items:center; gap:10px; padding:12px 16px; border-bottom:1px solid var(--line); font-weight:700; font-size:22px; }
+  .timer { position:sticky; top:52px; z-index:10; background:#fff; border-bottom:1px solid var(--line); text-align:center; padding:12px 16px; font-size:16px; font-weight:500; }
+  .timer span { color:var(--blue); }
+  section { padding:20px 16px; }
+  section.tint { background:var(--bg); }
+  .stat { background:var(--bg); border-radius:20px; padding:6px 14px; font-size:14px; text-align:center; margin:0 auto 14px; width:max-content; max-width:100%; }
+  .stat b { color:var(--blue); font-weight:500; }
+  h2 { font-size:22px; text-align:center; margin:0 0 14px; }
+  ul.check { list-style:none; padding:0; margin:0 0 16px; }
+  ul.check li { padding:7px 0 7px 40px; position:relative; font-size:17px; }
+  ul.check li::before { content:"✓"; position:absolute; left:0; top:7px; width:28px; height:28px; border-radius:50%; background:var(--bg); color:var(--blue); font-size:15px; font-weight:700; display:grid; place-items:center; }
+  .promo { background:var(--bg); border-radius:14px; padding:16px; display:flex; gap:14px; align-items:center; margin:0 0 16px; }
+  .promo .ic { font-size:28px; }
+  .promo b { display:block; font-size:16px; }
+  .promo span { color:var(--blue); font-size:16px; }
+  .plan { border:2px solid var(--line); border-radius:16px; padding:14px 14px; margin:0 0 12px; display:grid; grid-template-columns:22px 1fr auto; gap:10px; align-items:center; cursor:pointer; background:#fff; }
+  .plan.sel { border-color:var(--blue); background:#F5F8FF; }
+  .radio { width:22px; height:22px; border-radius:50%; border:2px solid #C4C9D6; position:relative; }
+  .plan.sel .radio { border-color:var(--blue); }
+  .plan.sel .radio::after { content:""; position:absolute; inset:3px; border-radius:50%; background:var(--blue); }
+  .plan .t { font-weight:700; font-size:19px; }
+  .plan .s { font-size:15px; color:var(--muted); white-space:nowrap; }
+  .plan .p { text-align:right; white-space:nowrap; }
+  .plan .p b { font-size:24px; }
+  .plan .p s { color:var(--grey); font-size:15px; margin-right:4px; }
+  .plan .p div { font-size:14px; color:var(--muted); }
+  .terms { font-size:15px; color:var(--muted); margin:4px 0 18px; }
+  h3 { font-size:19px; margin:0 0 10px; }
+  .paym { display:grid; gap:10px; }
+  .paym div { height:54px; border-radius:10px; display:grid; place-items:center; font-weight:700; font-size:19px; }
+  .trust { background:var(--bg); border-radius:14px; padding:14px 16px; margin-top:12px; font-size:15px; }
+  .trust b { display:block; }
+  .note { font-size:13px; color:var(--grey); text-align:center; padding:16px; }
+  body.hl .chg { outline:2px dashed #F59E0B; outline-offset:3px; border-radius:6px; }
+  [hidden] { display:none !important; }
+</style>
+</head>
+<body>
+<div class="ctl">
+  <button id="bOn" class="on">Таймер идёт</button>
+  <button id="bOff">Таймер закончился</button>
+  <button id="bHl" class="on">Подсветка изменений</button>
+</div>
+
+<div class="page">
+  <header>🧠 IQ Test</header>
+  <div class="timer promoOnly"><span>Get 85% off your program!</span> Offer ends in <b id="clock">07:00</b></div>
+
+  <section>
+    <div class="stat">Over <b>2725</b> tests taken today Avg. IQ score: 98</div>
+    <h2>Try Your Plan by Brain AI</h2>
+    <ul class="check">
+      <li>Receive a comprehensive report of your test results.</li>
+      <li>Access our app with brain games to enhance your abilities and skills.</li>
+      <li class="promoOnly">Your 3-day trial will cost only $0.99.<br><b>Afterwards, it will be $20.99/week.</b></li>
+      <li class="fullOnly chg">Your 3-day trial will cost $48.99.<br><b>Afterwards, it will be $20.99/week.</b></li>
+    </ul>
+
+    <div class="promo promoOnly">
+      <div class="ic">🎁</div>
+      <div><b>Promo Code BRAINAITODAY Applied</b><span>You save 85%</span></div>
+    </div>
+
+    <div class="plan sel" data-plan="week">
+      <div class="radio"></div>
+      <div><div class="t">3-Day Trial</div><div class="s chg">then $20.99/week</div></div>
+      <div class="p">
+        <div class="promoOnly"><s class="chg">$48.99</s><b>$0.99</b></div>
+        <div class="fullOnly"><b>$48.99</b></div>
+        <div class="chg">for 3 days</div>
+      </div>
+    </div>
+
+    <div class="plan chg" data-plan="4w">
+      <div class="radio"></div>
+      <div><div class="t">4-Week Plan</div><div class="s">$12.50/week · No trial</div></div>
+      <div class="p"><b>$49.99</b><div>every 4 weeks</div></div>
+    </div>
+
+    <p class="terms chg" id="terms"></p>
+
+    <h3>Payment method</h3>
+    <div class="paym">
+      <div style="background:#FFC439;color:#003087">PayPal</div>
+      <div style="background:#000;color:#fff">G Pay</div>
+      <div style="background:#0B2D8F;color:#fff">💳 Debit or Credit Card</div>
+    </div>
+    <div class="trust"><b>No commitment.</b>Cancel anytime</div>
+    <div class="trust"><b>Money back</b>We will remind you 2 days before your trial ends</div>
+  </section>
+
+  <p class="note">WEB-389 · прототип текстов и цен, вёрстка условная. Пунктир — что меняется относительно текущего пейволла test-1.</p>
+</div>
+
+<script>
+  const TERMS = {
+    week_promo: 'Your 3-day trial costs $0.99. After the trial, you will be charged $20.99 every week until you cancel. Cancel anytime in your account.',
+    week_full:  'Your 3-day trial costs $48.99. After the trial, you will be charged $20.99 every week until you cancel. Cancel anytime in your account.',
+    '4w':       'You will be charged $49.99 today and every 4 weeks until you cancel. Cancel anytime in your account.'
+  };
+  let promo = true, plan = 'week', left = 420, tick;
+  const $ = s => document.querySelector(s), $$ = s => document.querySelectorAll(s);
+
+  function render() {
+    $$('.promoOnly').forEach(e => e.hidden = !promo);
+    $$('.fullOnly').forEach(e => e.hidden = promo);
+    $$('.plan').forEach(e => e.classList.toggle('sel', e.dataset.plan === plan));
+    $('#terms').textContent = plan === '4w' ? TERMS['4w'] : (promo ? TERMS.week_promo : TERMS.week_full);
+    $('#bOn').classList.toggle('on', promo);
+    $('#bOff').classList.toggle('on', !promo);
+    const m = String(Math.floor(left / 60)).padStart(2, '0'), s = String(left % 60).padStart(2, '0');
+    $('#clock').textContent = m + ':' + s;
+  }
+  function start() {
+    clearInterval(tick); promo = true; left = 420;
+    tick = setInterval(() => { left--; if (left <= 0) { clearInterval(tick); promo = false; } render(); }, 1000);
+    render();
+  }
+  $('#bOn').onclick = start;
+  $('#bOff').onclick = () => { clearInterval(tick); promo = false; render(); };
+  $('#bHl').onclick = () => { document.body.classList.toggle('hl'); $('#bHl').classList.toggle('on'); };
+  $$('.plan').forEach(e => e.onclick = () => { plan = e.dataset.plan; render(); });
+  document.body.classList.add('hl');
+  start();
+</script>
+</body>
+</html>
