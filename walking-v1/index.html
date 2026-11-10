@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Walking Plan — prototype v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FAF7F2; --card:#FFFFFF; --ink:#26221D; --muted:#6F675E; --line:#E7E0D6;
+  --accent:#2F6B55; --accent-ink:#FFFFFF; --accent-soft:#E6F0EB; --warn:#B4582F;
+  --r:16px; --serif:"Source Serif 4",Georgia,serif; --sans:Inter,system-ui,-apple-system,Segoe UI,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#EFEAE2;color:var(--ink);font-family:var(--sans);font-size:18px;line-height:1.45;-webkit-font-smoothing:antialiased}
+.app{max-width:440px;min-height:100vh;margin:0 auto;background:var(--bg);position:relative;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:12px;padding:14px 16px 6px}
+.back{width:40px;height:40px;border:1px solid var(--line);border-radius:50%;background:var(--card);font-size:20px;color:var(--ink);cursor:pointer}
+.back[hidden]{visibility:hidden;display:block}
+.logo{font-family:var(--serif);font-weight:600;font-size:20px;flex:1;text-align:center}
+.count{width:40px;text-align:right;font-size:15px;color:var(--muted)}
+.bar{height:4px;background:var(--line);margin:4px 16px 0;border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.sections{display:flex;justify-content:space-between;padding:6px 16px 0;font-size:13px;color:var(--muted)}
+.sections b{color:var(--accent);font-weight:600}
+main{flex:1;padding:20px 16px 120px}
+h1{font-family:var(--serif);font-weight:600;font-size:30px;line-height:1.2;margin-bottom:10px}
+h2{font-family:var(--serif);font-weight:600;font-size:26px;line-height:1.25;margin-bottom:8px}
+.sub{color:var(--muted);margin-bottom:20px}
+.opts{display:flex;flex-direction:column;gap:12px}
+.opt{display:flex;align-items:center;gap:14px;width:100%;min-height:64px;padding:16px 18px;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);font:inherit;color:inherit;text-align:left;cursor:pointer}
+.opt:hover{border-color:#CFC6B8}
+.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+.opt .box{width:24px;height:24px;border:1.5px solid #BDB3A5;border-radius:6px;flex:none;display:grid;place-items:center}
+.opt.sel .box{background:var(--accent);border-color:var(--accent)}
+.opt.sel .box:after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.opt small{display:block;color:var(--muted);font-size:15px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.agecard{background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);overflow:hidden;cursor:pointer;font:inherit;color:inherit;padding:0;text-align:left}
+.agecard .ph{aspect-ratio:4/5;border-radius:0;margin:0}
+.agecard>span{display:flex;justify-content:space-between;padding:12px 14px;font-weight:600}
+.ph{background:linear-gradient(160deg,#E9E2D7,#D9CFC1);border-radius:var(--r);display:flex;align-items:flex-end;padding:10px;color:#6A5F52;font-size:12px;line-height:1.3;margin:6px 0 18px;min-height:120px}
+.ph b{font-weight:600}
+.cta{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:440px;padding:12px 16px calc(16px + env(safe-area-inset-bottom));background:linear-gradient(transparent,var(--bg) 30%)}
+.btn{display:block;width:100%;min-height:58px;border:0;border-radius:var(--r);background:var(--accent);color:var(--accent-ink);font:600 19px var(--sans);cursor:pointer}
+.btn:disabled{background:#BFC9C3;cursor:default}
+.btn.ghost{background:transparent;color:var(--muted);font-weight:500;min-height:44px;font-size:16px}
+.note{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin:14px 0}
+.big{font-family:var(--serif);font-size:44px;line-height:1.1;color:var(--accent);font-weight:600}
+.cite{font-size:14px;color:var(--muted);margin-top:8px}
+.field{display:flex;align-items:center;gap:10px;background:var(--card);border:1.5px solid var(--line);border-radius:var(--r);padding:0 18px;min-height:64px;margin-bottom:12px}
+.field input{flex:1;border:0;outline:0;font:600 24px var(--sans);background:transparent;color:var(--ink);min-width:0}
+.field label{color:var(--muted);font-size:16px}
+.seg{display:inline-flex;background:var(--line);border-radius:12px;padding:3px;margin-bottom:16px}
+.seg button{border:0;background:transparent;padding:8px 18px;border-radius:10px;font:500 16px var(--sans);color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--ink)}
+.bmi{position:relative;height:12px;border-radius:6px;background:linear-gradient(90deg,#9CC5B4,#2F6B55 35%,#D9A441 65%,#B4582F);margin:28px 0 8px}
+.bmi i{position:absolute;top:-30px;transform:translateX(-50%);background:var(--ink);color:#fff;font:600 13px var(--sans);padding:3px 8px;border-radius:8px;white-space:nowrap}
+.bmi i:after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--ink);border-bottom:0}
+.scale{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.kv div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;font-size:15px;color:var(--muted)}
+.kv b{display:block;color:var(--ink);font-size:18px}
+.steps{list-style:none;margin:20px 0}
+.steps li{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.steps li span{color:var(--muted);font-size:15px}
+.steps li.done span{color:var(--accent);font-weight:600}
+.track{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:8px}
+.track i{display:block;height:100%;width:0;background:var(--accent);transition:width .6s}
+.review{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:12px 0}
+.review p{font-size:16px}
+.review footer{margin-top:10px;font-size:14px;color:var(--muted);display:flex;align-items:center;gap:10px}
+.av{width:40px;height:40px;border-radius:50%;background:#DCD3C6;flex:none;display:grid;place-items:center;font-size:10px;color:#6A5F52}
+.stars{color:#C08A2B;letter-spacing:2px;font-size:15px}
+svg.chart{width:100%;height:auto;margin:8px 0 6px}
+.sticky{position:sticky;top:0;z-index:5;background:var(--ink);color:#fff;margin:-20px -16px 16px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;font-size:15px}
+.sticky b{font-variant-numeric:tabular-nums;font-size:18px}
+.nowgoal{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0}
+.nowgoal div{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:10px;text-align:center;font-size:14px;color:var(--muted)}
+.nowgoal .ph{min-height:150px;margin:0 0 8px}
+.nowgoal b{display:block;color:var(--ink);font-size:16px}
+.plan{border:2px solid var(--accent);background:var(--card);border-radius:var(--r);padding:18px;margin:14px 0;position:relative}
+.plan .tag{position:absolute;top:-12px;left:16px;background:var(--accent);color:#fff;font-size:13px;font-weight:600;padding:3px 10px;border-radius:8px}
+.plan .row{display:flex;justify-content:space-between;align-items:baseline}
+.plan .price{font-size:34px;font-weight:700}
+.plan s{color:var(--muted);font-size:16px}
+.fine{font-size:13px;color:var(--muted);margin-top:10px;line-height:1.45}
+.list{list-style:none;margin:10px 0}
+.list li{padding:8px 0 8px 28px;position:relative}
+.list li:before{content:"";position:absolute;left:4px;top:15px;width:12px;height:7px;border:solid var(--accent);border-width:0 0 2px 2px;transform:rotate(-45deg)}
+details{border-bottom:1px solid var(--line);padding:14px 0}
+summary{font-weight:600;cursor:pointer}
+details p{color:var(--muted);margin-top:8px;font-size:16px}
+.pay{display:flex;gap:8px;justify-content:center;margin:12px 0;font-size:12px;color:var(--muted)}
+.pay span{border:1px solid var(--line);border-radius:6px;padding:4px 8px;background:var(--card)}
+.src{display:none;margin:22px 0 0;padding:12px 14px;border:1px dashed #C9BFAF;border-radius:12px;background:#F3EEE6;font-size:13px;color:#5C5348;line-height:1.45}
+body.showsrc .src{display:block}
+.toggle{position:fixed;right:12px;top:12px;z-index:50;background:var(--ink);color:#fff;border:0;border-radius:20px;padding:8px 12px;font:500 13px var(--sans);cursor:pointer;opacity:.85}
+.jump{position:fixed;right:12px;top:52px;z-index:50;font:13px var(--sans);max-width:150px}
+@media (max-width:700px){.toggle{top:auto;right:auto;left:10px;bottom:92px;padding:6px 10px;font-size:12px;opacity:.7}.jump{display:none}}
+.modal{position:fixed;inset:0;background:rgba(38,34,29,.5);display:flex;align-items:flex-end;justify-content:center;z-index:40}
+.sheet{background:var(--bg);width:100%;max-width:440px;border-radius:20px 20px 0 0;padding:22px 16px 26px}
+.mock{border:1.5px dashed #C9BFAF;border-radius:12px;padding:18px;text-align:center;color:var(--muted);font-size:15px;margin:14px 0}
+</style>
+</head>
+<body>
+<button class="toggle" id="tg">Источник экрана</button>
+<select class="jump" id="jump"></select>
+<div class="app">
+  <header>
+    <button class="back" id="back" aria-label="Back">&#8249;</button>
+    <div class="logo">Walking Plan</div>
+    <div class="count" id="count"></div>
+  </header>
+  <div class="bar"><i id="bar"></i></div>
+  <div class="sections" id="sections"></div>
+  <main id="main"></main>
+</div>
+<script>
+// ---------- state ----------
+const S={unit:'us',answers:{},name:'',email:'',h:{ft:5,in:5,cm:165},w:180,goal:150,age:58};
+const SECTIONS=['Goals','Body','Lifestyle','Health','Plan'];
+const fmtDate=d=>d.toLocaleDateString('en-US',{month:'long',day:'numeric'});
+const plus=n=>{const d=new Date();d.setDate(d.getDate()+n);return d};
+const lbs=()=>S.unit==='us'?S.w:Math.round(S.w*2.2046);
+const goalLbs=()=>S.unit==='us'?S.goal:Math.round(S.goal*2.2046);
+const hM=()=>S.unit==='us'?((S.h.ft*12+ +S.h.in)*0.0254):S.h.cm/100;
+const bmi=()=>{const kg=lbs()/2.2046,m=hM();return m?kg/(m*m):0};
+const lose=()=>Math.max(lbs()-goalLbs(),0);
+const weeks=()=>Math.max(4,Math.min(26,Math.ceil(lose()/1.6)));
+const goalDate=()=>plus(weeks()*7);
+const wu=()=>S.unit==='us'?'lbs':'kg';
+const ph=(n,t)=>`<div class="ph"><span><b>Photo P${n}</b> · ${t}</span></div>`;
+const src=t=>`<div class="src"><b>Источник:</b> ${t}</div>`;
+
+// ---------- screens ----------
+// type: q (single), m (multi), info, custom
+const SCREENS=[
+{id:'age',sec:0,type:'custom',src:'Лендинг BetterMe 001 (возраст с портретами) + WalkFit military 001. Заголовок продолжает наш протестированный креатив «How much should you walk to lose 14 kg».',
+ render:()=>`<h1>How much should you walk to lose weight?</h1><p class="sub">Answer a few questions and get a walking plan made for your age and body. Choose your age to start.</p>
+ <div class="grid">${[['40–49',1],['50–59',2],['60–69',3],['70+',4]].map(([a,n])=>`<button class="agecard" data-v="${a}"><div class="ph"><span><b>Photo P${n}</b> · woman ${a}</span></div><span>${a}<span style="padding:0;color:var(--accent)">&rsaquo;</span></span></button>`).join('')}</div>
+ <p class="fine" style="text-align:center;margin-top:16px">By continuing you agree to our Terms of Use and Privacy Policy.</p>`,
+ bind:m=>m.querySelectorAll('.agecard').forEach(b=>b.onclick=()=>{S.answers.ageband=b.dataset.v;next()}),noCta:true},
+{id:'ready',sec:0,type:'info',src:'BAI Web «Ready when you are, 40 questions». Сократили до 20 вопросов.',
+ html:()=>`<h1>Your plan takes about 2 minutes</h1><p class="sub">20 short questions. There are no right or wrong answers — the plan simply adapts to you.</p>${ph(5,'woman 55–60 tying walking shoes in a bright hallway')}<div class="note">Built for women 40 and over: gentle on joints, realistic pace, no gym needed.</div>`,cta:'Let’s start'},
+{id:'lose',sec:0,type:'q',src:'Наш креатив (выбор диапазона веса + CALCULATE), BetterMe «weight goal ranges».',
+ q:'How much weight would you like to lose?',opts:['Up to 10 lbs','10–20 lbs','21–30 lbs','31–50 lbs','More than 50 lbs','I want to keep my weight and feel better']},
+{id:'proof1',sec:0,type:'info',src:'BAI «Join 1m+ users»; WalkFit «36 million users», BetterMe «2M women in their 40s».',
+ html:()=>`<div class="big">1 million+</div><h2>women ${S.answers.ageband||'50+'} already walk with a plan</h2><p class="sub">Most of them started with just 15 minutes a day.</p>${ph(6,'three women 55–65 walking together in a park, morning light')}`},
+{id:'goals',sec:0,type:'m',src:'WalkFit military 005 (мультивыбор целей), BetterMe «other goals».',
+ q:'What else would you like to improve?',sub:'Choose all that apply.',opts:['Healthier joints','Better balance','More energy','Better sleep','Healthy blood pressure','Less stress']},
+{id:'body',sec:1,type:'q',src:'WalkFit 007, WalkUp body type. Без стыдящих ярлыков (не «Flabby»).',
+ q:'How would you describe your body today?',opts:['Slim','Average','Curvy','Plus size']},
+{id:'zones',sec:1,type:'m',src:'WalkFit 009, WalkUp, BetterMe — target zones.',
+ q:'Which areas would you like to focus on?',sub:'Choose all that apply.',opts:['Belly','Hips','Thighs','Arms','Back','Whole body']},
+{id:'int1',sec:1,type:'info',src:'Интерстициал со ссылкой на исследование: WalkFit 017 (JAMA), WalkUp «Joint Health for Life».',
+ html:()=>`<h2>Walking works — even at a gentle pace</h2>${ph(7,'woman 60 walking indoors on the spot in a light living room')}<div class="note">Regular brisk walking is linked to lower belly fat and better heart health in adults over 50. You don’t need to run.</div><p class="cite">Source: to be confirmed with a peer-reviewed study before launch.</p>`},
+{id:'active',sec:1,type:'q',src:'WalkFit 012 activity, BetterMe schedule.',
+ q:'How active are you on a typical day?',opts:['Mostly sitting','Some walking around the house','On my feet a lot','Active most days']},
+{id:'stairs',sec:1,type:'q',src:'BetterMe «stairs breath».',
+ q:'How do you feel after one flight of stairs?',opts:['Out of breath','A little tired','Fine, I could keep going','I avoid stairs']},
+{id:'joints',sec:3,type:'m',src:'BetterMe «Sensitive back / knees» → карточка «We’ve got you».',
+ q:'Do you have any of these?',sub:'Choose all that apply.',opts:['Sensitive knees','Back pain','Hip discomfort','Swollen ankles','None of these'],none:'None of these'},
+{id:'care',sec:3,type:'info',src:'BetterMe «We’ve got you!» — успокаивающая карточка после вопроса о суставах.',
+ html:()=>{const j=(S.answers.joints||[]).filter(x=>x!=='None of these');return `<h2>${j.length?'We’ve got you':'Great — let’s keep it that way'}</h2><p class="sub">${j.length?'Your plan will use low-impact moves that are kind to your '+j.map(x=>x.replace(/Sensitive |pain|discomfort|Swollen /g,'').trim().toLowerCase()).join(' and ')+'.':'Your plan includes simple moves that protect your joints as you get stronger.'}</p>${ph(8,'close-up of woman 60 doing a gentle knee-friendly step, soft daylight')}`}},
+{id:'sched',sec:2,type:'q',src:'WalkFit 018 / BetterMe — график, вариант «I’m retired».',
+ q:'What does your day usually look like?',opts:['I work regular hours','My schedule changes a lot','I work from home','I’m retired']},
+{id:'time',sec:2,type:'q',src:'WalkFit 015–016 — время на ходьбу.',
+ q:'How much time can you give to walking each day?',opts:['10–15 minutes','15–30 minutes','30–45 minutes','More than 45 minutes']},
+{id:'where',sec:2,type:'q',src:'WalkFit indoor / BetterMe indoor; WalkUp — на улице.',
+ q:'Where would you prefer to walk?',opts:['At home','Outdoors','Both, depending on the weather']},
+{id:'int2',sec:2,type:'info',src:'WalkFit 019 «миф 10 000 шагов».',
+ html:()=>`<h2>You don’t need 10,000 steps</h2><div class="big">4,000</div><p class="sub">steps a day is where health benefits already begin. Your plan grows from there at your pace.</p><p class="cite">Source: to be confirmed before launch.</p>`},
+{id:'sleep',sec:3,type:'q',src:'WalkFit 026 (hot flashes / night sweats).',
+ q:'How do you usually sleep?',opts:['Well, most nights','I wake up during the night','Hot flashes or night sweats wake me','It takes me a long time to fall asleep']},
+{id:'energy',sec:3,type:'q',src:'WalkFit / BetterMe energy.',
+ q:'When do you feel low on energy?',opts:['In the morning','After lunch','In the evening','Most of the day','Rarely']},
+{id:'events',sec:3,type:'m',src:'WalkFit 032, BetterMe «Slower metabolism due to aging».',
+ q:'Have any of these affected your weight?',sub:'Choose all that apply.',opts:['Menopause','Metabolism slowing with age','Retirement or less movement','An injury','Stress','None of these'],none:'None of these'},
+{id:'int3',sec:3,type:'info',src:'WalkFit 038 «Thank you for your honesty».',
+ html:()=>`<h2>Thank you — this helps a lot</h2><p class="sub">Now a few numbers so we can calculate the right pace and goal for you.</p>${ph(9,'woman 58 smiling, sitting on a bench after a walk, notebook in hand')}`},
+{id:'height',sec:4,type:'custom',src:'WalkFit 034, BetterMe — рост с переключателем единиц.',
+ render:()=>`<h2>How tall are you?</h2>${unitSeg()}${S.unit==='us'?`<div style="display:flex;gap:12px"><div class="field" style="flex:1"><input inputmode="numeric" id="ft" value="${S.h.ft}"><label>ft</label></div><div class="field" style="flex:1"><input inputmode="numeric" id="in" value="${S.h.in}"><label>in</label></div></div>`:`<div class="field"><input inputmode="numeric" id="cm" value="${S.h.cm}"><label>cm</label></div>`}`,
+ bind:m=>{bindSeg(m);['ft','in','cm'].forEach(k=>{const e=m.querySelector('#'+k);if(e)e.oninput=()=>S.h[k]=+e.value||0})}},
+{id:'weight',sec:4,type:'custom',src:'WalkFit 035, BetterMe.',
+ render:()=>`<h2>What is your current weight?</h2>${unitSeg()}<div class="field"><input inputmode="numeric" id="w" value="${S.w}"><label>${wu()}</label></div><p class="fine">We use this only to calculate your plan.</p>`,
+ bind:m=>{bindSeg(m);m.querySelector('#w').oninput=e=>S.w=+e.target.value||0}},
+{id:'goalw',sec:4,type:'custom',src:'WalkFit 036, WalkUp target weight.',
+ render:()=>`<h2>What is your goal weight?</h2><div class="field"><input inputmode="numeric" id="g" value="${S.goal}"><label>${wu()}</label></div><div class="note" id="gn"></div>`,
+ bind:m=>{const u=()=>{const p=Math.round(lose()/Math.max(lbs(),1)*100);m.querySelector('#gn').innerHTML=p>0?`<b>Losing ${p}% of your weight</b> can lower blood pressure and take pressure off your knees.`:'Keeping a steady weight while getting stronger is a great goal.'};m.querySelector('#g').oninput=e=>{S.goal=+e.target.value||0;u()};u()}},
+{id:'agen',sec:4,type:'custom',src:'WalkFit 037 / BetterMe — возраст числом (BAI: возраст и профиль).',
+ render:()=>`<h2>How old are you?</h2><div class="field"><input inputmode="numeric" id="a" value="${S.age}"><label>years</label></div>`,
+ bind:m=>m.querySelector('#a').oninput=e=>S.age=+e.target.value||0},
+{id:'profile',sec:4,type:'info',src:'WalkFit 039 / BetterMe — профиль с ИМТ и рисками.',
+ html:()=>{const b=bmi(),pos=Math.min(96,Math.max(4,(b-15)/(40-15)*100)),lvl=b<18.5?'Below normal':b<25?'Normal':b<30?'Above normal':'High';return `<h2>Your profile</h2><p class="sub">Body Mass Index (BMI)</p><div class="bmi"><i style="left:${pos}%">You · ${b.toFixed(1)}</i></div><div class="scale"><span>Under</span><span>Normal</span><span>Over</span><span>High</span></div>
+ <div class="kv"><div>BMI<b>${lvl}</b></div><div>Activity<b>${(S.answers.active||'Mostly sitting').split(' ').slice(0,2).join(' ')}</b></div><div>Daily time<b>${S.answers.time||'15–30 minutes'}</b></div><div>Focus<b>${(S.answers.zones||['Belly'])[0]}</b></div></div>
+ ${b>=25?`<div class="note" style="border-color:#E8C9B8"><b style="color:var(--warn)">Worth knowing</b><br>A higher BMI puts more strain on knees and the heart. Walking is one of the safest ways to bring it down.</div>`:''}`}},
+{id:'event',sec:4,type:'q',src:'WalkFit 044, WalkUp, BetterMe — особое событие.',
+ q:'Is there a special occasion coming up?',opts:['A vacation','A family wedding','A birthday or reunion','Time with my grandchildren','No, I just want to feel better']},
+{id:'sure',sec:4,type:'q',src:'BetterMe — вопрос-обязательство «насколько уверены».',
+ q:'How sure are you that you’ll stick with a plan?',opts:['Very sure','Fairly sure','Not sure — I’ve given up before']},
+{id:'calc',sec:4,type:'custom',src:'BAI «Calculating your score» + лоадер с этапами и отзывом (BetterMe 5 этапов, WalkFit 047).',noCta:true,
+ render:()=>`<h2>Creating your walking plan…</h2><ul class="steps">${['Analyzing your answers','Matching pace to your age and joints','Choosing indoor and outdoor walks','Setting your weekly goal'].map(t=>`<li><div style="flex:1">${t}<div class="track"><i></i></div></div><span style="margin-left:12px">0%</span></li>`).join('')}</ul>
+ <div class="review"><div class="stars">★★★★★</div><p>“I’m 63 and walk in my living room every morning. My knees feel better and I’m down 17 lbs.”</p><footer><div class="av">P10</div>Linda, 63 · placeholder review</footer></div>`,
+ bind:m=>{const li=[...m.querySelectorAll('.steps li')];let i=0;const tick=()=>{if(i>=li.length){setTimeout(next,400);return}const t=li[i].querySelector('i'),s=li[i].querySelector('span');t.style.width='100%';let p=0;const iv=setInterval(()=>{p+=10;s.textContent=p+'%';if(p>=100){clearInterval(iv);li[i].classList.add('done');s.textContent='Done';i++;tick()}},70)};tick()}},
+{id:'forecast',sec:4,type:'info',src:'WalkFit 046 / BetterMe «80 kg by Feb 9 — just in time for Vacation».',
+ html:()=>{const ev=S.answers.event&&!/No,/.test(S.answers.event)?` — just in time for ${S.answers.event.replace(/^A |^Time with /,'').replace(/^my /,'your ').toLowerCase()}`:'';return `<p class="sub" style="margin-bottom:6px">Based on your answers, you can reach</p><h1>${S.unit==='us'?goalLbs():S.goal} ${wu()} by ${fmtDate(goalDate())}${ev}</h1>
+ <svg class="chart" viewBox="0 0 320 170"><defs><linearGradient id="g1" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2F6B55" stop-opacity=".18"/><stop offset="1" stop-color="#2F6B55" stop-opacity="0"/></linearGradient></defs>
+ <path d="M20 30 C110 40 170 110 300 132 L300 150 L20 150Z" fill="url(#g1)"/><path d="M20 30 C110 40 170 110 300 132" stroke="#2F6B55" stroke-width="3" fill="none"/>
+ <circle cx="20" cy="30" r="6" fill="#B4582F"/><circle cx="300" cy="132" r="7" fill="#2F6B55"/>
+ <text x="26" y="22" font-size="13" fill="#26221D">${S.w} ${wu()}</text><text x="296" y="114" text-anchor="end" font-size="13" fill="#26221D" font-weight="600">${S.goal} ${wu()}</text>
+ <text x="20" y="166" font-size="12" fill="#6F675E">Today</text><text x="300" y="166" font-size="12" fill="#6F675E" text-anchor="end">${fmtDate(goalDate())}</text></svg>
+ <p class="fine">This is an estimate based on a steady pace of about 1.5 lbs a week. Results vary.</p>`}},
+{id:'email',sec:4,type:'custom',src:'BAI email «Where Should We Send Your Results?» после расчёта; WalkFit 048 «to get your personal plan».',
+ render:()=>`<h2>Where should we send your walking plan?</h2><p class="sub">We’ll email your plan and daily reminders. No spam.</p><div class="field"><input type="email" id="em" placeholder="your@email.com" value="${S.email}" style="font-size:20px;font-weight:500"></div><p class="fine">We respect your privacy. Unsubscribe any time.</p>`,
+ bind:m=>{const e=m.querySelector('#em'),b=document.querySelector('#cta');const v=()=>{S.email=e.value;b.disabled=!/.+@.+\..+/.test(e.value)};e.oninput=v;v()}},
+{id:'name',sec:4,type:'custom',src:'WalkFit 050, BetterMe — имя после email.',
+ render:()=>`<h2>What should we call you?</h2><div class="field"><input id="nm" placeholder="Your first name" value="${S.name}" style="font-size:20px;font-weight:500"></div>`,
+ bind:m=>{const e=m.querySelector('#nm'),b=document.querySelector('#cta');const v=()=>{S.name=e.value.trim();b.disabled=!S.name};e.oninput=v;v()}},
+{id:'ready2',sec:4,type:'info',src:'BetterMe «<Name>, your plan is ready»; WalkFit 051–052 — вехи по датам.',
+ html:()=>`<h1>${S.name||'Mary'}, your 4-week walking plan is ready</h1><ul class="steps">${[[7,'You feel more energy'],[14,'Walking feels easier'],[21,'Clothes start to fit better'],[28,'You’re proud of your progress']].map(([d,t])=>`<li><div>${t}</div><span>by ${fmtDate(plus(d))}</span></li>`).join('')}</ul>${ph(11,'woman 58 walking on a light path, relaxed and confident')}`,cta:'Get my plan'},
+{id:'paywall',sec:-1,type:'custom',src:'BAI result-paywall: «Get 85% off… Offer ends in 07:00», триал $0.99, далее $20.99/нед с D3. Порядок блоков — лучшие практики WalkFit/BetterMe: таймер+CTA, Now/Goal, тариф, гарантия и логотипы, отзывы, FAQ.',noCta:true,
+ render:()=>`<div class="sticky"><span>Your discount is reserved for</span><b id="tm">07:00</b></div>
+ <h2>${S.name||'Mary'}, your walking plan is ready</h2>
+ <div class="nowgoal"><div>${ph(12,'same woman, before: tired, indoor')}Now<b>${S.w} ${wu()}</b></div><div>${ph(13,'same woman, after: confident, outdoors')}Goal<b>${S.goal} ${wu()}</b></div></div>
+ <div class="plan"><span class="tag">85% off today</span><div class="row"><div><b>3-day trial</b><br><span style="color:var(--muted);font-size:15px">then $20.99 per week</span></div><div style="text-align:right"><s>$6.99</s><div class="price">$0.99</div></div></div></div>
+ <button class="btn" id="buy">Start my plan</button>
+ <div class="pay"><span>Apple Pay</span><span>Google Pay</span><span>Visa</span><span>Mastercard</span><span>PayPal</span></div>
+ <p class="fine">You pay $0.99 today for 3 days of full access. Unless you cancel before the trial ends, you’ll be charged $20.99 every week starting ${fmtDate(plus(3))}. Cancel any time in your account or by email. We’ll remind you before the trial ends.</p>
+ <h2 style="margin-top:26px">What you get</h2><ul class="list"><li>Daily walks from 10 minutes, indoors or outside</li><li>Low-impact moves for knees and back</li><li>A pace that grows with you week by week</li><li>Simple meal tips for women over 50</li><li>Reminders and progress tracking</li></ul>
+ <h2 style="margin-top:22px">Women like you</h2>
+ ${[['“I didn’t believe walking at home would do anything. Six weeks later I’m 12 lbs lighter.”','Patricia, 58'],['“Gentle enough for my knees, and I finally sleep through the night.”','Susan, 66'],['“My grandkids noticed I keep up with them now.”','Karen, 61']].map(([t,n],i)=>`<div class="review"><div class="stars">★★★★★</div><p>${t}</p><footer><div class="av">P${14+i}</div>${n} · placeholder</footer></div>`).join('')}
+ <h2 style="margin-top:22px">Questions</h2>
+ <details><summary>Is it safe for my knees?</summary><p>Every walk has a low-impact version. Ask your doctor if you have a medical condition.</p></details>
+ <details><summary>Do I need equipment?</summary><p>No. Comfortable shoes and a few square feet of space are enough.</p></details>
+ <details><summary>How do I cancel?</summary><p>In your account or by emailing support — it takes one minute.</p></details>
+ <div class="note" style="text-align:center;margin-top:20px"><b>30-day money-back guarantee</b><br><span style="font-size:15px;color:var(--muted)">If you follow the plan and don’t see results, we’ll refund you.</span></div>
+ <button class="btn" id="buy2" style="margin-top:12px">Start my plan</button>
+ <button class="btn ghost" id="nothanks">No thanks</button>`,
+ bind:m=>{startTimer(m.querySelector('#tm'));m.querySelector('#buy').onclick=m.querySelector('#buy2').onclick=checkout;m.querySelector('#nothanks').onclick=()=>go('exit')}},
+{id:'exit',sec:-1,type:'custom',src:'Exit-offer — WalkFit «Did you know? 73% regain» + глубже скидка; WalkUp «72.5%». У BAI exit-offer нет — это гипотеза, цену согласовать.',noCta:true,
+ render:()=>`<h2>Wait — one more thing</h2><div class="big">7 in 10</div><p class="sub">people who try to lose weight alone give up in the first month. A daily plan with reminders doubles the chance you keep going.</p>
+ <div class="plan"><span class="tag">Extra offer</span><div class="row"><div><b>3-day trial</b><br><span style="color:var(--muted);font-size:15px">then $20.99 per week</span></div><div style="text-align:right"><s>$0.99</s><div class="price">$0.49</div></div></div></div>
+ <button class="btn" id="buy">Claim my offer</button><p class="fine">Price for the exit offer is a placeholder to agree on.</p><button class="btn ghost" onclick="go('paywall')">Back to my plan</button>`,
+ bind:m=>m.querySelector('#buy').onclick=checkout},
+{id:'up1',sec:-1,type:'custom',src:'BAI апсейл book-all $19.99 после оплаты — в фитнес-обёртке: гайды PDF.',noCta:true,
+ render:()=>`<p class="sub" style="color:var(--accent);font-weight:600">Payment successful</p><h2>Add the Walking Kit to your plan?</h2>${ph(18,'printed walking guide and recipe cards on a light wooden table')}<ul class="list"><li>Printable 28-day walking calendar</li><li>Knee-friendly warm-up guide</li><li>30 simple recipes for women over 50</li></ul><div class="plan"><div class="row"><b>One-time payment</b><div><s>$39.99</s> <span class="price" style="font-size:28px">$19.99</span></div></div></div><button class="btn" onclick="go('up2')">Add to my plan</button><button class="btn ghost" onclick="go('up2')">Skip</button>`},
+{id:'up2',sec:-1,type:'custom',src:'BAI апсейл premium $29.99.',noCta:true,
+ render:()=>`<h2>Want a personal coach?</h2><p class="sub">Weekly check-ins by message, pace adjustments and answers to your questions.</p>${ph(19,'woman 60 smiling at her phone on a sofa, soft daylight')}<div class="plan"><div class="row"><b>Coaching, first month</b><span class="price" style="font-size:28px">$29.99</span></div></div><button class="btn" onclick="go('success')">Add coaching</button><button class="btn ghost" onclick="go('success')">No thanks</button>`},
+{id:'success',sec:-1,type:'custom',src:'BAI success-страница со ссылкой на приложение. Приложение — заглушка (по задаче).',noCta:true,
+ render:()=>`<h1>Welcome, ${S.name||'Mary'}!</h1><p class="sub">Your plan is waiting in the app. Three steps and you’re in:</p>
+ <ul class="steps"><li><div><b>1.</b> Download the app</div><span>App Store</span></li><li><div><b>2.</b> Sign in with ${S.email||'your email'}</div><span>No password</span></li><li><div><b>3.</b> Start Day 1 — a 10-minute walk</div><span>Today</span></li></ul>
+ <div class="mock">App placeholder — link and app screens to be added</div><button class="btn">Download the app</button><p class="fine" style="text-align:center">We also sent these steps to your email.</p>`}
+];
+const QCOUNT=SCREENS.filter(s=>s.type==='q'||s.type==='m'||['height','weight','goalw','agen'].includes(s.id)).length;
+
+// ---------- engine ----------
+let idx=0;const hist=[];
+const $=s=>document.querySelector(s);
+function unitSeg(){return `<div class="seg"><button data-u="us" class="${S.unit==='us'?'on':''}">lbs / ft</button><button data-u="metric" class="${S.unit==='metric'?'on':''}">kg / cm</button></div>`}
+function bindSeg(m){m.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{if(S.unit===b.dataset.u)return;S.unit=b.dataset.u;if(S.unit==='metric'){S.w=Math.round(S.w/2.2046);S.goal=Math.round(S.goal/2.2046)}else{S.w=Math.round(S.w*2.2046);S.goal=Math.round(S.goal*2.2046)}render()})}
+let timerIv;function startTimer(el){clearInterval(timerIv);let t=S.t??420;timerIv=setInterval(()=>{t=Math.max(0,t-1);S.t=t;el.textContent=String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0')},1000)}
+function checkout(){const d=document.createElement('div');d.className='modal';d.innerHTML=`<div class="sheet"><h2>Checkout</h2><p class="sub">3-day trial · $0.99 today</p><div class="mock">Payment form placeholder<br>(Apple Pay · Card · PayPal)</div><button class="btn" id="paid">Pay $0.99 (prototype)</button><button class="btn ghost" id="cl">Cancel</button></div>`;document.body.appendChild(d);d.querySelector('#paid').onclick=()=>{d.remove();go('up1')};d.querySelector('#cl').onclick=()=>d.remove()}
+function go(id){hist.push(idx);idx=SCREENS.findIndex(s=>s.id===id);render()}
+function next(){if(idx<SCREENS.length-1){hist.push(idx);idx++;render()}}
+function back(){if(hist.length){idx=hist.pop();render()}}
+function render(){
+  clearInterval(timerIv);
+  const s=SCREENS[idx],m=$('#main');window.scrollTo(0,0);
+  const qi=SCREENS.slice(0,idx+1).filter(x=>x.type==='q'||x.type==='m'||['height','weight','goalw','agen'].includes(x.id)).length;
+  $('#back').hidden=idx===0||s.id==='up1'||s.id==='up2'||s.id==='success';
+  const isQ=s.type==='q'||s.type==='m'||['height','weight','goalw','agen'].includes(s.id);
+  $('#count').textContent=isQ?`${qi}/${QCOUNT}`:'';
+  const funnel=SCREENS.findIndex(x=>x.id==='paywall');
+  $('#bar').parentElement.style.display=s.sec<0?'none':'';$('#sections').style.display=s.sec<0?'none':'';
+  $('#bar').style.width=Math.round(idx/funnel*100)+'%';
+  $('#sections').innerHTML=SECTIONS.map((n,i)=>i===s.sec?`<b>${n}</b>`:`<span>${n}</span>`).join('');
+  let h='',cta=null;
+  if(s.type==='q'){h=`<h2>${s.q}</h2>${s.sub?`<p class="sub">${s.sub}</p>`:'<div style="height:12px"></div>'}<div class="opts">${s.opts.map(o=>`<button class="opt${S.answers[s.id]===o?' sel':''}">${o}</button>`).join('')}</div>`}
+  else if(s.type==='m'){const cur=S.answers[s.id]||[];h=`<h2>${s.q}</h2><p class="sub">${s.sub||''}</p><div class="opts">${s.opts.map(o=>`<button class="opt${cur.includes(o)?' sel':''}"><span class="box"></span>${o}</button>`).join('')}</div>`;cta='Continue'}
+  else if(s.type==='info'){h=s.html();cta=s.cta||'Continue'}
+  else {h=s.render();cta=s.noCta?null:(s.cta||'Continue')}
+  m.innerHTML=h+src(s.src)+(cta?`<div class="cta"><button class="btn" id="cta">${cta}</button></div>`:'');
+  if(s.type==='q')m.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{S.answers[s.id]=b.textContent;b.classList.add('sel');setTimeout(next,180)});
+  if(s.type==='m'){const btn=$('#cta');const upd=()=>btn.disabled=!(S.answers[s.id]||[]).length;m.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const v=b.textContent.trim();let cur=S.answers[s.id]||[];if(s.none&&v===s.none)cur=cur.includes(v)?[]:[v];else{cur=cur.filter(x=>x!==s.none);cur=cur.includes(v)?cur.filter(x=>x!==v):[...cur,v]}S.answers[s.id]=cur;render()});upd()}
+  if(cta)$('#cta').addEventListener('click',()=>{if(!$('#cta').disabled)next()});
+  if(s.bind)s.bind(m);
+  $('#jump').value=s.id;history.replaceState(null,'','#'+s.id);
+}
+$('#back').onclick=back;
+$('#tg').onclick=()=>document.body.classList.toggle('showsrc');
+$('#jump').innerHTML=SCREENS.map((s,i)=>`<option value="${s.id}">${String(i+1).padStart(2,'0')} · ${s.id}</option>`).join('');
+$('#jump').onchange=e=>go(e.target.value);
+const start=SCREENS.findIndex(s=>s.id===location.hash.slice(1));if(start>0)idx=start;
+if(new URLSearchParams(location.search).has('src'))document.body.classList.add('showsrc');
+window.addEventListener('hashchange',()=>{const i=SCREENS.findIndex(s=>s.id===location.hash.slice(1));if(i>=0&&i!==idx){hist.push(idx);idx=i;render()}});
+render();
+</script>
+</body>
+</html>
