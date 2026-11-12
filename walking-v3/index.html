@@ -115,9 +115,19 @@ details p{color:var(--text);margin-top:8px;font-size:15px;font-weight:300}
 .src{display:none;margin:22px 0 0;padding:12px 14px;border:1px dashed #C9C9CF;border-radius:12px;background:#F6F6F8;font-size:13px;color:#555;line-height:1.45;text-align:left}
 body.showsrc .src{display:block}
 /* s42: попап сверху, источник ниже попапа и поверх затемнения */
-body.showsrc .s42pad{height:78vh}
-.s42pad~.src{position:relative;z-index:45}
-body.showsrc main>.modal{position:absolute;align-items:flex-start!important;padding-top:28px!important}
+@media (max-width:919px){
+ body.showsrc .s42pad{height:78vh}
+ .s42pad~.src{position:relative;z-index:45}
+ body.showsrc main>.modal{position:absolute;align-items:flex-start!important;padding-top:28px!important}
+}
+@media (min-width:920px){
+ body.showsrc .app{margin:0 auto 0 calc(50% - 450px)}
+ body.showsrc .cta{left:calc(50% - 450px);transform:none}
+ body.showsrc .modal{left:calc(50% - 450px);right:auto;width:440px}
+ body.showsrc .src{position:fixed;left:calc(50% + 10px);top:0;width:440px;height:100vh;overflow-y:auto;margin:0;border:0;border-left:1px dashed #C9C9CF;border-radius:0;padding:16px 20px 40px;z-index:5}
+ body.showsrc .src img{max-width:100%;margin-top:10px}
+ body.showsrc .toggle,body.showsrc .jump{right:auto;left:calc(50% + 480px)}
+}
 .toggle{position:fixed;right:12px;top:12px;z-index:50;background:var(--ink);color:#fff;border:0;border-radius:20px;padding:8px 12px;font:500 13px var(--sans);cursor:pointer;opacity:.85}
 .jump{position:fixed;right:12px;top:52px;z-index:50;font:13px var(--sans);max-width:150px}
 @media (max-width:700px){.toggle{top:auto;right:auto;left:10px;bottom:96px;padding:6px 10px;font-size:12px;opacity:.7}.jump{display:none}}
@@ -606,6 +616,7 @@ $('#jump').innerHTML=SCREENS.map(s=>`<option value="${s.id}">${s.n?String(s.n).p
 $('#jump').onchange=e=>go(e.target.value);
 const start=SCREENS.findIndex(s=>s.id===location.hash.slice(1));if(start>0)idx=start;
 if(new URLSearchParams(location.search).has('src'))document.body.classList.add('showsrc');
+addEventListener('scroll',()=>{const p=document.querySelector('body.showsrc .src');if(!p||innerWidth<920)return;const k=scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight);p.scrollTop=k*(p.scrollHeight-p.clientHeight)},{passive:true});
 window.addEventListener('hashchange',()=>{const i=SCREENS.findIndex(s=>s.id===location.hash.slice(1));if(i>=0&&i!==idx){hist.push(idx);idx=i;render()}});
 render();
 </script>
