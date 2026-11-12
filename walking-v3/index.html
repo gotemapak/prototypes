@@ -9,8 +9,8 @@
 <style>
 :root{
   --bg:#FFFFFF; --card:#FFFFFF; --ink:#0F202E; --text:#414142; --muted:#8A8A8E; --line:#E6E6E6; --idle:#BCBCBC;
-  --accent:#FF2D55; --accent-top:#FF2D55; --accent-bot:#FF2D55; --accent-ink:#FFFFFF; --accent-soft:#FFF0F3; --accent-track:#FFD5DD; --coral:#FF5E50; --coral-soft:#FBB9B4; --lime:#ADD144; --lime-ink:#6E8F1E; --lime-soft:#F2F8E3;
-  --dot:#E3E6EC; --ok:#ADD144; --star:#FFC107; --zebra:#FAFBF6; --warn:#FF2D55;
+  --accent:#FF2D55; --accent-top:#FF2D55; --accent-bot:#FF2D55; --accent-ink:#FFFFFF; --accent-soft:#FFF0F3; --accent-track:#FFD5DD; --coral:#FF5E50; --coral-soft:#FBB9B4; --lime:#3DBE6E; --lime-ink:#23994F; --lime-soft:#E8F7EE; /* один зелёный на всю воронку (правка 2) */
+  --dot:#E3E6EC; --ok:#3DBE6E; --star:#FFC107; --zebra:#FAFBF6; --warn:#FF2D55;
   --grad:linear-gradient(180deg,var(--accent-top),var(--accent-bot));
   --r:14px; --rc:16px; --serif:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,system-ui,sans-serif; --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,Segoe UI,sans-serif;
 }
@@ -30,6 +30,8 @@ h1,h2{font-family:var(--sans);font-weight:800;color:var(--ink);letter-spacing:-.
 h1{font-size:30px;line-height:1.3;margin-bottom:12px}
 h2{font-size:28px;line-height:1.3;margin-bottom:12px}
 .sub{color:var(--text);font-weight:300;font-size:16px;line-height:1.55;margin:0 auto 24px;max-width:340px}
+.sub b{font-weight:700;color:var(--ink)}
+.sub.grey{color:var(--muted);font-weight:400}
 p{color:var(--text)}
 .opts{display:flex;flex-direction:column;gap:16px;text-align:left}
 .opt{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:54px;padding:14px 16px 14px 18px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);font:600 16px var(--sans);color:var(--ink);text-align:left;cursor:pointer;transition:border-color .15s}
@@ -70,7 +72,7 @@ img.thumb.pic{padding:0;background:none;object-fit:cover}
 .seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:3px;margin-bottom:20px}
 .seg button{border:0;background:transparent;padding:8px 20px;border-radius:var(--r);font:600 15px var(--sans);color:var(--muted);cursor:pointer}
 .seg button.on{background:var(--grad);color:#fff}
-.bmi{position:relative;height:8px;border-radius:4px;background:linear-gradient(90deg,#4BCBF6,#ADD144 35%,#FFC107 65%,#FF2D55);margin:34px 0 8px}
+.bmi{position:relative;height:8px;border-radius:4px;background:linear-gradient(90deg,#4BCBF6,#3DBE6E 35%,#FFC107 65%,#FF2D55);margin:34px 0 8px}
 .bmi i{position:absolute;top:-32px;transform:translateX(-50%);background:var(--ink);color:#fff;font:700 13px var(--sans);padding:3px 9px;border-radius:10px;white-space:nowrap}
 .bmi i:after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--ink);border-bottom:0}
 .scale{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
@@ -112,6 +114,10 @@ details p{color:var(--text);margin-top:8px;font-size:15px;font-weight:300}
 .pay span{border:1px solid var(--line);border-radius:8px;padding:4px 8px;background:var(--card)}
 .src{display:none;margin:22px 0 0;padding:12px 14px;border:1px dashed #C9C9CF;border-radius:12px;background:#F6F6F8;font-size:13px;color:#555;line-height:1.45;text-align:left}
 body.showsrc .src{display:block}
+/* s42: попап сверху, источник ниже попапа и поверх затемнения */
+body.showsrc .s42pad{height:78vh}
+.s42pad~.src{position:relative;z-index:45}
+body.showsrc main>.modal{position:absolute;align-items:flex-start!important;padding-top:28px!important}
 .toggle{position:fixed;right:12px;top:12px;z-index:50;background:var(--ink);color:#fff;border:0;border-radius:20px;padding:8px 12px;font:500 13px var(--sans);cursor:pointer;opacity:.85}
 .jump{position:fixed;right:12px;top:52px;z-index:50;font:13px var(--sans);max-width:150px}
 @media (max-width:700px){.toggle{top:auto;right:auto;left:10px;bottom:96px;padding:6px 10px;font-size:12px;opacity:.7}.jump{display:none}}
@@ -121,7 +127,7 @@ body.showsrc .src{display:block}
 
 /* ---------- v3: структура WalkFit indoor в стиле v2 ---------- */
 header{justify-content:space-between}
-.logo{display:block;height:26px}.logo img{height:26px;display:block}
+.logo{display:flex;align-items:center;gap:8px;height:30px}.logo img{height:26px;display:block}.logo img.ic{height:30px;width:30px;border-radius:8px}
 .count{display:block;min-width:36px;text-align:right;font-size:14px;font-weight:600;color:var(--muted)}
 .bar{display:block;height:4px;background:var(--line);margin:10px 16px 0;border-radius:2px;overflow:hidden}
 .bar i{display:block;height:100%;width:0;background:var(--lime);border-radius:2px;transition:width .3s}
@@ -160,18 +166,35 @@ header{justify-content:space-between}
 .weekrow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:10px;color:var(--muted);text-align:center;margin:6px 0}
 .weekrow i{display:grid;place-items:center;width:30px;height:30px;margin:0 auto 3px;border-radius:50%;border:2px solid var(--accent-track);font-style:normal;font-size:11px;color:var(--ink)}
 .weekrow i.d{background:var(--accent);border-color:var(--accent);color:#fff}
+.wk{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:13px;color:var(--ink);margin:4px 0}
+.wkh{color:var(--muted);font-size:14px;margin-top:10px}
+.wk i{position:relative;display:block;width:34px;height:34px;margin:4px auto 4px}
+.wk svg.dr{width:34px;height:34px;display:block}
+.wk .st{position:absolute;right:-5px;bottom:-3px;width:15px;height:15px;border-radius:4px;background:#FFB547;color:#fff;font-size:9px;line-height:15px;font-style:normal}
+.wk em{font-style:normal;display:block}
+.wk em.rest,.wk em.part{color:var(--muted)}
+.wk.streak{position:relative}
+.wk.streak:before{content:"";position:absolute;left:0;right:0;top:2px;height:40px;border-radius:20px;background:var(--accent-soft);z-index:0}
+.wk.streak>div{position:relative;z-index:1}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--rc);padding:16px;margin:12px 0;text-align:left}
 .rowkv{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
 .rowkv:last-child{border-bottom:0}
 .rowkv b{color:var(--ink)}
 .risk{background:var(--accent-soft);border-radius:var(--rc);padding:14px 16px;text-align:left;font-size:14px}
 .risk b{display:block;color:var(--ink);margin-bottom:4px}
+.risk.p-ok{background:var(--lime-soft)}.risk.p-warn{background:#FFF6DC}.risk.p-bad{background:var(--accent-soft)}
+.g39{display:grid;grid-template-columns:1fr 120px;gap:10px;align-items:center;margin:4px 0 14px;text-align:left}
+.g39 img.ph.pic{aspect-ratio:auto;max-height:190px;object-fit:contain}
+.r39{padding:6px 0}
+.r39 small{display:block;font-size:13px;color:var(--muted);line-height:1.3}
+.r39 b{display:flex;align-items:center;gap:8px;font-size:17px;color:var(--ink);line-height:1.3}
+.r39 b img{width:20px;height:20px;flex:none;object-fit:contain}
 .ring{width:170px;height:170px;margin:6px auto 10px;position:relative}
 .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
 .ring span{position:absolute;inset:0;display:grid;place-items:center;font-size:40px;font-weight:800;color:var(--ink)}
 .carousel{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:14px -24px 0;padding:0 24px 8px}
 .carousel .review{flex:0 0 82%;scroll-snap-align:start;margin:0}
-.pill{display:inline-flex;gap:8px;align-items:center;background:var(--lime-soft);color:var(--lime-ink);font-size:13px;font-weight:800;letter-spacing:.04em;padding:8px 14px;border-radius:20px;margin:4px 0 14px}
+.pill{display:inline-flex;gap:8px;align-items:center;justify-content:center;width:100%;background:var(--lime-soft);border:1.5px solid var(--lime);color:var(--ink);font-size:13px;font-weight:800;letter-spacing:.04em;padding:8px 14px;border-radius:20px;margin:4px 0 14px}
 .red{color:var(--accent)}
 .green{color:var(--lime-ink)}
 .splash{position:fixed;inset:0;z-index:30;background:#fff;color:var(--ink);overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:32px}
@@ -202,9 +225,13 @@ header{justify-content:space-between}
 .seg5 i{flex:1;height:6px;border-radius:3px;background:var(--line)}
 .seg5 i.on{background:var(--accent)}
 .disc{font-size:12px;color:var(--muted);margin:6px 0 16px}
-.sum2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
-.sum2 div{border:1px solid var(--line);border-radius:18px;padding:10px 12px;text-align:left;font-size:13px;color:var(--muted)}
-.sum2 b{display:block;color:var(--ink);font-size:17px}
+.sum2{display:flex;justify-content:center;gap:40px;margin:18px 0 22px}
+.sum2>div{text-align:left}
+.sum2 small{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}
+.sum2 b{display:flex;align-items:center;gap:8px;color:var(--ink);font-size:20px;font-weight:700}
+.sum2 .ic{font-size:20px;filter:grayscale(1)}
+.ngimg{position:relative}
+.ngimg .arr{position:absolute;left:50%;top:50%;width:46px;height:92px;transform:translate(-50%,-50%);opacity:.55;pointer-events:none}
 .offer{background:var(--ink);color:#fff;border-radius:16px;padding:12px;font-weight:700;margin:12px 0 4px}
 .boost{background:var(--accent-soft);border-radius:var(--rc);padding:14px;margin:6px 0 6px}
 .boost h3{font-size:20px;line-height:1.3}
@@ -215,7 +242,9 @@ header{justify-content:space-between}
 .pl .rb{width:22px;height:22px;border-radius:50%;border:2px solid var(--idle);flex:none;display:grid;place-items:center}
 .pl.sel .rb{border-color:var(--accent)}
 .pl.sel .rb:after{content:"";width:10px;height:10px;border-radius:50%;background:var(--accent)}
-.pl .rib{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--grad);color:#fff;font-size:11px;font-weight:800;padding:2px 12px;border-radius:10px;white-space:nowrap;letter-spacing:.04em}
+.pl.hasrib{margin-top:26px;border-radius:0 0 20px 20px;border-color:var(--lime)}
+.pl.hasrib.sel{border-color:var(--lime);background:var(--lime-soft)}
+.pl .rib{position:absolute;bottom:100%;left:-1.5px;right:-1.5px;background:var(--lime);color:#fff;font-size:12px;font-weight:800;padding:4px 0;border-radius:14px 14px 0 0;text-align:center;white-space:nowrap;letter-spacing:.06em}
 .pl .mid{flex:1}
 .pl .mid b{display:block;font-size:17px}
 .pl .tag2{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;background:#F6F1EA;color:var(--text);margin:3px 0}
@@ -234,10 +263,27 @@ header{justify-content:space-between}
 .go{font-weight:700;margin:22px 0 10px}
 .pulse{animation:pu 1.6s infinite}
 @keyframes pu{0%,100%{box-shadow:0 0 0 0 rgba(255,45,85,.45)}50%{box-shadow:0 0 0 10px rgba(255,45,85,0)}}
-.badge1{background:#FFF1E8;border-radius:var(--rc);padding:18px;margin:22px 0}
-.badge1 .lw{font-size:22px;font-weight:800}
-.foot{font-size:12px;color:var(--muted);margin-top:24px;line-height:1.7}
-.foot a{color:var(--muted)}
+.badge1{background:#FFF3E0;border:1.5px solid #EBDDC6;border-radius:var(--rc);padding:22px 18px 20px;margin:26px 0}
+.badge1 .lw{display:flex;align-items:center;justify-content:center;gap:6px}
+.badge1 .lw svg{width:58px;height:96px}.badge1 .lw svg.flip{transform:scaleX(-1)}
+.badge1 .n1{display:flex;flex-direction:column;align-items:center;font-style:italic;color:var(--ink)}
+.badge1 .n1 span{font-size:84px;font-weight:900;line-height:.9;letter-spacing:-2px}.badge1 .n1 small{font-size:30px;margin-right:4px}
+.badge1 .n1 em{font-size:20px;font-weight:700;margin-top:4px}
+.foot{font-size:13px;color:var(--muted);margin:30px -24px 0;padding:24px 24px 8px;line-height:1.8;background:#fff;border-top:1px solid var(--line);text-align:center}
+.foot a{color:var(--muted);text-decoration:none}
+.foot .gsc{display:flex;align-items:center;justify-content:center;gap:6px;color:var(--ink);font-weight:700;font-size:15px;margin:16px 0 10px}
+.foot .logos{display:flex;align-items:center;justify-content:space-around;gap:10px;margin-bottom:12px}
+.foot .visa{font:italic 900 20px/1 Arial,sans-serif;color:#1A1F71;letter-spacing:-.5px}
+.foot .ppl{font:italic 800 18px/1 Arial,sans-serif}.foot .ppl i:first-child{color:#003087}.foot .ppl i:last-child{color:#009CDE}
+.foot .ssl{font-size:7px;line-height:1.1;font-weight:700;color:#2E7D32;border:1px solid #2E7D32;border-radius:3px;padding:2px 4px;text-align:left;background:#F1F8E9}
+.foot .co{font-size:14px;color:var(--text)}
+.store{display:inline-flex;flex-direction:column;align-items:center;gap:4px;margin:14px auto 12px;color:var(--text);font-size:14px;text-decoration:none}
+.steps2{list-style:none;counter-reset:st;text-align:left;margin:24px 0}
+.steps2 li{counter-increment:st;position:relative;padding:0 0 22px 48px}
+.steps2 li:before{content:counter(st);position:absolute;left:0;top:-2px;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;display:grid;place-items:center}
+.steps2 li b{display:block;font-size:18px;color:var(--ink);margin-bottom:10px}
+.steps2 li span{color:var(--muted);font-size:15px}
+.steps2 .btn{text-align:center;line-height:48px;text-decoration:none}
 .chk{text-align:left;max-height:88vh;overflow:auto;position:relative}
 .chk .x{position:absolute;left:16px;top:14px;border:0;background:none;font-size:26px;color:var(--idle);cursor:pointer}
 .chk h2{text-align:center}
@@ -268,7 +314,7 @@ header{justify-content:space-between}
 <script>
 // Прототип v3: воронка WalkFit indoor (прогон 10 ноября 2026) экран в экран, тексты 1 в 1, бренд и стиль Depfit (экспорты depfit/design/app-depfit, 12 ноября 2026).
 // Название бренда и домен вынесены в константы, чтобы заменить в одном месте в следующей итерации.
-const BRAND='Depfit', DOMAIN='our website' /* домен Depfit — TBD */, LOGO='img/depfit-logo.png';
+const BRAND='Depfit', DOMAIN='our website' /* домен Depfit — TBD */, LOGO='img/depfit-logo.png', ICON='img/depfit-icon.png', APP_URL='https://apps.apple.com/app/id1456357156';
 const ORIG='orig/';
 
 // ---------- state ----------
@@ -281,14 +327,27 @@ const hm=()=>S.h?(S.hu==='cm'?S.h/100:S.h*0.0254):1.86;
 const wkg=()=>S.w?kg(S.w):95, gkg=()=>S.goal?kg(S.goal):89;
 const bmi=()=>wkg()/(hm()*hm());
 const goalTxt=()=>`${S.goal||89} ${S.wu}`;
-const weeks=()=>Math.max(4,Math.ceil(Math.max(wkg()-gkg(),0)/0.75));
+// s46: срок как у WalkFit (getBMIBasedWeightLossIndexPerWeek): похудение — разница в кг / темп по BMI (до 24.9 → 1, 25–29.9 → 1.5, 30–34.9 → 1.7, от 35 → 2 кг в неделю); набор — разница / 0.5; округление до недель
+const pace=b=>b<=24.9?1:b<30?1.5:b<35?1.7:2;
+const weeks=()=>{const d=wkg()-gkg();return Math.round(d>0?d/pace(bmi()):d<0?-d/0.5:0)};
 let CUR=1;
 const IMG={4:'img-004.jpg',6:'img-006.jpg',9:'img-009.png',11:'img-011.jpg',13:'img-013.jpg',17:'img-017.png',19:'img-019.png',25:'img-025.jpg',28:'img-028.jpg',33:'img-033.jpg',38:'img-038.jpg',39:'img-039.png',40:'img-040.png',43:'img-043.jpg'};
 const ph=(t,st='',f)=>{f=f||IMG[CUR];return f?`<img class="ph pic${f.endsWith('.png')?' cut':''}" src="img/${f}" alt="${t.replace(/"/g,'')}" style="${st}">`:`<div class="ph" style="${st}"><span><b>Image ${String(CUR).padStart(3,'0')}</b> · ${t}</span></div>`};
 const th=t=>/\.(png|jpg)$/.test(t)?`<img class="thumb pic" src="img/${t}" alt="">`:`<span class="thumb">${t}</span>`;
 const sig=n=>`<span class="sig">${[6,9,12,15,18].map((h,i)=>`<i class="${i<n?'on':''}" style="height:${h}px"></i>`).join('')}</span>`;
+// s22: кольцо прогресса дня (доля шагов от цели 6 000), кресло для дня отдыха
+const RING=(steps,n)=>{const p=Math.min(1,steps/6000),c=2*Math.PI*13;return `<svg class="dr" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="#fff" stroke="#F1F1F3" stroke-width="2.5"/><circle cx="16" cy="16" r="13" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${(c*p).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 16 16)"/><text x="16" y="20.5" text-anchor="middle" font-size="12" fill="#0F202E">${n}</text></svg>`};
+const CHAIR=`<svg class="dr" viewBox="0 0 32 32"><circle cx="16" cy="16" r="15" fill="#fff" stroke="#F1F1F3" stroke-width="1.5"/><g fill="#FFB547"><rect x="9" y="10" width="14" height="8" rx="3"/><rect x="7" y="14" width="4" height="8" rx="2"/><rect x="21" y="14" width="4" height="8" rx="2"/><rect x="10" y="17" width="12" height="4" rx="1.5" fill="#FF9F1C"/><rect x="9" y="22" width="2" height="2" rx="1"/><rect x="21" y="22" width="2" height="2" rx="1"/></g></svg>`;
+const DONE=(star)=>`<svg class="dr" viewBox="0 0 32 32"><circle cx="16" cy="16" r="15" fill="var(--accent)"/><path d="M10 16.5l4 4 8-8.5" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>${star?'<span class="st">★</span>':''}`;
+// s39: состояния по ответам — как в конфиге WalkFit (экран ob_feedback_summary_d), иконки строк — img/s39/
+const S39={
+ life:{"I get sleepy when I'm hungry":['Sedentary','life-sedentary'],'I am tired after I eat':['Sedentary','life-sedentary'],'I feel good':['Change seeker','life-change-seeker'],'I always feel energized':['Change seeker','life-change-seeker']}, // из s30
+ ex:{Beginner:['Little or no exercise','ex-little'],Intermediate:['Light exercise','ex-light'],Advanced:['Moderate exercise','ex-moderate']}, // из s12
+ act:{'Fewer than 20 mins':['Low','act-low'],'20-60 mins':['Intermediate','act-intermediate'],'1-2 hours':['Intermediate','act-intermediate'],'More than 2 hours':['High','act-high']}}; // из s15
+const bmiPlaque=b=>b<25?['ok','👌','Good starting BMI to get a fit body','Research has shown that walking helps you boost your metabolism, lose weight, gain muscle strength, and improve heart health']:[b<=30?'warn':'bad',b<=30?'🤔':'☝️','Risks for an unhealthy BMI','High blood pressure, heart disease, stroke, type 2 diabetes, some types of cancer, osteoarthritis, back pain, all case mortality'];
 const icon=x=>!x?'':x.startsWith('img:')?th(x.slice(4)):x.startsWith('sig:')?sig(+x.slice(4)):`<span class="emo">${x}</span>`;
 const stars='<div class="stars">★★★★★</div>';
+const LAUREL=c=>`<svg class="${c.trim()}" viewBox="0 0 60 100"><g fill="#DCD49A">${[0,1,2,3,4,5].map(i=>`<ellipse cx="${20+i*1.5}" cy="${86-i*14}" rx="5" ry="10" transform="rotate(${-40+i*6} ${20+i*1.5} ${86-i*14})"/><ellipse cx="${34+i*0.5}" cy="${80-i*14}" rx="4.5" ry="9" transform="rotate(${50-i*4} ${34+i*0.5} ${80-i*14})"/>`).join('')}</g><path d="M40 96 C18 80 14 40 26 6" stroke="#DCD49A" stroke-width="2.5" fill="none"/></svg>`;
 const rv=(n,t)=>`<div class="review">${stars}<p>${t}</p><footer>${n}</footer></div>`;
 
 // ---------- screens ----------
@@ -309,7 +368,7 @@ const SCREENS=[
 {id:'s09',n:9,p:9,type:'m',layout:'zones',q:'Choose your target zones',img:'full-body cut-out: smiling blonde older woman in red tank, red leggings, white sneakers',opts:['Lower back','Belly','Buttocks','Hips','Thighs','Knees','Calves','Whole body'],cta:'Continue'},
 {id:'s10',n:10,p:10,type:'q',q:'When were you last happy with your weight?',opts:[['Less than a year ago','🤔'],['1 to 2 years ago','😅'],['More than 3 years ago','😢'],["I'm happy with my weight",'😍'],['Never','❌']]},
 {id:'s11',n:11,type:'info',html:()=>`${ph('smiling blonde woman in red V-neck tee, hands on hips, bright kitchen','min-height:240px')}<h2>You're amazing!</h2><p class="sub">Many people often grapple with the fear of not being good enough. We'll take this into account as we devise your plan to provide you with the confidence-building approach!</p>`},
-{id:'s12',n:12,p:12,type:'q',q:'What is your activity level?',opts:[['Beginner','sig:1',"I'm just starting out"],['Intermediate','sig:2','I exercise somewhat consistently'],['Advanced','sig:4','I do regular workouts']]},
+{id:'s12',n:12,p:12,type:'q',q:'What is your activity level?',opts:[['Beginner','sig:1',"I'm just starting out"],['Intermediate','sig:2','I exercise somewhat consistently'],['Advanced','sig:5','I do regular workouts']]},
 {id:'s13',n:13,type:'info',html:()=>`${ph('blonde woman in red tee and navy leggings marching mid-stride in the living room','min-height:220px')}<h2>Step into fitness: discover the benefits of indoor walking</h2><p class="sub">A ${BRAND} indoor walking plan is a convenient and weather-proof way to stay active, offering the same health benefits as outdoor walking, but without the need for favorable weather or even going outside.</p>`},
 {id:'s14',n:14,p:14,type:'m',layout:'chips',q:'Choose your focus',opts:['Fat burn','Better shape','Energy boost','Improved physique','Better relaxation','Heart health','Better sleep','Increased life expectancy','Better mobility','Metabolism boost','Improved agility','Physical recovery'],cta:'Continue'},
 {id:'s15',n:15,p:15,type:'q',q:'How much time do you spend walking on a typical day?',opts:[['Fewer than 20 mins','👌'],['20-60 mins','👍'],['1-2 hours','💪'],['More than 2 hours','🏅']]},
@@ -320,8 +379,9 @@ const SCREENS=[
 {id:'s20',n:20,p:20,type:'q',q:'Do you wear a smartwatch or fitness tracker?',opts:[['Yes','✅'],['No','❌']],skip:v=>v==='No'?'s22':null,src:'Куда ведёт «No», краулер не снял (выбрал Yes). В прототипе «No» пропускает вопрос о модели часов.'},
 {id:'s21',n:21,p:21,type:'m',q:'What kind of smartwatch or fitness tracker do you wear?',opts:['Apple Watch','Fitbit','Samsung Galaxy','Garmin','None of the above'],none:'None of the above'},
 {id:'s22',n:22,p:22,type:'info',html:()=>`<div class="card"><div class="stat3"><div><b>14 days</b>finished</div><div><b>6,304</b>avg. steps</div><div><b>120,980</b>total steps</div></div>
- <div class="weekrow">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d,i)=>`<div><i class="${[0,6].includes(i)?'d':''}">${i===2?'🛋':[0,6].includes(i)?'✓':i+0}</i>${['5,239','4,211','Rest','2,980','1,210','4,910','6,890'][i]}</div>`).join('')}</div>
- <div class="weekrow">${['6,017','8,000','5,029','7,300','5,239','7,890','Rest'].map((s,i)=>`<div><i class="${i<6?'d':''}">${i<6?'✓':'🛋'}</i>${s}</div>`).join('')}</div></div>
+ <div class="wk wkh">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d,i)=>`<span class="${i===6?'red':''}">${d}</span>`).join('')}</div>
+ <div class="wk">${[[5239,'d'],[4211,2],[0,'r'],[2980,4],[1210,5],[4910,6],[6890,'ds']].map(([s,t])=>`<div><i>${t==='r'?CHAIR:t==='d'||t==='ds'?DONE(t==='ds'):RING(s,t)}</i><em class="${t==='r'?'rest':typeof t==='number'?'part':''}">${t==='r'?'Rest':s.toLocaleString('en-US')}</em></div>`).join('')}</div>
+ <div class="wk streak">${[[6017],[8000,1],[5029],[7300],[5239],[7890,1],['r']].map(([s,st])=>`<div><i>${s==='r'?CHAIR:DONE(st)}</i><em class="${s==='r'?'rest':''}">${s==='r'?'Rest':s.toLocaleString('en-US')}</em></div>`).join('')}</div></div>
  <h2>You're making strides towards your goal!</h2><p class="sub">Our walking programs will seamlessly integrate with your fitness tracker.</p>`,src:'Картинка — карточка приложения со статистикой шагов, собрана вёрсткой.'},
 {id:'s23',n:23,p:23,type:'q',q:'Do you own a scale?',opts:['Yes, a smart internet-connected scale','Yes, a basic scale','No']},
 {id:'s24',n:24,p:24,type:'q',q:'What pace would you like to achieve your goal at?',opts:[['Slow and steady','🚶'],['Moderate','🏃'],['Fast','⚡'],['Mixed','👟'],[`I want ${BRAND} to decide`,'img:depfit-logo.png']]},
@@ -349,30 +409,32 @@ const SCREENS=[
  <div class="hint"><b>👉 We ask your age to create your personal plan</b>Older people tend to have more body fat than younger people with the same BMI.</div>`,
  bind:m=>bindNum(m,'age',()=>[16,99,''])},
 {id:'s38',n:38,type:'info',html:()=>`${ph('blonde woman in red tee and navy leggings, arms wide, living room','min-height:240px')}<h2>Thank you!</h2><p class="sub">Thank you for your remarkable honesty. We're nearly finished!</p>`},
-{id:'s39',n:39,type:'info',cta:'Continue',src:'Значения Lifestyle / Exercise / Activity level у WalkFit сняты при ответах Fewer than 20 mins и Beginner; для других ответов подобраны по смыслу.',
- html:()=>{const b=bmi(),pos=Math.min(96,Math.max(4,(b-18.5)/(40-18.5)*100));const lv=(S.answers.s12||'Beginner');const life={'Fewer than 20 mins':'Sedentary','20-60 mins':'Lightly active','1-2 hours':'Active','More than 2 hours':'Very active'}[S.answers.s15]||'Sedentary';
- return `<h2 class="left">Summary of your fitness level</h2><div class="card"><div style="display:flex;justify-content:space-between;font-size:14px"><b>Body Mass Index (BMI)</b><span style="color:var(--muted)">Normal - 25.1</span></div>
- <div class="bmi" style="background:linear-gradient(90deg,#ADD144,#FFC107 45%,#FF9800 70%,#FF2D55)"><i style="left:${pos}%">You - ${b.toFixed(1)}</i></div><div class="scale"><span>NORMAL</span><span>OVERWEIGHT</span><span>OBESE</span></div>
- <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:10px;margin-top:10px"><div><div class="rowkv"><span>🪑 Lifestyle</span><b>${life}</b></div><div class="rowkv"><span>🏋️ Exercise</span><b>${{Beginner:'Little or no exercise',Intermediate:'Some exercise',Advanced:'Regular exercise'}[lv]}</b></div><div class="rowkv"><span>📶 Activity level</span><b>${{Beginner:'Low',Intermediate:'Medium',Advanced:'High'}[lv]}</b></div></div>${ph('cut-out: slim woman in black sports bra and leggings, hands behind head','margin:0;min-height:150px')}</div></div>
- <div class="risk"><b>🤔 Risks of an unhealthy BMI</b>High blood pressure, heart disease, stroke, type 2 diabetes, some types of cancer, osteoarthritis, back pain, all case mortality</div>`}},
+{id:'s39',n:39,type:'info',cta:'Continue',src:'Логика из конфига WalkFit (все 5 прогонов краулера шли по первым ответам и совпали с ним). Плашка BMI — 3 версии: меньше 25 зелёная 👌, 25–30 жёлтая 🤔, больше 30 красная ☝️. Lifestyle — из s30 (sleepy / tired → Sedentary, good / energized → Change seeker); Exercise — из s12 (Beginner → Little or no, Intermediate → Light, Advanced → Moderate exercise); Activity level — из s15 (до 20 мин → Low, 20–60 мин и 1–2 ч → Intermediate, больше 2 ч → High). Картинка у WalkFit — 6 версий: пол (s02) × BMI (до 25, 25–30, от 30); в прототипе пока одна.',
+ html:()=>{const b=bmi(),pos=Math.min(96,Math.max(4,(b-18.5)/(40-18.5)*100));
+ const g=(map,k,d)=>map[S.answers[k]]||map[d];const L=g(S39.life,'s30','I get sleepy when I\'m hungry'),E=g(S39.ex,'s12','Beginner'),A=g(S39.act,'s15','Fewer than 20 mins');const [pc,pe,pt,px]=bmiPlaque(b);
+ const row=(lab,[v,ic])=>`<div class="r39"><small>${lab}</small><b><img src="img/s39/${ic}.png" alt="">${v}</b></div>`;
+ return `<h2>Summary of your fitness level</h2><div class="card"><div style="display:flex;justify-content:space-between;font-size:14px"><b>Body Mass Index (BMI)</b><span style="color:var(--muted)">Normal - 25.1</span></div>
+ <div class="bmi" style="background:linear-gradient(90deg,#3DBE6E,#FFC107 45%,#FF9800 70%,#FF2D55)"><i style="left:${pos}%">You - ${b.toFixed(1)}</i></div><div class="scale"><span>NORMAL</span><span>OVERWEIGHT</span><span>OBESE</span></div></div>
+ <div class="g39"><div>${row('Lifestyle',L)}${row('Exercise',E)}${row('Activity level',A)}</div>${ph('cut-out: slim woman in black sports bra and leggings, hands behind head','margin:0;min-height:150px')}</div>
+ <div class="risk p-${pc}"><b>${pe} ${pt}</b>${px}</div>`}},
 {id:'s40',n:40,type:'info',html:()=>`${ph('flat illustration: pink blob with white OK-hand gesture and sparkles','min-height:200px')}<h2>Walking can reduce the risk of cardiovascular diseases by 33%</h2><p class="sub">According to the the study in Journal of the American College of Cardiology, participants who engaged in as little as 10 minutes a day of brisk walking had 33% lower risk of death than those who had no physical activity.</p><p class="cite">*"Exercise Lowers Mortality Risk in Patients with Heart Disease." CardioSmart, American College of Cardiology, 30 Sept. 2017</p>`,src:'Опечатка «the the» — как у WalkFit.'},
 {id:'s41',n:41,p:41,type:'m',q:'Have you struggled with any of these setbacks in the past?',sub:'Select all that apply',opts:["Lack of motivation","Time constraints","Didn't have a clear plan","Lack of visible progress","Workouts were too hard","Bad coaching","None of these"],none:'None of these'},
 {id:'s42',n:42,p:41,type:'custom',noCta:true,src:'Поп-ап поверх экрана 41 (фон затемнён).',
  render:()=>`<h2>Have you struggled with any of these setbacks in the past?</h2><p class="sub">Select all that apply</p>
- <div class="modal" style="align-items:center;padding:24px"><div class="sheet" style="border-radius:28px;padding:0;overflow:hidden"><div style="background:#F2F8E3;padding:22px"><div style="width:72px;height:72px;border-radius:50%;background:#ADD144;margin:0 auto;display:grid;place-items:center;font-size:36px">👌</div></div>
- <div style="padding:20px 22px 24px"><h2>Thanks for sharing!</h2><p class="sub">We've found that many people face the same issues. ${BRAND} offers all the tools you need to maintain a consistent walking routine and make progress toward your goals.</p><button class="btn" id="cta">CONTINUE</button></div></div></div>`,
+ <div class="modal" style="align-items:center;padding:24px"><div class="sheet" style="border-radius:28px;padding:0;overflow:hidden"><div style="background:#E8F7EE;padding:22px"><div style="width:72px;height:72px;border-radius:50%;background:#3DBE6E;box-shadow:0 0 0 8px rgba(61,190,110,.28);margin:0 auto;display:grid;place-items:center;font-size:36px">👌</div></div>
+ <div style="padding:20px 22px 24px"><h2>Thanks for sharing!</h2><p class="sub">We've found that many people face the same issues. ${BRAND} offers all the tools you need to maintain a consistent walking routine and make progress toward your goals.</p><button class="btn" id="cta">CONTINUE</button></div></div></div><div class="s42pad"></div>`,
  bind:m=>m.querySelector('#cta').onclick=next},
 {id:'s43',n:43,type:'info',html:()=>`<div class="left">${ph('smiling brunette woman in red tee, grey pants, hands on hips, plain beige backdrop','min-height:240px')}<h2>Why do people give up on exercise?</h2><p class="sub"><b>The #1 reason is starting too big too quickly</b></p><p class="sub">We're not promising quick results, but we're committed to supporting you on your journey to achieving your goals.</p></div>`},
-{id:'s44',n:44,p:43,type:'q',iconLeft:true,q:'Is there a special occasion you want to lose weight for?',sub:'<span class="red">You’re more likely to reach your goal if you have something important to aim for</span>',opts:[['Vacation','✈️'],['Wedding','🥂'],['Sporting event','🏆'],['Beach trip','🏝️'],['Reunion','🥳'],['Family occasion','👨‍👩‍👧'],['No']],skip:v=>v==='No'?'s46':null,src:'Куда ведёт «No», краулер не снял. В прототипе «No» пропускает вопрос о дате.'},
+{id:'s44',n:44,p:43,type:'q',iconLeft:true,q:'Is there a special occasion you want to lose weight for?',sub:'You’re more likely to reach your goal if you have something important to aim for',opts:[['Vacation','✈️'],['Wedding','🥂'],['Sporting event','🏆'],['Beach trip','🏝️'],['Reunion','🥳'],['Family occasion','👨‍👩‍👧'],['No']],skip:v=>v==='No'?'s46':null,src:'Куда ведёт «No», краулер не снял. В прототипе «No» пропускает вопрос о дате.'},
 {id:'s45',n:45,type:'custom',src:'Дата события, формат MM/DD/YYYY, есть «SKIP THIS QUESTION».',
  render:()=>`<h2>When's your event?</h2><p class="sub">Once we know this, we’ll be able to put together your plan to help you get in shape. Your data will not be shared with any third parties.</p>
  <p class="left" style="font-size:13px;color:var(--muted);margin-bottom:6px">Date</p><div class="field"><input type="date" id="dt" data-demo="2027-10-02" value="${S.event}" style="font-size:18px"></div>`,
  cta:'CONTINUE',after:'<button class="link" id="skip">SKIP THIS QUESTION</button>',
  bind:m=>{const e=m.querySelector('#dt'),b=$('#cta');const v=()=>{S.event=e.value;b.disabled=!e.value};e.oninput=e.onchange=v;v();$('#skip').onclick=next}},
-{id:'s46',n:46,p:45,type:'info',cta:'Continue',src:'Цель и дата: дата у WalkFit = день прогона; в прототипе считаем от разницы веса, ~0,75 кг в неделю. Слово события — из экрана 44.',
+{id:'s46',n:46,p:45,type:'info',cta:'Continue',src:'Дата цели — по коду WalkFit: сегодня + разница весов / темп по BMI (до 24.9 → 1 кг в неделю, 25–29.9 → 1.5, 30–34.9 → 1.7, от 35 → 2; набор веса — 0.5 кг в неделю), округление до недель. От даты события на s45 не зависит. Строка «Get ready to amaze everyone at your …» — только если на s44 выбран повод, не «No».',
  html:()=>{const ev=S.answers.s44&&S.answers.s44!=='No'?`<p class="sub">Get ready to amaze everyone at your ${S.answers.s44.toLowerCase()}</p>`:'';const d=plus(weeks()*7);
- return `<h2>The one and only plan you’ll ever need to stay in shape</h2><p class="sub" style="margin-bottom:4px">According to the information you have provided us, you’ll achieve your goal weight of</p><h2><u>${goalTxt()} by ${fmtS(d)}</u></h2>${ev}
- <div class="card"><svg class="chart" viewBox="0 0 320 150"><path d="M20 30 C120 40 180 110 300 118 L300 140 L20 140Z" fill="#ADD144" fill-opacity=".12"/><path d="M20 30 C120 40 180 110 300 118" stroke="#ADD144" stroke-width="3" fill="none"/><circle cx="300" cy="118" r="7" fill="#ADD144"/><rect x="246" y="80" width="64" height="24" rx="10" fill="#0F202E"/><text x="278" y="97" text-anchor="middle" font-size="13" fill="#fff" font-weight="700">${goalTxt()}</text><text x="20" y="148" font-size="12" fill="#8A8A8E">${new Date().toLocaleDateString('en-US',{month:'short'})}</text><text x="300" y="148" font-size="12" fill="#8A8A8E" text-anchor="end">${d.toLocaleDateString('en-US',{month:'short'})}</text></svg></div>`}},
+ return `<h2>The one and only plan you’ll ever need to ${Math.round(wkg())!==Math.round(gkg())?'get':'stay'} in shape</h2><p class="sub" style="margin-bottom:4px">According to the information you have provided us, you’ll achieve your goal weight of</p><h2><u>${goalTxt()} by ${fmtS(d)}</u></h2>${ev}
+ <div class="card"><svg class="chart" viewBox="0 0 320 150"><path d="M20 30 C120 40 180 110 300 118 L300 140 L20 140Z" fill="#3DBE6E" fill-opacity=".12"/><path d="M20 30 C120 40 180 110 300 118" stroke="#3DBE6E" stroke-width="3" fill="none"/><circle cx="300" cy="118" r="7" fill="#3DBE6E"/><rect x="246" y="80" width="64" height="24" rx="10" fill="#0F202E"/><text x="278" y="97" text-anchor="middle" font-size="13" fill="#fff" font-weight="700">${goalTxt()}</text><text x="20" y="148" font-size="12" fill="#8A8A8E">${new Date().toLocaleDateString('en-US',{month:'short'})}</text><text x="300" y="148" font-size="12" fill="#8A8A8E" text-anchor="end">${d.toLocaleDateString('en-US',{month:'short'})}</text></svg></div>`}},
 {id:'s47',n:47,type:'custom',noCta:true,src:'Лоадер: кольцо с процентами, «36 million», карусель отзывов; на 100% автопереход к email.',
  render:()=>`<div class="ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" stroke="#F2F2F4" stroke-width="8" fill="none"/><circle id="arc" cx="50" cy="50" r="44" stroke="#FF2D55" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="276.5"/></svg><span id="pc">0%</span></div>
  <p class="sub" style="margin-bottom:14px">Creating your walking plan...</p><div class="big" style="color:var(--ink);font-size:34px">36 million</div><p class="sub" style="margin-bottom:0">users have chosen us</p>
@@ -391,22 +453,24 @@ const SCREENS=[
  cta:'CONTINUE',after:'<button class="link" id="skip">SKIP</button>',
  bind:m=>{const e=m.querySelector('#nm'),b=$('#cta');const v=()=>{S.name=e.value.trim();b.disabled=!S.name};e.oninput=v;v();$('#skip').onclick=next}},
 {id:'s51',n:51,type:'info',src:'Дата старта = сегодня + 6 дней (как в прогоне: 10 → 16 ноября).',
- html:()=>`<h3 class="left" style="font-size:18px;margin-bottom:6px">Your Weight</h3><div class="card"><svg class="chart" viewBox="0 0 320 160"><defs><linearGradient id="yg" x1="0" x2="1"><stop offset="0" stop-color="#FFC107"/><stop offset="1" stop-color="#ADD144"/></linearGradient></defs><path d="M24 34 C90 40 130 70 170 78 C220 88 250 110 300 128" stroke="url(#yg)" stroke-width="4" fill="none"/><circle cx="24" cy="34" r="7" fill="#FFC107"/><rect x="8" y="4" width="44" height="22" rx="10" fill="#0F202E"/><text x="30" y="20" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">Now</text>${['Week 1','Week 2','Week 3','Week 4'].map((w,i)=>`<text x="${30+i*88}" y="154" font-size="11" fill="#8A8A8E" text-anchor="middle">${w}</text>`).join('')}</svg></div>
- <p class="fine" style="text-align:center">The chart is for illustration purposes only and results may vary for each individual</p><h2 style="margin-top:16px">Start your 4-week <span class="green">Indoor Walking Plan</span> on ${fmtL(plus(6))}!</h2>`},
+ html:()=>`<h3 class="left" style="font-size:18px;margin-bottom:6px">Your Weight</h3><div class="card"><svg class="chart" viewBox="0 0 320 160"><defs><linearGradient id="yg" x1="0" x2="1"><stop offset="0" stop-color="#FFC107"/><stop offset="1" stop-color="#3DBE6E"/></linearGradient></defs>
+ <g stroke="#E3E3E8" stroke-width="1" stroke-dasharray="3 4">${[20,48,76,104,132].map(y=>`<line x1="24" y1="${y}" x2="310" y2="${y}"/>`).join('')}${[30,118,206,294].map(x=>`<line x1="${x}" y1="14" x2="${x}" y2="138"/>`).join('')}</g>
+ <path d="M30 30 C70 70 110 78 160 80 C200 82 215 96 236 116" stroke="url(#yg)" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="30" cy="30" r="7" fill="#fff" stroke="#FFC107" stroke-width="3"/><rect x="44" y="16" width="40" height="20" rx="6" fill="#0F202E"/><text x="64" y="30" text-anchor="middle" font-size="11" fill="#fff" font-weight="700">Now</text>${['Week 1','Week 2','Week 3','Week 4'].map((w,i)=>`<text x="${30+i*88}" y="154" font-size="11" fill="#8A8A8E" text-anchor="middle">${w}</text>`).join('')}</svg></div>
+ <p class="fine" style="text-align:center">The chart is for illustration purposes only and results may vary for each individual</p><h2 style="margin-top:16px">Start your 4-week<br><span class="green">Indoor Walking Plan</span><br>on ${fmtL(plus(6))}!</h2>`},
 {id:'s52',n:52,type:'custom',noCta:true,src:'Заставка (у WalkFit красная, у нас белая с кругами как на сплэше Depfit): строки появляются по очереди, потом кнопка. Даты = старт + 7 / 14 / 21 день.',
  render:()=>`<div class="splash"><small>Welcome to</small><img class="lg" src="${LOGO}" alt="${BRAND}"><p style="animation-delay:.4s">In just 7 minutes a day…</p><p style="animation-delay:.9s">By ${fmtL(plus(13))}, you'll feel it</p><p style="animation-delay:1.4s">By ${fmtL(plus(20))}, you'll see it</p><p style="animation-delay:1.9s">By ${fmtL(plus(27))}, you'll be proud of your body!</p><button class="btn" id="cta">Let's get started 🙌</button></div>`,
  bind:m=>m.querySelector('#cta').onclick=next},
 {id:'s53',n:53,type:'custom',noCta:true,src:'Спиннер перед пейволлом, ~1 с.',render:()=>`<div class="spin"></div>`,bind:()=>{LOOP=setTimeout(next,1100)}},
-{id:'paywall',n:64,sec:-1,type:'custom',noCta:true,src:'Пейволл 054–064 сверху вниз: липкая плашка с таймером 10:00, Now/Goal, итог, три тарифа (по умолчанию 4-WEEK), мелкий шрифт под выбранный тариф, карусель приложения, #1 Walking app, What you get, отзывы, сторы, футер. FAQ и гарантии у WalkFit нет. Закрыть чекаут → exit-offer.',
+{id:'paywall',n:64,sec:-1,type:'custom',noCta:true,src:'Пейволл 054–064 сверху вниз: липкая плашка с таймером 10:00, Now/Goal, итог, три тарифа (по умолчанию 4-WEEK), мелкий шрифт под выбранный тариф, карусель приложения, #1 Walking app, What you get, отзывы, сторы, футер. FAQ и гарантии у WalkFit нет. В подвале юрлицо — то же, что у Brain AI (название и адрес подставить). Закрыть чекаут → exit-offer.',
  render:()=>paywall(),bind:m=>bindPaywall(m)},
 {id:'exit',n:67,sec:-1,type:'custom',noCta:true,src:'Exit-offer: всплывает при закрытии чекаута. GOT IT → пейволл со скидкой 71%, таймер снова 10:00.',
  render:()=>paywall(),bind:m=>{bindPaywall(m);exitModal()}},
 {id:'checkout',n:65,sec:-1,type:'custom',noCta:true,src:'Чекаут — шторка поверх пейволла: расшифровка цены, PayPal в один клик, карта. Форма — заглушка.',
  render:()=>paywall(),bind:m=>{bindPaywall(m);checkout()}},
-{id:'success',n:0,sec:-1,type:'custom',noCta:true,src:'Не из WalkFit: экран после оплаты WalkFit краулер не видел. Наша success-страница из v2, апсейлы убраны.',
- render:()=>`<h1>Welcome, ${S.name||'Mary'}!</h1><p class="sub">Your plan is waiting in the app. Three steps and you’re in:</p>
- <ul class="steps"><li><div><b>1.</b> Download the app</div><span>App Store</span></li><li><div><b>2.</b> Sign in with ${S.email||'your email'}</div><span>No password</span></li><li><div><b>3.</b> Start Day 1 — a 10-minute walk</div><span>Today</span></li></ul>
- <div class="mock">App placeholder — link and app screens to be added</div><button class="btn">Download the app</button><p class="fine" style="text-align:center">We also sent these steps to your email.</p>`}
+{id:'success',n:0,sec:-1,type:'custom',noCta:true,src:'Не из WalkFit: экран после оплаты WalkFit краулер не видел. Аккаунта в приложении нет, поэтому без шага Sign in: в первой версии доступ — по ссылке на приложение после покупки.',
+ render:()=>`<img src="${ICON}" alt="" style="width:72px;height:72px;border-radius:18px;margin:10px auto 14px;display:block"><h1>Welcome, ${S.name||'Mary'}!</h1><p class="sub">Your plan is waiting in the app. Two steps and you’re in:</p>
+ <ol class="steps2"><li><b>Download the app</b><a class="btn" href="${APP_URL}" target="_blank" rel="noopener">Download on the App Store</a></li><li><b>Start Day 1 — 10-minute walk today</b><span>Open the app and tap your first walk.</span></li></ol>
+ <p class="fine" style="text-align:center">We also sent these steps to your email.</p>`}
 ];
 
 // ---------- paywall ----------
@@ -425,23 +489,23 @@ const BILL={
 const num=s=>+s.replace(',','.'), money=n=>n.toFixed(2).replace('.',',');
 const cur=()=>PLANS[S.disc].find(p=>p.id===S.plan);
 const mmss=t=>String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');
-function planCard(p){const [d,c]=p.day.split('.');return `<p class="above">${p.above}</p><div class="pl${p.id===S.plan?' sel':''}" data-p="${p.id}">${p.rib?`<span class="rib">${p.rib}</span>`:''}<span class="rb"></span>
+function planCard(p){const [d,c]=p.day.split('.');return `<p class="above">${p.above}</p><div class="pl${p.id===S.plan?' sel':''}${p.rib?' hasrib':''}" data-p="${p.id}">${p.rib?`<span class="rib">${p.rib}</span>`:''}<span class="rb"></span>
  <div class="mid"><b>${p.title}</b><span class="tag2${p.save?' save':''}">${p.tag}</span><div class="pr"><s>$${p.full}</s><span>$${p.price}</span></div></div>
  <div class="pd"><span class="o">$${p.dold}</span><sup>$</sup><b>${d}</b><em>${c}<small>per day</small></em></div></div>`}
 function paywall(){const lvl=S.answers.s12||'Beginner';
  return `<div class="topbar"><div><small>${S.disc}% discount reserved for:</small><b class="tm">${mmss(S.t)}</b></div><button class="btn buy">GET MY PLAN</button></div>
  ${S.disc===71?`<div class="boost"><h3>Get a <s>61%</s> <span class="red">71%</span> discount on your personalized plan</h3><p style="font-size:14px">Get visible results in 30 days</p></div>`:''}
- <div class="ng"><div class="hd"><span>Now</span><span>Goal</span></div><div class="cols" style="padding:0">${ph('Now','margin:0;border-radius:0','img-paywall-now.jpg')}${ph('Goal','margin:0;border-radius:0','img-paywall-goal.jpg')}</div>
+ <div class="ng"><div class="hd"><span>Now</span><span>Goal</span></div><div class="cols ngimg" style="padding:0">${ph('Now','margin:0;border-radius:0','img-paywall-now.jpg')}${ph('Goal','margin:0;border-radius:0','img-paywall-goal.jpg')}<svg class="arr" viewBox="0 0 60 120"><path d="M6 6 L44 60 L6 114 L22 114 L60 60 L22 6Z" fill="#fff"/></svg></div>
  <div class="cols"><div>Body fat<b>21-24%</b>Fitness level<div class="seg5">${[1,2,3,4,5].map(i=>`<i class="${i<=2?'on':''}"></i>`).join('')}</div></div><div>Body fat<b>14-20%</b>Fitness level<div class="seg5">${[1,2,3,4,5].map(i=>`<i class="${i<=4?'on':''}"></i>`).join('')}</div></div></div></div>
  <p class="disc">This is not a guarantee or promise of results.</p>
- <h2>Your walking plan is ready!</h2><div class="sum2"><div>⚖️ Target weight<b>${goalTxt()}</b></div><div>🚶 Starting level<b>${lvl}</b></div></div>
+ <h2 style="margin-top:34px">Your walking plan is ready!</h2><div class="sum2"><div><small>Target weight</small><b><span class="ic">⚖️</span>${goalTxt()}</b></div><div><small>Starting level</small><b><span class="ic">🚶</span>${lvl}</b></div></div>
  <div class="offer">⏰ This offer ends in <span class="tm">${mmss(S.t)}</span> min</div>
  <div id="plans">${PLANS[S.disc].map(planCard).join('')}</div>
  <p class="go">Start hitting your goals right now</p><button class="btn buy pulse">GET MY PLAN</button>
  <p class="fine" id="bill">${BILL[S.plan]}</p>
  <h2 style="margin-top:30px">Use Our Handy Mobile App to Improve Your Results</h2>
  <div class="carousel">${['phone mock-up: map screen with route and a red button','phone mock-up: “Good morning” home — week strip, Step Progress 4,5k / 10k, time, calories, distance, Today’s workout #4 Full body 10 min','phone mock-up: workout in progress ring, Steps 1,035, Duration 08:35'].map(t=>`<div style="flex:0 0 70%;scroll-snap-align:center">${ph(t,'min-height:300px;margin:0')}</div>`).join('')}</div>
- <div class="badge1"><div class="lw">🌿 #1 Walking app* 🌿</div><h2 style="margin:8px 0">Start Losing Weight Right Now</h2><p class="fine" style="text-align:center">*AppMagic, 2022, Android &amp; iOS by downloads</p><button class="btn buy" style="margin-top:12px">GET MY PLAN</button></div>
+ <div class="badge1"><div class="lw">${LAUREL('')}<div class="n1"><span><small>#</small>1</span><em>Walking app*</em></div>${LAUREL(' flip')}</div><h2 style="margin:8px 0 2px">Start Losing Weight Right Now</h2><p class="fine" style="text-align:center">*AppMagic, 2022, Android &amp; iOS by downloads</p><button class="btn buy" style="margin-top:12px">GET MY PLAN</button></div>
  <h2 class="left">What you get</h2><p class="left" style="margin-bottom:10px">According to your goals and personal data, our smart algorithm will suggest a personalized walking plan that will enable you to maximize your results.</p><p class="left" style="margin-bottom:14px">Based on your current activity level, the algorithm sets individual activity goals for each day and suggests a tailored walking workout program. It guides you smoothly to reach the target activity level for the first 4 weeks.</p>
  <p class="left"><b>To achieve your goal you get:</b></p><ul class="list"><li>A comprehensive library of 300+ workouts and 500+ exercises from certified coaches with video tutorials and step-by-step instructions.</li><li>Built-in GPS with an easy-to-follow map to track your route</li><li>Daily goals and motivation support to maximize your results.</li><li>Personalized walking programs tailored to your parameters.</li><li>Progress analytics to motivate yourself.</li></ul>
  <p class="left" style="font-size:14px">Everything in one mobile app on your device (iOS 16.0 or later or Android 8.0 or later)</p>
@@ -450,10 +514,13 @@ function paywall(){const lvl=S.answers.s12||'Beginner';
  ${rv('Piper Lauren Clay','Something I didn’t think I would be able to do 2 weeks ago… go out for a 45 min walk in the cold rain just to keep my walking streak! 💪')}
  ${rv('Mary-Margaret Miller',`Affordable, Gentle, Great Workouts! I discovered the Walk Fit app last year and signed up for 3 months. I enjoyed it. Truly. I enjoyed that there were a bunch of short workouts. I could still do something worthwhile, even if I could only carve out 10 minutes… It’s also VERY affordable, which I really appreciate.`)}
  ${rv('Gary Brown',`${BRAND} works for my daily activities, and it's fun challenging yourself 😁`)}
- <h2 style="margin-top:28px">Start hitting your goals right now!</h2><div class="pay"><span> App Store</span><span>▶ Google Play</span></div>
+ <h2 style="margin-top:28px">Start hitting your goals right now!</h2><a class="store" href="${APP_URL}" target="_blank" rel="noopener"><svg viewBox="0 0 384 512" width="34" height="40"><path fill="#000" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg><span>App Store</span></a>
  <p><span class="stars">★★★★★</span> <b>4.5+</b> out of 5</p><p style="margin:6px 0"><b>#1 Walking app*</b> | <b>19M+ users</b></p><p class="fine" style="text-align:center">*AppMagic, Dec’24, Android &amp; iOS by downloads</p>
  <button class="btn buy pulse" style="margin-top:14px">BEGIN MY JOURNEY</button>
- <div class="foot"><a href="#">Privacy Notice</a>, <a href="#">Terms of Use</a>, <a href="#">Refund Policy</a><br><a href="#">Manage Privacy Preferences</a><br><br><b>🛡 Guaranteed Safe Checkout</b><div class="pay"><span>VISA</span><span>Mastercard</span><span>PayPal</span><span>🔒 SSL Secure Connection</span></div>[Company name, address]</div>`}
+ <div class="foot"><p><a href="#">Privacy Notice</a>, <a href="#">Terms of Use</a>, <a href="#">Refund Policy</a></p><p><a href="#">Manage Privacy Preferences</a></p>
+ <p class="gsc">Guaranteed Safe Checkout <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z" fill="#9AA3B5"/><path d="M8.5 12l2.5 2.5 4.5-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></p>
+ <div class="logos"><span class="visa">VISA</span><svg viewBox="0 0 40 24" width="36" height="22"><circle cx="15" cy="12" r="10" fill="#EB001B"/><circle cx="25" cy="12" r="10" fill="#F79E1B" fill-opacity=".9"/></svg><span class="ppl"><i>Pay</i><i>Pal</i></span><span class="ssl">SSL<br>Secure<br>Connection</span></div>
+ <p class="co">[Company name, City, Country]</p></div>`}
 function bindPaywall(m){
  startTimer();
  m.querySelectorAll('.buy').forEach(b=>b.onclick=checkout);
@@ -480,9 +547,9 @@ function exitModal(){
  S.exitShown=true;
  const d=document.createElement('div');d.className='modal';
  d.innerHTML=`<div class="sheet"><h2>Did you know?</h2><p class="sub">A Columbia University study showed that 73% of dieters have lost weight and then gained it back at least once.</p>
- <svg class="chart" viewBox="0 0 320 180"><defs><linearGradient id="eg" x1="0" x2="1"><stop offset="0" stop-color="#FF2D55" stop-opacity=".35"/><stop offset=".45" stop-color="#FFC107" stop-opacity=".25"/><stop offset="1" stop-color="#ADD144" stop-opacity=".25"/></linearGradient></defs>
- <path d="M30 40 C90 60 120 120 200 128 C240 132 270 132 300 132 L300 160 L30 160Z" fill="url(#eg)"/><path d="M30 40 C120 55 200 70 300 74" stroke="#FF9800" stroke-width="3" fill="none"/><path d="M30 40 C90 60 120 120 200 128 C240 132 270 132 300 132" stroke="#ADD144" stroke-width="3" fill="none"/>
- <line x1="250" y1="20" x2="250" y2="160" stroke="#8A8A8E" stroke-dasharray="4 4"/><circle cx="30" cy="40" r="6" fill="#FF2D55"/><circle cx="250" cy="72" r="6" fill="#FFC107"/><circle cx="200" cy="128" r="5" fill="#fff" stroke="#ADD144" stroke-width="3"/><circle cx="250" cy="131" r="5" fill="#fff" stroke="#ADD144" stroke-width="3"/><circle cx="295" cy="132" r="5" fill="#fff" stroke="#ADD144" stroke-width="3"/>
+ <svg class="chart" viewBox="0 0 320 180"><defs><linearGradient id="eg" x1="0" x2="1"><stop offset="0" stop-color="#FF2D55" stop-opacity=".35"/><stop offset=".45" stop-color="#FFC107" stop-opacity=".25"/><stop offset="1" stop-color="#3DBE6E" stop-opacity=".25"/></linearGradient></defs>
+ <path d="M30 40 C90 60 120 120 200 128 C240 132 270 132 300 132 L300 160 L30 160Z" fill="url(#eg)"/><path d="M30 40 C120 55 200 70 300 74" stroke="#FF9800" stroke-width="3" fill="none"/><path d="M30 40 C90 60 120 120 200 128 C240 132 270 132 300 132" stroke="#3DBE6E" stroke-width="3" fill="none"/>
+ <line x1="250" y1="20" x2="250" y2="160" stroke="#8A8A8E" stroke-dasharray="4 4"/><circle cx="30" cy="40" r="6" fill="#FF2D55"/><circle cx="250" cy="72" r="6" fill="#FFC107"/><circle cx="200" cy="128" r="5" fill="#fff" stroke="#3DBE6E" stroke-width="3"/><circle cx="250" cy="131" r="5" fill="#fff" stroke="#3DBE6E" stroke-width="3"/><circle cx="295" cy="132" r="5" fill="#fff" stroke="#3DBE6E" stroke-width="3"/>
  <text x="14" y="22" font-size="13" fill="#0F202E">Your weight</text><text x="300" y="58" font-size="13" fill="#0F202E" text-anchor="end">Regular dieters</text><text x="300" y="112" font-size="13" fill="#0F202E" text-anchor="end" font-weight="700">With ${BRAND}</text><text x="30" y="176" font-size="12" fill="#8A8A8E">Today</text><text x="250" y="176" font-size="12" fill="#8A8A8E" text-anchor="middle">1st Month</text></svg>
  <p class="fine" style="text-align:center">This chart illustrates a potential weight loss range of up to 1 kg per week. Individual results may vary based on factors such as starting weight, metabolism, and lifestyle choices.</p>
  <div class="note" style="text-align:center">We want you to find success so we are offering an additional discount on your Personalized Plan.</div><button class="btn" id="got">GOT IT</button></div>`;
@@ -513,7 +580,7 @@ function render(){
  clearInterval(timerIv);clearInterval(LOOP);clearTimeout(LOOP);document.querySelectorAll('body>.modal').forEach(x=>x.remove());
  const s=SCREENS[idx],m=$('#main');CUR=s.n;window.scrollTo(0,0);
  const total=s.n>=24?51:52;
- $('#back').hidden=!s.p;$('#logo').innerHTML=s.sec<0?'':`<img src="${LOGO}" alt="${BRAND}">`;
+ $('#back').hidden=!s.p;$('#logo').innerHTML=s.sec<0?'':`<img class="ic" src="${ICON}" alt=""><img src="${LOGO}" alt="${BRAND}">`;
  $('#count').textContent=s.p?`${s.p}/${total}`:'';
  $('#barw').style.display=s.p?'':'none';$('#bar').style.width=s.p?Math.round(s.p/total*100)+'%':'0';
  document.querySelector('header').style.display=s.sec<0?'none':'';
