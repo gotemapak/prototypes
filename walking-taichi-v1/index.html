@@ -265,7 +265,7 @@ header{justify-content:space-between}
 .thumb.tall{width:46px;height:78px;border-radius:10px;background:#fff;object-fit:contain;padding:2px}
 .zb{position:relative}
 .zb .ph{min-height:380px!important;height:100%}
-.glow{position:absolute;width:42%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(rgba(255,94,80,.8),rgba(255,94,80,0) 68%);pointer-events:none}
+.glow{position:absolute;width:34%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(rgba(255,140,40,.85),rgba(255,140,40,0) 70%);filter:blur(6px);mix-blend-mode:multiply;pointer-events:none}
 .glow.all{inset:0;width:auto;transform:none;border-radius:var(--rc);background:radial-gradient(ellipse at center,rgba(255,94,80,.45),rgba(255,94,80,0) 75%)}
 .opts.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .opts.g2 .opt{min-height:70px;font-size:15px;align-items:flex-start}
@@ -355,6 +355,19 @@ header{justify-content:space-between}
 .ebars{display:flex;justify-content:center;align-items:flex-end;gap:36px;height:170px;margin:10px 0 4px}
 .ebars div{width:84px;border-radius:12px 12px 0 0;display:flex;align-items:flex-start;justify-content:center;color:#fff;font-weight:800;padding-top:8px}
 .ebars small{display:block;font-size:11px;font-weight:700;color:var(--ink);margin-top:6px}
+/* бенчмарк справа: на широком экране скрин конкурента — колонкой рядом с нашим экраном, скролл синхронный */
+@media (min-width:920px){
+ body.showsrc .app{margin:0 auto 0 calc(50% - 450px)}
+ body.showsrc .cta{left:calc(50% - 450px);transform:none}
+ body.showsrc .src{position:fixed;left:calc(50% + 10px);top:0;width:440px;height:100vh;overflow-y:auto;margin:0;border:0;border-left:1px dashed #C9C9CF;border-radius:0;padding:16px 20px 40px;z-index:5}
+ body.showsrc .src img{max-width:100%;margin-top:10px}
+ body.showsrc .toggle,body.showsrc .jump{right:auto;left:calc(50% + 480px)}
+}
+/* s27 — крупнее для 55+, ближе к бенчмарку */
+.quote{font-size:20px;line-height:1.45;color:var(--ink);text-align:left;margin:4px 0 10px}
+.quote b{color:var(--accent);font-weight:800}
+.qby{font-size:18px;font-weight:800;color:var(--ink);text-align:left}
+.ph.port{aspect-ratio:4/5;width:78%;min-height:0;margin:8px auto 18px;border-radius:28px}
 </style>
 </head>
 <body>
@@ -389,6 +402,28 @@ const wkg=()=>S.w?kg(S.w):89, gkg=()=>S.goal?kg(S.goal):80;
 const bmi=()=>wkg()/(hm()*hm());
 const wTxt=()=>`${S.w||89} ${S.wu}`, goalTxt=()=>`${S.goal||80} ${S.wu}`;
 const weeks=()=>Math.max(4,Math.ceil(Math.max(wkg()-gkg(),0)/1));
+/* график 033: ось — 5 меток месяцев от текущего, точка цели — на дате цели */
+function goalChart(){
+ const now=new Date(),goal=plus(weeks()*7),st=+(S.w||89),g=+(S.goal||80),u=S.wu;
+ const m0=new Date(now.getFullYear(),now.getMonth(),1);
+ const mToGoal=(goal.getFullYear()-now.getFullYear())*12+goal.getMonth()-now.getMonth();
+ const step=Math.max(1,Math.ceil((mToGoal+1)/4));
+ const ticks=[0,1,2,3,4].map(i=>new Date(m0.getFullYear(),m0.getMonth()+i*step,1));
+ const X0=30,X1=300,t0=+ticks[0],t1=+ticks[4],x=t=>X0+(t-t0)/(t1-t0)*(X1-X0);
+ const Y0=40,Y1=126,y=w=>st===g?Y0:Y0+(st-w)/(st-g)*(Y1-Y0);
+ const T=goal-now,wAt=t=>{const p=Math.min(1,Math.max(0,(t-now)/T));return st-(st-g)*(1-Math.pow(1-p,1.6))};
+ const pts=[];for(let i=0;i<=24;i++){const t=+now+T*i/24;pts.push([x(t),y(wAt(t))])}pts.push([X1,y(g)]);
+ const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+ const xs=x(+now),xg=x(+goal),tm=ticks[1]<goal?ticks[1]:null,wm=tm?Math.round(wAt(+tm)):null;
+ const tag=(cx,cy,w,fill,txt,col='#fff',fs=12)=>{const l=Math.min(320-w,Math.max(0,cx-w/2));return `<rect x="${l}" y="${cy}" width="${w}" height="22" rx="10" fill="${fill}"/><text x="${l+w/2}" y="${cy+15}" text-anchor="middle" font-size="${fs}" fill="${col}" font-weight="700">${txt}</text>`};
+ const svg=`<svg class="chart" viewBox="0 0 320 170"><defs><linearGradient id="cg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FF5E50" stop-opacity=".35"/><stop offset="1" stop-color="#FF2D55" stop-opacity="0"/></linearGradient></defs>${ticks.map(t=>`<line x1="${x(+t)}" y1="20" x2="${x(+t)}" y2="145" stroke="#E6E6E6" stroke-dasharray="3 4"/>`).join('')}
+ <path d="${line} L${X1} 145 L${xs.toFixed(1)} 145Z" fill="url(#cg)"/><path d="${line}" stroke="#FF5E50" stroke-width="3" fill="none"/>
+ <circle cx="${xs}" cy="${Y0}" r="7" fill="#fff" stroke="#FF2D55" stroke-width="3"/>${tag(xs,8,54,'#FF5E50',st+u)}
+ ${tm?`<circle cx="${x(+tm)}" cy="${y(wm)}" r="5" fill="#FF9800"/>${tag(x(+tm),y(wm)-30,54,'#FF9800',wm+u)}`:''}
+ <circle cx="${xg}" cy="${y(g)}" r="7" fill="#fff" stroke="#FF2D55" stroke-width="3"/>${tag(xg,y(g)-34,96,'#FF2D55','Expected Result','#fff',11)}
+ ${ticks.map(t=>`<text x="${x(+t)}" y="163" font-size="12" fill="#8A8A8E" text-anchor="middle">${t.toLocaleDateString('en-US',{month:'short'})}</text>`).join('')}</svg>`;
+ return {goal,svg};
+}
 let CUR=1;
 // готовые картинки: ключ — номер плашки ('003', '005-1', 'P01'), значение — файл в img/
 const IMG={};
@@ -420,9 +455,9 @@ const SCREENS=[
 {id:'s06',n:6,type:'info',cta:'CONTINUE',html:()=>`<h2 class="left">The perfect approach is right here!</h2>${ph('round photo: woman ~65 in a tai chi stance in a sunlit living room, three small round 3D bubbles (neck, spine, lower back) at the right edge','min-height:240px')}<p class="sub" style="text-align:left;margin-bottom:8px"><span class="red"><b>Tai Chi Walking</b></span> cultivates <b class="red">inner balance and physical vitality</b>. It nurtures:</p>${checks(['Improved stability for effortless, fluid movement.','Reduced risk of falls and injuries.','A foundation for a healthier, more vibrant life.'])}`},
 {id:'s07',n:7,p:4,type:'q',q:'Have you tried Tai Chi?',opts:[['Yes','🤗'],['No','🙅']]},
 {id:'s08',n:8,type:'info',cta:'CONTINUE',html:()=>`<h2 class="left">Joint Health for Life!</h2>${ph('round photo: woman ~65 in a slow tai chi step, arm forward; three round 3D bubbles with red pain spots (neck/shoulder, upper back, lower back)','min-height:260px')}<p class="sub" style="text-align:left">For those with joint pain, strenuous exercise can be a barrier. <b class="red">Tai Chi Walking</b> offers a gentle alternative, a low-impact art that can be <b class="red">practiced for a lifetime</b>, providing <b class="red">soothing relief and lasting wellness.</b></p>`},
-{id:'s09',n:9,p:7,type:'q',q:'Choose your current body type',sub:'Choose the best option for you',opts:[['Slim','img:body-slim.png'],['Mid-sized','img:body-medium.png'],['Full-figured','img:body-plus.png'],['Extended size','ph:009-4']],src:'У WalkUp — фото торса одной модели в 4 размерах. Здесь три фигуры из выгрузки Figma Depfit (very sport / medium / fatyyy), четвёртую надо дорисовать в том же стиле.'},
-{id:'s10',n:10,p:8,type:'q',q:'Choose the body type you want to have',opts:[['Thin','ph:010-1'],['Toned','ph:010-2'],['Average','ph:010-3'],['Curvy','ph:010-4']],src:'У WalkUp — фото торса той же модели. Для Depfit — четыре фигуры в стиле иллюстраций приложения.'},
-{id:'s11',n:11,p:10,type:'m',layout:'zones',q:'Choose your target zones',img:'full-body cut-out: woman ~60 standing straight, arms down, light tai chi wear, frontal, head to feet',opts:['Arms','Chest','Abs','Butt','Legs','Full Body'],cta:'CONTINUE',src:'Экраны 011–014 — один экран в разных состояниях. Выбор подсвечивает зону на фигуре оранжевым пятном. CONTINUE неактивна, пока ничего не выбрано.'},
+{id:'s09',n:9,p:7,type:'q',q:'Choose your current body type',sub:'Choose the best option for you',opts:[['Slim','ph:009-1'],['Mid-sized','ph:009-2'],['Full-figured','ph:009-3'],['Extended size','ph:009-4']],src:'У WalkUp — фото торса одной модели в 4 размерах: серый спортивный топ и леггинсы, кадр от груди до колен, одинаковый масштаб. Нужно сгенерировать 4 таких фото (заглушки 009-1…009-4).'},
+{id:'s10',n:10,p:8,type:'q',q:'Choose the body type you want to have',opts:[['Thin','ph:010-1'],['Toned','ph:010-2'],['Average','ph:010-3'],['Curvy','ph:010-4']],src:'У WalkUp — фото торса той же модели, что на 009, в 4 желаемых формах. Нужно сгенерировать 4 фото в том же кадре (заглушки 010-1…010-4).'},
+{id:'s11',n:11,p:10,type:'m',layout:'zones',q:'Choose your target zones',img:'full-body cut-out: woman ~60 standing straight, arms down, light tai chi wear, frontal, head to feet',opts:['Arms','Chest','Abs','Butt','Legs','Full Body'],cta:'CONTINUE',src:'Экраны 011–014 — один экран в разных состояниях. Выбор подсвечивает зону на фигуре размытым оранжевым пятном (руки — оба плеча, ноги — оба бедра), кнопка — голубая с синей рамкой. Full Body — подсветка всей фигуры. Фото 011 должно стоять в фиксированном кадре, чтобы пятна попадали на зоны. CONTINUE неактивна, пока ничего не выбрано.'},
 {id:'s15',n:15,p:11,type:'q',q:'How long was the last time you were in the best shape of your life?',opts:[['Less than a year ago','🤔'],['1 to 2 years ago','😅'],['More than 3 years ago','🥲'],['I am confident in my body','😌'],['Never','❌']],src:'Варианта «2 to 3 years ago» у WalkUp нет — так и оставлено.'},
 {id:'s16',n:16,type:'info',cta:'CONTINUE',html:()=>`<h2 class="left">The <span class="red">Tai Chi Walking Plan</span> makes you painless and healthier</h2>${ph('round park photo: woman ~60 in a deep slow tai chi step, 3/4 side view, orange glow on the hip; small inset of a pelvis with a red zone and three tiny joint icons','min-height:200px')}<p class="sub" style="text-align:left;margin-bottom:8px">The slow, deliberate movements of Tai Chi Walking are key to fall prevention. They strengthen the pelvic floor and leg muscles, improving your body's proprioception and stability.</p>${checks(['Builds leg and core strength.','Enhances joint flexibility.','Refines balance and coordination.'])}`},
 {id:'s17',n:17,p:12,type:'q',q:'How often do you exercise?',opts:[['Sedentary','sig:1'],['1-2 times a month','sig:2'],['1-2 times a week','sig:3'],['3-4 times a week','sig:4'],['Almost every day','sig:5']],src:'У WalkUp справа ступенчатая пирамидка 1–5 уровней; здесь — столбики.'},
@@ -444,7 +479,7 @@ const SCREENS=[
 {id:'s26',n:26,p:22,type:'custom',src:'Возраст спрашивают второй раз (после диапазона на 001) — как у WalkUp.',
  render:()=>`<h2>What is your age?</h2>${numField('age','','58')}<p class="hintline" id="err" style="display:none"></p>${tip('👌','We ask for your age to personalize your plan.','We will customize a workout plan tailored to your age group.')}`,
  bind:m=>bindNum(m,'age',()=>[16,99,''])},
-{id:'s27',n:27,type:'info',cta:'CONTINUE',html:()=>`<h2 class="left"><span class="red">Tai Chi Walking</span> is an Art of Living Longer</h2>${ph('rounded-square photo: smiling woman ~70, grey hair in a bun, arms stretched to the sides in a tai chi pose, bright home with a window to the garden, warm light','min-height:230px')}<p class="sub" style="text-align:left">“Tai Chi <b class="red">reduces mortality rates</b> in older adults by 20-30% over a 10-year period. Mechanisms: <b class="red">Improved heart health, better stress management, and fewer falls.</b>”</p><p class="left" style="font-weight:700;color:var(--ink)">—— Harvard Health Publishing</p>`},
+{id:'s27',n:27,type:'info',cta:'CONTINUE',src:'Шрифт цитаты крупнее, чем у WalkUp (20 px), — аудитория 55+. Фото — вертикальный портрет со скруглением, ~¾ ширины.',html:()=>`<h2 class="left"><span class="red">Tai Chi Walking</span> is an Art of Living Longer</h2>${ph('portrait photo 4:5, rounded: smiling woman ~70, grey hair in a bun, arms stretched to the sides in a tai chi pose, bright home with a window to the garden, warm light','aspect-ratio:4/5;width:78%;min-height:0;margin:8px auto 18px;border-radius:28px','027')}<p class="quote">“Tai Chi <b>reduces mortality rates</b> in older adults by 20-30% over a 10-year period. Mechanisms: <b>Improved heart health, better stress management, and fewer falls.</b>”</p><p class="qby">—— Harvard Health Publishing</p>`},
 {id:'s28',n:28,type:'info',cta:'CONTINUE',src:'Сводка: активность — из вопроса 019, тип тела — 009, возраст — 001. ИМТ считается из роста и веса.',
  html:()=>{const b=bmi(),cat=b<18.5?'UNDERWEIGHT':b<25?'NORMAL':b<30?'OVERWEIGHT':b<35?'OBESE':'EXTREMELY OBESE',pos=Math.min(97,Math.max(3,(b-15)/(40-15)*100));
  return `<h2 class="left">Here's your health profile summary</h2><div class="prof">${ph('cut-out: smiling woman ~55, short hair, light linen top, frontal, head to mid-thigh','')}<div class="st"><div><small>Activity level</small><b>🚶 ${S.answers.s19||'Sedentary'}</b></div><div><small>Body type</small><b>🎯 ${S.answers.s09||'Slim'}</b></div><div><small>Age Group</small><b>📋 ${S.answers.s01||'Age: 50-59'}</b></div></div></div>
@@ -455,15 +490,10 @@ const SCREENS=[
  render:()=>`<h2>When's your event?</h2><p class="sub">Once we know this, we'll be able to put together your plan to help you get in fit. Your data will not be shared with any third parties.</p><div class="field"><input type="date" id="dt" value="${S.event||iso(plus(92))}" style="font-size:18px"></div>`,
  cta:'CONTINUE',after:'<button class="link" id="skip">SKIP THIS QUESTION</button>',
  bind:m=>{const e=m.querySelector('#dt'),b=$('#cta');const v=()=>{S.event=e.value;b.disabled=!e.value};e.oninput=e.onchange=v;v();$('#skip').onclick=next}},
-{id:'s33',n:33,type:'info',cta:'CONTINUE',src:'Дата цели — от разницы веса, ~1 кг в неделю (у WalkUp 89 → 80 кг за ~9 недель). Метки на графике — текущий вес и промежуточный.',
- html:()=>{const d=plus(weeks()*7),st=S.w||89,g=S.goal||80,mid=Math.round(st-(st-g)*.45),mo=[0,1,2,3,4].map(i=>{const x=new Date();x.setMonth(x.getMonth()+i);return x.toLocaleDateString('en-US',{month:'short'})});
- return `<h2>We believe this is the plan you'll ever need unlike any other.</h2><p class="sub" style="margin-bottom:6px">According to the information you have provided us, you'll achieve your goal weight of</p><h2>${goalTxt()} by ${fmtS(d)}</h2><p class="sub" style="font-size:14px">Get ready to amaze everyone</p>
- <div class="card"><svg class="chart" viewBox="0 0 320 170"><defs><linearGradient id="cg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FF5E50" stop-opacity=".35"/><stop offset="1" stop-color="#FF2D55" stop-opacity="0"/></linearGradient></defs>${[30,100,170,240,300].map(x=>`<line x1="${x}" y1="20" x2="${x}" y2="145" stroke="#E6E6E6" stroke-dasharray="3 4"/>`).join('')}
- <path d="M30 40 C80 50 110 75 150 92 C200 112 240 122 300 126 L300 145 L30 145Z" fill="url(#cg)"/><path d="M30 40 C80 50 110 75 150 92 C200 112 240 122 300 126" stroke="#FF5E50" stroke-width="3" fill="none"/>
- <circle cx="30" cy="40" r="7" fill="#fff" stroke="#FF2D55" stroke-width="3"/><rect x="12" y="8" width="54" height="22" rx="10" fill="#FF5E50"/><text x="39" y="23" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">${st}${S.wu}</text>
- <rect x="76" y="44" width="54" height="22" rx="10" fill="#FF9800"/><text x="103" y="59" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">${mid}${S.wu}</text>
- <rect x="226" y="94" width="88" height="22" rx="10" fill="#F2F2F4"/><text x="270" y="109" text-anchor="middle" font-size="11" fill="#8A8A8E">Expected Result</text>
- ${mo.map((t,i)=>`<text x="${[30,100,170,240,300][i]}" y="163" font-size="12" fill="#8A8A8E" text-anchor="middle">${t}</text>`).join('')}</svg></div>`}},
+{id:'s33',n:33,type:'info',cta:'CONTINUE',src:'Дата цели = сегодня + недели (≈1 кг или 2,2 lb в неделю, минимум 4 недели). Ось: 5 меток месяцев от текущего, шаг подбирается так, чтобы дата цели попала на ось. Точка «Expected Result» стоит на дате цели, промежуточная метка — вес на первой метке месяца. Логика — в черновике задачи разработчику.',
+ html:()=>{const c=goalChart();
+ return `<h2>We believe this is the plan you'll ever need unlike any other.</h2><p class="sub" style="margin-bottom:6px">According to the information you have provided us, you'll achieve your goal weight of</p><h2>${goalTxt()} by ${fmtS(c.goal)}</h2><p class="sub" style="font-size:14px">Get ready to amaze everyone</p>
+ <div class="card">${c.svg}</div>`}},
 {id:'s34',n:34,type:'custom',noCta:true,src:'Лоадер: кольцо с процентами, мозаика фото крутится вверх, на 100% автопереход. У WalkUp здесь же меню и Help.',
  render:()=>`<div class="ldr"><div class="ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" stroke="#FFD5DD" stroke-width="10" fill="none"/><circle id="arc" cx="50" cy="50" r="42" stroke="#FF2D55" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="263.9"/></svg><span id="pc">0%</span></div>Creating your personalized plan.</div>
  <h2 style="font-size:22px;margin-bottom:4px">Analyzing your data</h2><p class="sub" style="margin-bottom:0">Please wait while we create your personalized plan</p>
@@ -475,7 +505,7 @@ const SCREENS=[
  <circle cx="296" cy="126" r="7" fill="#fff" stroke="#FF2D55" stroke-width="3"/><rect x="214" y="90" width="96" height="24" rx="10" fill="#FF2D55"/><text x="262" y="106" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">After 4 weeks</text>
  ${['Week 1','Week 2','Week 3','Week 4'].map((w,i)=>`<text x="${40+i*82}" y="164" font-size="11" fill="#8A8A8E" text-anchor="middle">${w}</text>`).join('')}</svg></div>
  <h2 style="margin-top:40px">Your 4-week <span class="red">Tai Chi Walking</span> plan is ready!</h2>`},
-{id:'paywall',n:36,file:'036-paywall.jpg',sec:-1,type:'custom',noCta:true,src:'Пейволл 036–050 сверху вниз: бегущая строка Flash Sale, липкая плашка с таймером 10:00, Now/Goal, три тарифа (по умолчанию 4-WEEK), гарантия, отзывы, FAQ, приложение, «What you will get», второй блок тарифов с плашкой «83% off», гарантия, футер. Цены — как у WalkUp. Закрыть чекаут → exit-offer.',
+{id:'paywall',n:36,file:'050-paywall-full.jpg',sec:-1,type:'custom',noCta:true,src:'Пейволл 036–050 сверху вниз: бегущая строка Flash Sale, липкая плашка с таймером 10:00, Now/Goal, три тарифа (по умолчанию 4-WEEK), гарантия, отзывы, FAQ, приложение, «What you will get», второй блок тарифов с плашкой «83% off», гарантия, футер. Цены — как у WalkUp. Закрыть чекаут → exit-offer.',
  render:()=>paywall(),bind:m=>bindPaywall(m)},
 {id:'checkout',n:51,file:'051-checkout.jpg',sec:-1,type:'custom',noCta:true,src:'Чекаут — шторка поверх пейволла: расшифровка цены, PayPal / G Pay в один клик, карта. Email, имени и адреса нет. Форма — заглушка.',
  render:()=>paywall(),bind:m=>{bindPaywall(m);checkout()}},
@@ -607,7 +637,7 @@ function next(){if(idx<SCREENS.length-1){hist.push(idx);idx++;render()}}
 function back(){if(hist.length){idx=hist.pop();render()}}
 function optHTML(o,multi,sel){const [l,ic,sub]=Array.isArray(o)?o:[o];
  return `<button class="opt${sel?' sel':''}" data-v="${l.replace(/"/g,'&quot;')}">${multi?'<span class="box"></span>':''}<span class="lbl">${l}${sub?`<small>${sub}</small>`:''}</span>${icon(ic)}</button>`}
-const GLOW={Arms:[20,34],Chest:[50,27],Abs:[50,41],Butt:[50,52],Legs:[50,74]};
+const GLOW={Arms:[[22,33],[78,33]],Chest:[[50,26]],Abs:[[50,40]],Butt:[[50,51]],Legs:[[40,72],[60,72]]};
 function render(){
  clearInterval(timerIv);clearInterval(LOOP);clearTimeout(LOOP);document.querySelectorAll('body>.modal').forEach(x=>x.remove());
  const s=SCREENS[idx],m=$('#main');CUR=s.n;window.scrollTo(0,0);
@@ -618,7 +648,7 @@ function render(){
  let h='',cta=null;
  if(s.type==='q'){h=`<h2>${s.q}</h2>${s.sub?`<p class="sub">${s.sub}</p>`:'<div style="height:12px"></div>'}<div class="opts${s.layout?' '+s.layout:''}">${s.opts.map(o=>optHTML(o,false,S.answers[s.id]===(Array.isArray(o)?o[0]:o))).join('')}</div>${s.below?s.below():''}`}
  else if(s.type==='m'){const c=S.answers[s.id]||[];const os=s.opts.map(o=>optHTML(o,true,c.includes(Array.isArray(o)?o[0]:o))).join('');
-  const glows=c.includes('Full Body')?'<i class="glow all"></i>':c.filter(z=>GLOW[z]).map(z=>`<i class="glow" style="left:${GLOW[z][0]}%;top:${GLOW[z][1]}%"></i>`).join('');
+  const glows=c.includes('Full Body')?'<i class="glow all"></i>':c.filter(z=>GLOW[z]).flatMap(z=>GLOW[z].map(([l,t])=>`<i class="glow" style="left:${l}%;top:${t}%"></i>`)).join('');
   h=`<h2>${s.q}</h2>${s.sub?`<p class="sub">${s.sub}</p>`:'<div style="height:12px"></div>'}`+(s.layout==='zones'?`<div class="zones"><div class="zb">${ph(s.img)}${glows}</div><div class="opts">${os}</div></div>`:`<div class="opts multi">${os}</div>`);cta=s.cta||'CONTINUE'}
  else if(s.type==='info'){h=s.html();cta=s.cta||'CONTINUE'}
  else {h=s.render();cta=s.noCta?null:(s.cta||'CONTINUE')}
@@ -639,6 +669,8 @@ const start=SCREENS.findIndex(s=>s.id===location.hash.slice(1));if(start>0)idx=s
 if(new URLSearchParams(location.search).has('src'))document.body.classList.add('showsrc');
 window.addEventListener('hashchange',()=>{const i=SCREENS.findIndex(s=>s.id===location.hash.slice(1));if(i>=0&&i!==idx){hist.push(idx);idx=i;render()}});
 render();
+/* бенчмарк справа: прокрутка панели вслед за экраном */
+addEventListener('scroll',()=>{const p=document.querySelector('body.showsrc .src');if(!p||innerWidth<920)return;const k=scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight);p.scrollTop=k*(p.scrollHeight-p.clientHeight)},{passive:true});
 </script>
 </body>
 </html>
