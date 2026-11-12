@@ -9,8 +9,8 @@
 <style>
 :root{
   --bg:#FFFFFF; --card:#FFFFFF; --ink:#0F202E; --text:#414142; --muted:#8A8A8E; --line:#E6E6E6; --idle:#BCBCBC;
-  --accent:#FF2D55; --accent-top:#FF2D55; --accent-bot:#FF2D55; --accent-ink:#FFFFFF; --accent-soft:#FFF0F3; --accent-track:#FFD5DD; --coral:#FF5E50; --coral-soft:#FBB9B4; --lime:#ADD144; --lime-ink:#6E8F1E; --lime-soft:#F2F8E3;
-  --dot:#E3E6EC; --ok:#ADD144; --star:#FFC107; --zebra:#FAFBF6; --warn:#FF2D55;
+  --accent:#FF2D55; --accent-top:#FF2D55; --accent-bot:#FF2D55; --accent-ink:#FFFFFF; --accent-soft:#FFF0F3; --accent-track:#FFD5DD; --coral:#FF5E50; --coral-soft:#FBB9B4; --lime:#3DBE6E; --lime-ink:#23994F; --lime-soft:#E8F7EE; /* один зелёный на всю воронку, как в walking-v3 */
+  --dot:#E3E6EC; --ok:#3DBE6E; --star:#FFC107; --zebra:#FAFBF6; --warn:#FF2D55;
   --grad:linear-gradient(180deg,var(--accent-top),var(--accent-bot));
   --r:14px; --rc:16px; --serif:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,system-ui,sans-serif; --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,Segoe UI,sans-serif;
 }
@@ -30,6 +30,7 @@ h1,h2{font-family:var(--sans);font-weight:800;color:var(--ink);letter-spacing:-.
 h1{font-size:30px;line-height:1.3;margin-bottom:12px}
 h2{font-size:28px;line-height:1.3;margin-bottom:12px}
 .sub{color:var(--text);font-weight:300;font-size:16px;line-height:1.55;margin:0 auto 24px;max-width:340px}
+.sub b{font-weight:700;color:var(--ink)}.sub b.red{color:var(--accent)}
 p{color:var(--text)}
 .opts{display:flex;flex-direction:column;gap:16px;text-align:left}
 .opt{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:54px;padding:14px 16px 14px 18px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);font:600 16px var(--sans);color:var(--ink);text-align:left;cursor:pointer;transition:border-color .15s}
@@ -70,7 +71,7 @@ img.thumb.pic{padding:0;background:none;object-fit:cover}
 .seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:3px;margin-bottom:20px}
 .seg button{border:0;background:transparent;padding:8px 20px;border-radius:var(--r);font:600 15px var(--sans);color:var(--muted);cursor:pointer}
 .seg button.on{background:var(--grad);color:#fff}
-.bmi{position:relative;height:8px;border-radius:4px;background:linear-gradient(90deg,#4BCBF6,#ADD144 35%,#FFC107 65%,#FF2D55);margin:34px 0 8px}
+.bmi{position:relative;height:8px;border-radius:4px;background:linear-gradient(90deg,#4BCBF6,#3DBE6E 35%,#FFC107 65%,#FF2D55);margin:34px 0 8px}
 .bmi i{position:absolute;top:-32px;transform:translateX(-50%);background:var(--ink);color:#fff;font:700 13px var(--sans);padding:3px 9px;border-radius:10px;white-space:nowrap}
 .bmi i:after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--ink);border-bottom:0}
 .scale{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
@@ -121,7 +122,7 @@ body.showsrc .src{display:block}
 
 /* ---------- v3: структура WalkFit indoor в стиле v2 ---------- */
 header{justify-content:space-between}
-.logo{display:block;height:26px}.logo img{height:26px;display:block}
+.logo{display:flex;align-items:center;gap:8px;height:30px}.logo img{height:26px;display:block}.logo img.ic{height:30px;width:30px;border-radius:8px}
 .count{display:block;min-width:36px;text-align:right;font-size:14px;font-weight:600;color:var(--muted)}
 .bar{display:block;height:4px;background:var(--line);margin:10px 16px 0;border-radius:2px;overflow:hidden}
 .bar i{display:block;height:100%;width:0;background:var(--lime);border-radius:2px;transition:width .3s}
@@ -215,7 +216,7 @@ header{justify-content:space-between}
 .pl .rb{width:22px;height:22px;border-radius:50%;border:2px solid var(--idle);flex:none;display:grid;place-items:center}
 .pl.sel .rb{border-color:var(--accent)}
 .pl.sel .rb:after{content:"";width:10px;height:10px;border-radius:50%;background:var(--accent)}
-.pl .rib{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--grad);color:#fff;font-size:11px;font-weight:800;padding:2px 12px;border-radius:10px;white-space:nowrap;letter-spacing:.04em}
+.pl .rib{position:absolute;bottom:100%;left:-1.5px;right:-1.5px;background:var(--lime);color:#fff;font-size:12px;font-weight:800;padding:4px 0;border-radius:14px 14px 0 0;text-align:center;white-space:nowrap;letter-spacing:.06em}
 .pl .mid{flex:1}
 .pl .mid b{display:block;font-size:17px}
 .pl .tag2{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;background:#F6F1EA;color:var(--text);margin:3px 0}
@@ -236,8 +237,21 @@ header{justify-content:space-between}
 @keyframes pu{0%,100%{box-shadow:0 0 0 0 rgba(255,45,85,.45)}50%{box-shadow:0 0 0 10px rgba(255,45,85,0)}}
 .badge1{background:#FFF1E8;border-radius:var(--rc);padding:18px;margin:22px 0}
 .badge1 .lw{font-size:22px;font-weight:800}
-.foot{font-size:12px;color:var(--muted);margin-top:24px;line-height:1.7}
-.foot a{color:var(--muted)}
+.foot{font-size:13px;color:var(--muted);margin:30px -24px 0;padding:24px 24px 8px;line-height:1.8;background:#fff;border-top:1px solid var(--line);text-align:center}
+.foot a{color:var(--muted);text-decoration:none}
+.gsc{display:flex;align-items:center;justify-content:center;gap:6px;color:var(--ink);font-weight:700;font-size:15px;margin:16px 0 10px}
+.logos{display:flex;align-items:center;justify-content:space-around;gap:10px;margin-bottom:12px}
+.logos .visa{font:italic 900 20px/1 Arial,sans-serif;color:#1A1F71;letter-spacing:-.5px}
+.logos .ppl{font:italic 800 18px/1 Arial,sans-serif}.logos .ppl i:first-child{color:#003087}.logos .ppl i:last-child{color:#009CDE}
+.logos .ssl{font-size:7px;line-height:1.1;font-weight:700;color:#2E7D32;border:1px solid #2E7D32;border-radius:3px;padding:2px 4px;text-align:left;background:#F1F8E9}
+.foot .co{font-size:14px;color:var(--text)}
+.store{display:inline-flex;flex-direction:column;align-items:center;gap:4px;margin:6px auto 8px;color:var(--text);font-size:14px;text-decoration:none}
+.steps2{list-style:none;counter-reset:st;text-align:left;margin:24px 0}
+.steps2 li{counter-increment:st;position:relative;padding:0 0 22px 48px}
+.steps2 li:before{content:counter(st);position:absolute;left:0;top:-2px;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;display:grid;place-items:center}
+.steps2 li b{display:block;font-size:18px;color:var(--ink);margin-bottom:10px}
+.steps2 li span{color:var(--muted);font-size:15px}
+.steps2 .btn{text-align:center;line-height:48px;text-decoration:none}
 .chk{text-align:left;max-height:88vh;overflow:auto;position:relative}
 .chk .x{position:absolute;left:16px;top:14px;border:0;background:none;font-size:26px;color:var(--idle);cursor:pointer}
 .chk h2{text-align:center}
@@ -317,8 +331,8 @@ header{justify-content:space-between}
 .nowgoal2 .cols>div.t+div.t{border-left:1px solid var(--line)}
 .nowgoal2 .cols b{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
 .seg5 i.on{background:var(--lime)}
-.pl.hasrib{padding-top:42px;overflow:hidden}
-.pl .rib2{position:absolute;top:0;left:0;right:0;background:var(--accent);color:#fff;font-size:12px;font-weight:800;text-align:center;padding:6px;letter-spacing:.04em}
+.pl.hasrib{margin-top:26px;border-radius:0 0 20px 20px;border-color:var(--lime)}
+.pl.hasrib.sel{border-color:var(--lime);background:var(--lime-soft)}
 .pl .bonus{display:inline-block;border:1.5px dashed var(--accent);color:var(--accent);border-radius:8px;font-size:11px;font-weight:700;padding:2px 8px;margin-top:6px}
 .pls{display:flex;flex-direction:column;gap:12px;margin:14px 0}
 .banner{background:#FFF8EC;border-radius:14px;padding:12px;font-weight:600;font-size:15px;margin:4px 0 12px}
@@ -349,7 +363,7 @@ header{justify-content:space-between}
 .trev p{font-size:14px;font-weight:300}
 .laurel{font-size:30px;font-weight:800;margin:26px 0 0}
 .rate{background:#fff;border:1px solid var(--line);border-radius:var(--rc);padding:14px;margin:14px 0}
-.rate .stores{display:flex;justify-content:center;gap:18px;font-weight:700;margin:8px 0}
+.rate .store{display:flex;margin:8px auto}
 .devpill{display:inline-block;background:var(--lime-soft);color:var(--lime-ink);font-weight:700;font-size:13px;padding:6px 12px;border-radius:14px;margin:6px 0 12px}
 .chkx .rowkv{font-size:14px}
 .ebars{display:flex;justify-content:center;align-items:flex-end;gap:36px;height:170px;margin:10px 0 4px}
@@ -386,7 +400,7 @@ header{justify-content:space-between}
 <script>
 // Прототип taichi-v1: воронка WalkUp «Tai Chi Walking For Beginners» (прогон 10 ноября 2026) экран в экран, тексты 1 в 1, бренд Depfit как в прототипе v3.
 // Картинок пока нет: плашки «Image NNN», список — content-plan.md. Готовые картинки класть в img/ и вписывать в IMG по номеру плашки.
-const BRAND='Depfit', DOMAIN='our website' /* домен Depfit — TBD */, LOGO='img/depfit-logo.png';
+const BRAND='Depfit', DOMAIN='our website' /* домен Depfit — TBD */, LOGO='img/depfit-logo.png', ICON='img/depfit-icon.png', APP_URL='https://apps.apple.com/app/id1456357156';
 const ORIG='orig/';
 const TOTAL=23;
 
@@ -396,33 +410,45 @@ const pad=n=>String(n).padStart(3,'0');
 const fmtS=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 const iso=d=>d.toISOString().slice(0,10);
 const plus=n=>{const d=new Date();d.setDate(d.getDate()+n);return d};
-const kg=v=>S.wu==='kg'?v:v/2.2046;
+const kg=v=>S.wu==='kg'?v:v*0.45359237;
 const hm=()=>S.h?(S.hu==='cm'?S.h/100:S.h*0.0254):1.80;
 const wkg=()=>S.w?kg(S.w):89, gkg=()=>S.goal?kg(S.goal):80;
 const bmi=()=>wkg()/(hm()*hm());
+const tbmi=()=>gkg()/(hm()*hm());
+/* WalkUp Purchase: процент жира по ИМТ — для «Now» от текущего веса, для «Your Goal» от целевого */
+const fatRange=b=>b<18.5?'8–12%':b<25?'12–24%':b<30?'25–31%':b<35?'32–39%':b<40?'40–45%':'>45%';
+const BODY_CUR=['Slim','Mid-sized','Full-figured','Extended size'],BODY_TGT=['Thin','Toned','Average','Curvy'];
+const bodyIdx=id=>{const L=id==='s09'?BODY_CUR:BODY_TGT,i=L.indexOf(S.answers[id]);return i<0?(id==='s09'?2:2):i+1};
 const wTxt=()=>`${S.w||89} ${S.wu}`, goalTxt=()=>`${S.goal||80} ${S.wu}`;
-const weeks=()=>Math.max(4,Math.ceil(Math.max(wkg()-gkg(),0)/1));
-/* график 033: ось — 5 меток месяцев от текущего, точка цели — на дате цели */
+/* как у WalkUp (OccasionResult): дней до цели = ceil(|вес − цель| / 0.14) в единицах ввода; дата цели = сегодня + дни */
+const goalDays=()=>Math.ceil(Math.abs((+(S.w||89))-(+(S.goal||80)))/0.14);
+/* дробь месяцев между сегодня и датой цели — как dayjs diff 'month' (целые месяцы, вниз) */
+const monthDiff=(a,b)=>{let m=(b.getFullYear()-a.getFullYear())*12+b.getMonth()-a.getMonth();if(b.getDate()<a.getDate())m--;return m};
+/* график 033: шаблон и подписи зависят от направления (сбросить / набрать / держать) и от числа месяцев до цели */
 function goalChart(){
- const now=new Date(),goal=plus(weeks()*7),st=+(S.w||89),g=+(S.goal||80),u=S.wu;
- const m0=new Date(now.getFullYear(),now.getMonth(),1);
- const mToGoal=(goal.getFullYear()-now.getFullYear())*12+goal.getMonth()-now.getMonth();
- const step=Math.max(1,Math.ceil((mToGoal+1)/4));
- const ticks=[0,1,2,3,4].map(i=>new Date(m0.getFullYear(),m0.getMonth()+i*step,1));
- const X0=30,X1=300,t0=+ticks[0],t1=+ticks[4],x=t=>X0+(t-t0)/(t1-t0)*(X1-X0);
- const Y0=40,Y1=126,y=w=>st===g?Y0:Y0+(st-w)/(st-g)*(Y1-Y0);
- const T=goal-now,wAt=t=>{const p=Math.min(1,Math.max(0,(t-now)/T));return st-(st-g)*(1-Math.pow(1-p,1.6))};
- const pts=[];for(let i=0;i<=24;i++){const t=+now+T*i/24;pts.push([x(t),y(wAt(t))])}pts.push([X1,y(g)]);
- const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
- const xs=x(+now),xg=x(+goal),tm=ticks[1]<goal?ticks[1]:null,wm=tm?Math.round(wAt(+tm)):null;
+ const now=new Date(),goal=plus(goalDays()),st=+(S.w||89),g=+(S.goal||80),u=S.wu;
+ const M=k=>new Date(now.getFullYear(),now.getMonth()+k,1).toLocaleDateString('en-US',{month:'short'});
+ const SM=(goal.getFullYear()-now.getFullYear())*12+goal.getMonth()-now.getMonth(); // месяц цели от текущего
+ const r1=v=>Math.round(v*10)/10, mo=monthDiff(now,goal);
+ let tpl,pts,months;
+ if(g===st){tpl='keep_weight';pts=[g];months=[M(0)]}
+ else if(g>st){tpl='low_to_high';pts=[st,g];months=[M(0),M(SM)]}
+ else if(mo<=0){tpl='high_to_low_two_other';pts=[st,g];months=[M(0),M(0),M(1)]}
+ else if(mo===1){tpl='high_to_low_two';pts=[st,g];months=[0,1,2,3,4].map(M)}
+ else if(mo===2){tpl='high_to_low_three';pts=[st,Math.round(st-4.2),g];months=[0,1,2,3,4].map(M)}
+ else {tpl='high_to_low_four';pts=[st,r1(st-4.2),r1(g+4.2),g];months=[M(0),M(1),M(SM-1),M(SM),M(SM+1)]}
+ const X0=34,X1=290,n=pts.length,xp=i=>n===1?(X0+X1)/2:X0+i*(X1-X0)/(n-1);
+ const hi=Math.max(...pts),lo=Math.min(...pts),Y0=46,Y1=124,yp=w=>hi===lo?(Y0+Y1)/2:Y0+(hi-w)/(hi-lo)*(Y1-Y0);
+ const P=pts.map((w,i)=>[xp(i),yp(w)]);
+ let line=`M${P[0][0]} ${P[0][1]}`;for(let i=1;i<n;i++){const [x0,y0]=P[i-1],[x1,y1]=P[i],cx=(x0+x1)/2;line+=` C${cx} ${y0} ${cx} ${y1} ${x1} ${y1}`}
  const tag=(cx,cy,w,fill,txt,col='#fff',fs=12)=>{const l=Math.min(320-w,Math.max(0,cx-w/2));return `<rect x="${l}" y="${cy}" width="${w}" height="22" rx="10" fill="${fill}"/><text x="${l+w/2}" y="${cy+15}" text-anchor="middle" font-size="${fs}" fill="${col}" font-weight="700">${txt}</text>`};
- const svg=`<svg class="chart" viewBox="0 0 320 170"><defs><linearGradient id="cg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FF5E50" stop-opacity=".35"/><stop offset="1" stop-color="#FF2D55" stop-opacity="0"/></linearGradient></defs>${ticks.map(t=>`<line x1="${x(+t)}" y1="20" x2="${x(+t)}" y2="145" stroke="#E6E6E6" stroke-dasharray="3 4"/>`).join('')}
- <path d="${line} L${X1} 145 L${xs.toFixed(1)} 145Z" fill="url(#cg)"/><path d="${line}" stroke="#FF5E50" stroke-width="3" fill="none"/>
- <circle cx="${xs}" cy="${Y0}" r="7" fill="#fff" stroke="#FF2D55" stroke-width="3"/>${tag(xs,8,54,'#FF5E50',st+u)}
- ${tm?`<circle cx="${x(+tm)}" cy="${y(wm)}" r="5" fill="#FF9800"/>${tag(x(+tm),y(wm)-30,54,'#FF9800',wm+u)}`:''}
- <circle cx="${xg}" cy="${y(g)}" r="7" fill="#fff" stroke="#FF2D55" stroke-width="3"/>${tag(xg,y(g)-34,96,'#FF2D55','Expected Result','#fff',11)}
- ${ticks.map(t=>`<text x="${x(+t)}" y="163" font-size="12" fill="#8A8A8E" text-anchor="middle">${t.toLocaleDateString('en-US',{month:'short'})}</text>`).join('')}</svg>`;
- return {goal,svg};
+ const mx=i=>months.length===1?(X0+X1)/2:X0+i*(X1-X0)/(months.length-1);
+ const cols=['#FF5E50','#FF9800','#FFC107','#3DBE6E'];
+ const svg=`<svg class="chart" viewBox="0 0 320 170"><defs><linearGradient id="cg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FF5E50" stop-opacity=".35"/><stop offset="1" stop-color="#FF2D55" stop-opacity="0"/></linearGradient></defs>${months.map((m,i)=>`<line x1="${mx(i)}" y1="20" x2="${mx(i)}" y2="145" stroke="#E6E6E6" stroke-dasharray="3 4"/>`).join('')}
+ ${n>1?`<path d="${line} L${X1} 145 L${X0} 145Z" fill="url(#cg)"/><path d="${line}" stroke="#FF5E50" stroke-width="3" fill="none"/>`:''}
+ ${P.map(([x,y],i)=>{const last=i===n-1,c=last?'#FF2D55':cols[Math.min(i,2)];return `<circle cx="${x}" cy="${y}" r="${last||i===0?7:5}" fill="#fff" stroke="${c}" stroke-width="3"/>${last?tag(x,y-62,96,'#FF2D55','Expected Result','#fff',11):''}${tag(x,y-32,58,last?'#0F202E':c,pts[i]+' '+u)}`}).join('')}
+ ${months.map((m,i)=>`<text x="${mx(i)}" y="163" font-size="12" fill="#8A8A8E" text-anchor="middle">${m}</text>`).join('')}</svg>`;
+ return {goal,svg,tpl};
 }
 let CUR=1;
 // готовые картинки: ключ — номер плашки ('003', '005-1', 'P01'), значение — файл в img/
@@ -480,41 +506,41 @@ const SCREENS=[
  render:()=>`<h2>What is your age?</h2>${numField('age','','58')}<p class="hintline" id="err" style="display:none"></p>${tip('👌','We ask for your age to personalize your plan.','We will customize a workout plan tailored to your age group.')}`,
  bind:m=>bindNum(m,'age',()=>[16,99,''])},
 {id:'s27',n:27,type:'info',cta:'CONTINUE',src:'Шрифт цитаты крупнее, чем у WalkUp (20 px), — аудитория 55+. Фото — вертикальный портрет со скруглением, ~¾ ширины.',html:()=>`<h2 class="left"><span class="red">Tai Chi Walking</span> is an Art of Living Longer</h2>${ph('portrait photo 4:5, rounded: smiling woman ~70, grey hair in a bun, arms stretched to the sides in a tai chi pose, bright home with a window to the garden, warm light','aspect-ratio:4/5;width:78%;min-height:0;margin:8px auto 18px;border-radius:28px','027')}<p class="quote">“Tai Chi <b>reduces mortality rates</b> in older adults by 20-30% over a 10-year period. Mechanisms: <b>Improved heart health, better stress management, and fewer falls.</b>”</p><p class="qby">—— Harvard Health Publishing</p>`},
-{id:'s28',n:28,type:'info',cta:'CONTINUE',src:'Сводка: активность — из вопроса 019, тип тела — 009, возраст — 001. ИМТ считается из роста и веса.',
- html:()=>{const b=bmi(),cat=b<18.5?'UNDERWEIGHT':b<25?'NORMAL':b<30?'OVERWEIGHT':b<35?'OBESE':'EXTREMELY OBESE',pos=Math.min(97,Math.max(3,(b-15)/(40-15)*100));
- return `<h2 class="left">Here's your health profile summary</h2><div class="prof">${ph('cut-out: smiling woman ~55, short hair, light linen top, frontal, head to mid-thigh','')}<div class="st"><div><small>Activity level</small><b>🚶 ${S.answers.s19||'Sedentary'}</b></div><div><small>Body type</small><b>🎯 ${S.answers.s09||'Slim'}</b></div><div><small>Age Group</small><b>📋 ${S.answers.s01||'Age: 50-59'}</b></div></div></div>
- <div class="card"><b>Body Mass Index(BMI)</b><div class="bmi5">${['#ADD144','#FFCC00','#FF9800','#FF5E8A','#5B5BD6'].map(c=>`<span style="background:${c}"></span>`).join('')}<i class="mk" style="left:${pos}%">You-${b.toFixed(1)}</i></div><div class="scale"><span>Normal - 21.5</span><span class="lvl">${cat}</span></div>
- <p style="margin-top:12px;font-size:14px"><b style="color:var(--ink)">Risks for an unhealthy BMI</b><br>Elevated blood pressure, cardiovascular conditions, cerebral vascular accidents, diabetes mellitus type 2, certain cancers, degenerative joint disease, lumbar discomfort, and overall increased risk of mortality.</p></div>`}},
+{id:'s28',n:28,type:'info',cta:'CONTINUE',src:'Как у WalkUp (Profile). ИМТ = вес, кг / рост, м² (lb × 0,45359237). Категория: < 18,5 — UNDERWEIGHT, но на экране пишется NORMAL; 18,5–24,9 — NORMAL; до 30 — OVERWEIGHT; от 30 — OBESE. Маркер «You-ИМТ»: (ИМТ − 15) / 25 от ширины шкалы, от 0 до 92%. Подсказка: NORMAL и UNDERWEIGHT — «Good Starting BMI…», OVERWEIGHT и OBESE — «Risks for an unhealthy BMI». Три строки справа: Activity level — ответ 017, Body type — ответ 009, Age Group — ответ 001. Фото слева — картинка выбранного на 009 типа тела (та же, что Now на пейволле), 4 версии: заглушки P01-1…P01-4.',
+ html:()=>{const b=bmi(),cat=b<18.5?'UNDERWEIGHT':b<=24.9?'NORMAL':b<30?'OVERWEIGHT':'OBESE',lbl=cat==='UNDERWEIGHT'?'NORMAL':cat,pos=Math.min(92,Math.max(0,(b-15)/25*100)),ok=cat==='NORMAL'||cat==='UNDERWEIGHT',ci=bodyIdx('s09');
+ return `<h2 class="left">Here's your health profile summary</h2><div class="prof">${ph(`cut-out: woman ~55, current body type «${BODY_CUR[ci-1]}», light linen top, frontal, head to mid-thigh (same image as Now on the paywall)`,'',`P01-${ci}`)}<div class="st"><div><small>Activity level</small><b>🚶 ${S.answers.s17||'Sedentary'}</b></div><div><small>Body type</small><b>🎯 ${S.answers.s09||'Mid-sized'}</b></div><div><small>Age Group</small><b>📋 ${S.answers.s01||'Age: 50-59'}</b></div></div></div>
+ <div class="card"><b>Body Mass Index(BMI)</b><div class="bmi5">${['#3DBE6E','#FFCC00','#FF9800','#FF5E8A','#5B5BD6'].map(c=>`<span style="background:${c}"></span>`).join('')}<i class="mk" style="left:${pos}%">You-${b.toFixed(1)}</i></div><div class="scale"><span>Normal - 21.5</span><span class="lvl">${lbl}</span></div>
+ ${ok?`<p style="margin-top:12px;font-size:14px"><b style="color:var(--ink)">Good Starting BMI for Fitness Goals</b><br>Based on research, an ideal body fat percentage to start gaining muscle and building a fit body faster is between 18% and 25%.</p>`:`<p style="margin-top:12px;font-size:14px"><b style="color:var(--ink)">Risks for an unhealthy BMI</b><br>Elevated blood pressure, cardiovascular conditions, cerebral vascular accidents, diabetes mellitus type 2, certain cancers, degenerative joint disease, lumbar discomfort, and overall increased risk of mortality.</p>`}</div>`}},
 {id:'s29',n:29,p:23,type:'q',q:'Is there a special occasion coming up?',sub:'With motivation, your goals will be easier to achieve.',opts:[['Vacation','✈️'],['Wedding','🥂'],['Sporting event','🏆'],['Beach trip','🏖️'],['Reunion','🥳'],['Family occasion','👨‍👩‍👧'],['Other','✨'],['No','🙅']],skip:v=>v==='No'?'s33':null,src:'Иконки трёх последних вариантов на скрине не видны (ниже сгиба) — подобраны. Куда ведут «Other» и «No», краулер не снял: в прототипе «No» пропускает дату.'},
 {id:'s30',n:30,type:'custom',src:'Экраны 030–032 — один экран: поле даты (по умолчанию +3 месяца), календарь по тапу, «SKIP THIS QUESTION». Дата дальше нигде не используется — как у WalkUp.',
  render:()=>`<h2>When's your event?</h2><p class="sub">Once we know this, we'll be able to put together your plan to help you get in fit. Your data will not be shared with any third parties.</p><div class="field"><input type="date" id="dt" value="${S.event||iso(plus(92))}" style="font-size:18px"></div>`,
  cta:'CONTINUE',after:'<button class="link" id="skip">SKIP THIS QUESTION</button>',
  bind:m=>{const e=m.querySelector('#dt'),b=$('#cta');const v=()=>{S.event=e.value;b.disabled=!e.value};e.oninput=e.onchange=v;v();$('#skip').onclick=next}},
-{id:'s33',n:33,type:'info',cta:'CONTINUE',src:'Дата цели = сегодня + недели (≈1 кг или 2,2 lb в неделю, минимум 4 недели). Ось: 5 меток месяцев от текущего, шаг подбирается так, чтобы дата цели попала на ось. Точка «Expected Result» стоит на дате цели, промежуточная метка — вес на первой метке месяца. Логика — в черновике задачи разработчику.',
- html:()=>{const c=goalChart();
- return `<h2>We believe this is the plan you'll ever need unlike any other.</h2><p class="sub" style="margin-bottom:6px">According to the information you have provided us, you'll achieve your goal weight of</p><h2>${goalTxt()} by ${fmtS(c.goal)}</h2><p class="sub" style="font-size:14px">Get ready to amaze everyone</p>
+{id:'s33',n:33,type:'info',cta:'CONTINUE',src:'Как у WalkUp (OccasionResult). Дней до цели = ceil(|текущий вес − целевой| / 0,14), в единицах ввода (у WalkUp и для lb 0,14 lb в день — план в фунтах выходит в 2,2 раза длиннее); дата цели = сегодня + дни. Проверено на прогоне: 89 → 80 кг 10 ноября → 65 дней → 14 января 2027. Заголовок «{цель} {kg|lb} by {дата}». Шаблон графика: цель = вес — keep_weight (одна точка, текущий месяц); цель > вес — low_to_high (вес → цель, текущий месяц и месяц цели); цель < вес — по целым месяцам до цели: 0 — две точки, месяцы M, M, M+1; 1 — две точки, M…M+4; 2 — три точки (вес, вес − 4,2 с округлением, цель), M…M+4; 3 и больше — четыре точки (вес, вес − 4,2, цель + 4,2, цель), месяцы M, M+1, S−1, S, S+1, где S — месяц цели. Последняя точка — «Expected Result». Подсказка «Get ready to amaze everyone at …» — повод из 029; у WalkUp повод не подставился (на прогоне пусто), у нас подставляем, при «Other» и «No» — без хвоста.',
+ html:()=>{const c=goalChart(),oc=S.answers.s29,tail=oc&&oc!=='No'&&oc!=='Other'?` at your ${oc.toLowerCase()}`:'';
+ return `<h2>We believe this is the plan you'll ever need unlike any other.</h2><p class="sub" style="margin-bottom:6px">According to the information you have provided us, you'll achieve your goal weight of</p><h2>${goalTxt()} by ${fmtS(c.goal)}</h2><p class="sub" style="font-size:14px">Get ready to amaze everyone${tail}!</p>
  <div class="card">${c.svg}</div>`}},
 {id:'s34',n:34,type:'custom',noCta:true,src:'Лоадер: кольцо с процентами, мозаика фото крутится вверх, на 100% автопереход. У WalkUp здесь же меню и Help.',
  render:()=>`<div class="ldr"><div class="ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" stroke="#FFD5DD" stroke-width="10" fill="none"/><circle id="arc" cx="50" cy="50" r="42" stroke="#FF2D55" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="263.9"/></svg><span id="pc">0%</span></div>Creating your personalized plan.</div>
  <h2 style="font-size:22px;margin-bottom:4px">Analyzing your data</h2><p class="sub" style="margin-bottom:0">Please wait while we create your personalized plan</p>
  <div class="mosaic">${[0,1,2].map(c=>`<div>${[1,2,3,1,2,3].map(r=>{const k=c*3+r;return ph(['woman ~65 tai chi stance, living room','woman ~70 arms raised, backyard','couple ~60 practicing together','woman ~55 slow step, park','close-up: soft trousers and flat shoes on grass','woman ~70 arms wide, by the window','two women ~60 side by side','woman ~50 at home, living room','woman ~65 eyes closed, breathing'][k-1],'',`034-${k}`)}).join('')}</div>`).join('')}</div>`,
  bind:m=>{let p=0;const a=m.querySelector('#arc'),t=m.querySelector('#pc');const iv=setInterval(()=>{p=Math.min(100,p+2);t.textContent=p+'%';a.style.strokeDashoffset=263.9*(1-p/100);if(p>=100){clearInterval(iv);setTimeout(next,300)}},70);LOOP=iv}},
-{id:'s35',n:35,type:'info',cta:'CONTINUE',html:()=>`<div class="card" style="border:0;padding:0;margin-top:20px"><b style="font-size:18px">Your Weight</b><svg class="chart" viewBox="0 0 320 170"><defs><linearGradient id="yg" x1="0" x2="1"><stop offset="0" stop-color="#ADD144"/><stop offset=".5" stop-color="#FFC107"/><stop offset="1" stop-color="#FF2D55"/></linearGradient><linearGradient id="ya" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FFD5DD" stop-opacity=".7"/><stop offset="1" stop-color="#FFD5DD" stop-opacity="0"/></linearGradient></defs>${[50,85,120].map(y=>`<line x1="10" y1="${y}" x2="310" y2="${y}" stroke="#E6E6E6" stroke-dasharray="3 4"/>`).join('')}
+{id:'s35',n:35,type:'info',cta:'CONTINUE',src:'Как у WalkUp (PlanReady): «Your Weight», подписи Now и After 4 weeks, ось Week 1–4, чисел из ответов нет. У WalkUp две анимации: цель меньше веса — линия вниз (как здесь), цель больше веса — линия вверх.',html:()=>`<div class="card" style="border:0;padding:0;margin-top:20px"><b style="font-size:18px">Your Weight</b><svg class="chart" viewBox="0 0 320 170"><defs><linearGradient id="yg" x1="0" x2="1"><stop offset="0" stop-color="#3DBE6E"/><stop offset=".5" stop-color="#FFC107"/><stop offset="1" stop-color="#FF2D55"/></linearGradient><linearGradient id="ya" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FFD5DD" stop-opacity=".7"/><stop offset="1" stop-color="#FFD5DD" stop-opacity="0"/></linearGradient></defs>${[50,85,120].map(y=>`<line x1="10" y1="${y}" x2="310" y2="${y}" stroke="#E6E6E6" stroke-dasharray="3 4"/>`).join('')}
  <path d="M30 40 C100 46 130 80 170 92 C220 108 250 118 296 126 L296 145 L30 145Z" fill="url(#ya)"/><path d="M30 40 C100 46 130 80 170 92 C220 108 250 118 296 126" stroke="url(#yg)" stroke-width="4" fill="none"/>
- <circle cx="30" cy="40" r="7" fill="#fff" stroke="#ADD144" stroke-width="3"/><rect x="10" y="8" width="44" height="22" rx="10" fill="#0F202E"/><text x="32" y="23" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">Now</text>
+ <circle cx="30" cy="40" r="7" fill="#fff" stroke="#3DBE6E" stroke-width="3"/><rect x="10" y="8" width="44" height="22" rx="10" fill="#0F202E"/><text x="32" y="23" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">Now</text>
  <circle cx="296" cy="126" r="7" fill="#fff" stroke="#FF2D55" stroke-width="3"/><rect x="214" y="90" width="96" height="24" rx="10" fill="#FF2D55"/><text x="262" y="106" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">After 4 weeks</text>
  ${['Week 1','Week 2','Week 3','Week 4'].map((w,i)=>`<text x="${40+i*82}" y="164" font-size="11" fill="#8A8A8E" text-anchor="middle">${w}</text>`).join('')}</svg></div>
  <h2 style="margin-top:40px">Your 4-week <span class="red">Tai Chi Walking</span> plan is ready!</h2>`},
-{id:'paywall',n:36,file:'050-paywall-full.jpg',sec:-1,type:'custom',noCta:true,src:'Пейволл 036–050 сверху вниз: бегущая строка Flash Sale, липкая плашка с таймером 10:00, Now/Goal, три тарифа (по умолчанию 4-WEEK), гарантия, отзывы, FAQ, приложение, «What you will get», второй блок тарифов с плашкой «83% off», гарантия, футер. Цены — как у WalkUp. Закрыть чекаут → exit-offer.',
+{id:'paywall',n:36,file:'050-paywall-full.jpg',sec:-1,type:'custom',noCta:true,src:'Пейволл 036–050 сверху вниз: бегущая строка Flash Sale, липкая плашка с таймером 10:00, Now/Goal, три тарифа (по умолчанию 4-WEEK), гарантия, отзывы, FAQ, приложение, «What you will get», второй блок тарифов с плашкой «83% off», гарантия, футер. Цены — как у WalkUp. Закрыть чекаут → exit-offer. Подстановки как у WalkUp (Purchase): фото Now — картинка выбранного на 009 типа тела (P01-1…4, та же, что на 028), Your Goal — выбранного на 010 (P02-1…4); Body fat Now — по ИМТ от текущего веса, Your Goal — по ИМТ от целевого: < 18,5 — 8–12%, < 25 — 12–24%, < 30 — 25–31%, < 35 — 32–39%, < 40 — 40–45%, иначе >45%; Level — значение уровня из ответа 019 (в конфиге WalkUp, по умолчанию 3 из 5; на прогоне с Sedentary — 3), у цели все 5. Target Weight — ответ 025 с единицами, Starting Level — текст ответа 019. Ленты MOST POPULAR — зелёной полосой над карточкой, магазин — только App Store, подвал как в walking-v3.',
  render:()=>paywall(),bind:m=>bindPaywall(m)},
 {id:'checkout',n:51,file:'051-checkout.jpg',sec:-1,type:'custom',noCta:true,src:'Чекаут — шторка поверх пейволла: расшифровка цены, PayPal / G Pay в один клик, карта. Email, имени и адреса нет. Форма — заглушка.',
  render:()=>paywall(),bind:m=>{bindPaywall(m);checkout()}},
 {id:'exit',n:53,file:'053-paywall-exit-offer.jpg',sec:-1,type:'custom',noCta:true,src:'Exit-offer при попытке уйти (закрыть чекаут). У WalkUp после GOT IT ничего не меняется: та же скидка 83% и те же цены.',
  render:()=>paywall(),bind:m=>{bindPaywall(m);exitModal()}},
-{id:'success',n:0,sec:-1,type:'custom',noCta:true,src:'Не из WalkUp: экран после оплаты краулер не видел. Success-страница из прототипа v3.',
- render:()=>`<h1>Welcome!</h1><p class="sub">Your plan is waiting in the app. Three steps and you’re in:</p>
- <ul class="steps"><li><div><b>1.</b> Download the app</div><span>App Store</span></li><li><div><b>2.</b> Sign in with your email</div><span>No password</span></li><li><div><b>3.</b> Start Day 1 — a 7-minute Tai Chi walk</div><span>Today</span></li></ul>
- <div class="mock">App placeholder — link and app screens to be added</div><button class="btn">Download the app</button><p class="fine" style="text-align:center">We also sent these steps to your email.</p>`}
+{id:'success',n:0,sec:-1,type:'custom',noCta:true,src:'Не из WalkUp: экран после оплаты краулер не видел. Success как в walking-v3: аккаунта в приложении нет, поэтому без шага Sign in; доступ после покупки — общий раздел «Покупка и доступ в приложении» в черновике разработки.',
+ render:()=>`<img src="${ICON}" alt="" style="width:72px;height:72px;border-radius:18px;margin:10px auto 14px;display:block"><h1>Welcome!</h1><p class="sub">Your Tai Chi Walking plan is waiting in the app. Two steps and you’re in:</p>
+ <ol class="steps2"><li><b>Download the app</b><a class="btn" href="${APP_URL}" target="_blank" rel="noopener">Download on the App Store</a></li><li><b>Start Day 1 — a 7-minute Tai Chi walk today</b><span>Open the app and tap your first Tai Chi walk. Go slowly — you can follow along at home.</span></li></ol>
+ <p class="fine" style="text-align:center">We also sent these steps to your email.</p>`}
 ];
 
 // ---------- paywall ----------
@@ -527,10 +553,11 @@ const BILL={
  w4:'To avoid any disruption, you agree that the plan you selected will automatically be extended at the full price for successive renewal periods and you will be charged $59.99 every 4-week. Cancel anytime.',
  w12:'To avoid any disruption, you agree that the plan you selected will automatically be extended at the full price for successive renewal periods and you will be charged $79.99 every 12-week. Cancel anytime.'};
 const cur=()=>PLANS.find(p=>p.id===S.plan);
-function planCard(p){const [d,c]=p.day.split('.');return `<div class="pl${p.rib?' hasrib':''}${p.id===S.plan?' sel':''}" data-p="${p.id}">${p.rib?`<span class="rib2">${p.rib}</span>`:''}<span class="rb"></span>
+function planCard(p){const [d,c]=p.day.split('.');return `<div class="pl${p.rib?' hasrib':''}${p.id===S.plan?' sel':''}" data-p="${p.id}">${p.rib?`<span class="rib">${p.rib}</span>`:''}<span class="rb"></span>
  <div class="mid"><b>${p.title}</b><div class="pr"><s>$${p.full}</s><span>$${p.price}</span></div>${p.bonus?`<span class="bonus">${p.bonus}</span>`:''}</div>
  <div class="pd"><span class="o">$${p.dold}</span><sup>$</sup><b>${d}</b><em>${c}<small>per day</small></em></div></div>`}
-const payLogos=`<div class="seal" style="margin-bottom:0;font-size:14px">🛡 Guaranteed Safe Checkout</div><div class="pay" style="flex-wrap:wrap"><span>PayPal</span><span> Pay</span><span>G Pay</span><span>VISA</span><span>Mastercard</span><span>🔒 SSL Secure Connection</span></div>`;
+const payLogos=`<p class="gsc">Guaranteed Safe Checkout <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z" fill="#9AA3B5"/><path d="M8.5 12l2.5 2.5 4.5-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></p><div class="logos"><span class="visa">VISA</span><svg viewBox="0 0 40 24" width="36" height="22"><circle cx="15" cy="12" r="10" fill="#EB001B"/><circle cx="25" cy="12" r="10" fill="#F79E1B" fill-opacity=".9"/></svg><span class="ppl"><i>Pay</i><i>Pal</i></span><span class="ssl">SSL<br>Secure<br>Connection</span></div>`;
+const APPLE=`<svg viewBox="0 0 384 512" width="30" height="36"><path fill="#000" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>`;
 function planBlock(ticket){
  return `<h2 style="margin-top:8px">Your Personalized Plan is Ready!</h2><p class="sub" style="margin-bottom:10px">Based on your current fitness intensity level:</p>
  <div class="sum2"><div>⚖️ Target Weight<b>${goalTxt()}</b></div><div>🚶 Starting Level<b>${S.answers.s19||'Sedentary'}</b></div></div>
@@ -544,8 +571,8 @@ const trev=(e,n,x)=>`<div class="trev"><span class="av">${e}</span><div><b>${n}<
 function paywall(){
  return `<div class="pw"><div class="flash"><span>${'⚡️🎁 Flash Sale! &nbsp; '.repeat(16)}</span></div>
  <div class="topbar"><div><small>83% discount is reserved for:</small><b class="tm">10:00</b></div><button class="btn buy">GET MY PLAN</button></div>
- <div class="nowgoal2"><div class="hd"><span>Now</span><span>Your Goal</span></div><div class="cols">${ph('Now: woman ~55, short hair, light linen top, frontal, waist up, softer figure','','P01')}${ph('Your Goal: same woman, same outfit, slimmer and more upright, smiling','','P02')}</div><span class="chev">›</span>
- <div class="cols"><div class="t">Body fat<b>25–31%</b>Level<div class="seg5">${[1,2,3,4,5].map(i=>`<i class="${i<=3?'on':''}"></i>`).join('')}</div></div><div class="t">Body fat<b>12–24%</b>Level<div class="seg5">${[1,2,3,4,5].map(i=>`<i class="on"></i>`).join('')}</div></div></div></div>
+ <div class="nowgoal2"><div class="hd"><span>Now</span><span>Your Goal</span></div><div class="cols">${ph(`Now: woman ~55, current body type «${BODY_CUR[bodyIdx('s09')-1]}», light linen top, frontal, waist up`,'',`P01-${bodyIdx('s09')}`)}${ph(`Your Goal: same woman, desired body type «${BODY_TGT[bodyIdx('s10')-1]}», more upright, smiling`,'',`P02-${bodyIdx('s10')}`)}</div><span class="chev">›</span>
+ <div class="cols"><div class="t">Body fat<b>${fatRange(bmi())}</b>Level<div class="seg5">${[1,2,3,4,5].map(i=>`<i class="${i<=3?'on':''}"></i>`).join('')}</div></div><div class="t">Body fat<b>${fatRange(tbmi())}</b>Level<div class="seg5">${[1,2,3,4,5].map(i=>`<i class="on"></i>`).join('')}</div></div></div></div>
  ${planBlock(false)}
  <h2 style="margin-top:30px">Our users meet their goals</h2>
  <div class="carousel">${rcard('Karen','A Gentle Way to Start Again','Aug. 10th','As someone new to tai chi, I was nervous at first. But this Tai Chi Plan made it so easy! The instructions are clear, the pace is gentle, and I never felt overwhelmed. Now I look forward to my daily practice—it’s truly beginner-friendly!')}
@@ -562,7 +589,7 @@ function paywall(){
  ${trev('🤩','Brandon Lloyd','As a retiree with knee issues, I worried about finding a workout I could stick to. The Tai Chi Plan’s seated modifications are a blessing! The instructor explains every detail, and I can adjust the intensity. Now, my grandkids join me—it’s become our bonding time!')}
  ${trev('🥰','Lewis','My doctor recommended Tai Chi for balance, and this plan delivers. The step-by-step breakdowns (like ‘weight shift drills’) made it easy to learn. Within weeks, I noticed fewer stumbles and better posture. Even my physical therapist approved!')}
  <div class="laurel">🌿 15+ million 🌿</div><p>started their walking journey with us</p>
- <div class="rate"><div class="stars">★★★★★</div><b>4.8 out of 5</b><div class="stores"><span> App Store</span><span>▶ Google Play</span></div><p class="fine" style="text-align:center;margin:0">over 22.2K 5-star ratings</p></div>
+ <div class="rate"><div class="stars">★★★★★</div><b>4.8 out of 5</b><a class="store" href="${APP_URL}" target="_blank" rel="noopener">${APPLE}<span>App Store</span></a><p class="fine" style="text-align:center;margin:0">over 22.2K 5-star ratings</p></div>
  <h2 style="margin-top:24px">What you will get</h2><p class="left" style="margin-bottom:8px">Our program combines AI-powered insights with fitness science to make every walk count. Designed by movement experts and data scientists, ${BRAND} ensures your walking routine is effective, enjoyable, and tailored to you.</p>
  <div class="devpill">💡 Mobile phone📱 + Pad + PC 💻 All Available</div>${ph('devices mock-up: monitor + tablet + phone with the Depfit app','min-height:180px','P10')}
  <ul class="list"><li><b>Smart Step Tracking:</b> Precision step counting with real-time feedback, so you never miss progress.</li><li><b>AI Music Sync:</b> Automatically matches music tempo to your walking pace, keeping you motivated and in rhythm.</li><li><b>Personalized Plans:</b> Adapts to your fitness level, goals (weight loss, endurance, recovery), and even weather conditions.</li><li><b>Data-Driven Coaching:</b> Analyzes your walking patterns (speed, distance, calories) to optimize future sessions.</li><li><b>50+ Guided Walks:</b> From scenic virtual routes to power-walking challenges, all with expert audio guidance.</li></ul>
@@ -570,7 +597,7 @@ function paywall(){
  ${planBlock(true)}
  <h2 style="margin-top:30px">100% Money-Back Guarantee</h2><div class="seal big"><i>30 DAY MONEY-BACK</i></div>
  <p class="left" style="font-size:15px">We are confident that our program will deliver for you, promising noticeable outcomes within a month! If you don't experience the desired results and can demonstrate compliance with our guidelines, we're committed to offering a full refund. Be sure to review our <u>Refund Policy</u> for all the necessary details.</p>
- <div class="foot"><a href="#">Privacy Policy</a>, <a href="#">Refund Policy</a>, <a href="#">Terms of Service</a>${payLogos}Copyright © 2026 ${BRAND}. All rights reserved.</div></div>`}
+ <div class="foot"><p><a href="#">Privacy Policy</a>, <a href="#">Terms of Service</a>, <a href="#">Refund Policy</a></p><p><a href="#">Manage Privacy Preferences</a></p>${payLogos}<p class="co">[Company name, City, Country]</p></div></div>`}
 function bindPaywall(m){
  startTimer();
  m.querySelectorAll('.buy').forEach(b=>b.onclick=checkout);
@@ -641,7 +668,7 @@ const GLOW={Arms:[[22,33],[78,33]],Chest:[[50,26]],Abs:[[50,40]],Butt:[[50,51]],
 function render(){
  clearInterval(timerIv);clearInterval(LOOP);clearTimeout(LOOP);document.querySelectorAll('body>.modal').forEach(x=>x.remove());
  const s=SCREENS[idx],m=$('#main');CUR=s.n;window.scrollTo(0,0);
- $('#back').hidden=!s.p;$('#logo').innerHTML=s.sec<0?'':`<img src="${LOGO}" alt="${BRAND}">`;
+ $('#back').hidden=!s.p;$('#logo').innerHTML=s.sec<0?'':`<img class="ic" src="${ICON}" alt=""><img src="${LOGO}" alt="${BRAND}">`;
  $('#count').textContent=s.p?`${s.p}/${TOTAL}`:'';
  $('#barw').style.display=s.p?'':'none';$('#bar').style.width=s.p?Math.round(s.p/TOTAL*100)+'%':'0';
  document.querySelector('header').style.display=s.sec<0?'none':'';
