@@ -49,6 +49,12 @@ p{color:var(--text)}
 .agecard>span{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;font-weight:700;background:var(--grad);color:#fff}
 .ph{background:linear-gradient(160deg,#F4F4F6,#E7E7EB);border-radius:var(--rc);display:flex;align-items:flex-end;padding:10px;color:#8A8A8E;font-size:12px;line-height:1.3;margin:6px 0 20px;min-height:120px;text-align:left}
 .ph b{font-weight:700}
+img.ph.pic{display:block;width:100%;height:auto;min-height:0!important;padding:0;background:none;object-fit:cover;aspect-ratio:1200/780}
+img.ph.pic.cut{aspect-ratio:auto;object-fit:contain;max-height:300px}
+img.thumb.pic{padding:0;background:none;object-fit:cover}
+.agec img.ph.pic{aspect-ratio:1;object-fit:cover}
+.zones img.ph.pic{max-height:none;height:100%;object-fit:contain}
+.ng img.ph.pic{aspect-ratio:600/900;height:auto}
 .cta{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:440px;padding:12px 24px calc(28px + env(safe-area-inset-bottom));background:linear-gradient(rgba(255,255,255,0),#fff 30%)}
 .btn{display:block;width:100%;min-height:48px;border:0;border-radius:var(--r);background:var(--grad);color:var(--accent-ink);font:600 16px var(--sans);cursor:pointer;box-shadow:0 8px 20px rgba(255,72,107,.28)}
 .btn:disabled{background:#FFC2CE;box-shadow:none;cursor:default}
@@ -273,8 +279,9 @@ const bmi=()=>wkg()/(hm()*hm());
 const goalTxt=()=>`${S.goal||89} ${S.wu}`;
 const weeks=()=>Math.max(4,Math.ceil(Math.max(wkg()-gkg(),0)/0.75));
 let CUR=1;
-const ph=(t,st='')=>`<div class="ph" style="${st}"><span><b>Image ${String(CUR).padStart(3,'0')}</b> · ${t}</span></div>`;
-const th=t=>`<span class="thumb">${t}</span>`;
+const IMG={4:'img-004.jpg',6:'img-006.jpg',9:'img-009.png',11:'img-011.jpg',13:'img-013.jpg',17:'img-017.png',19:'img-019.png',25:'img-025.jpg',28:'img-028.jpg',33:'img-033.jpg',38:'img-038.jpg',39:'img-039.png',40:'img-040.png',43:'img-043.jpg'};
+const ph=(t,st='',f)=>{f=f||IMG[CUR];return f?`<img class="ph pic${f.endsWith('.png')?' cut':''}" src="img/${f}" alt="${t.replace(/"/g,'')}" style="${st}">`:`<div class="ph" style="${st}"><span><b>Image ${String(CUR).padStart(3,'0')}</b> · ${t}</span></div>`};
+const th=t=>/\.(png|jpg)$/.test(t)?`<img class="thumb pic" src="img/${t}" alt="">`:`<span class="thumb">${t}</span>`;
 const sig=n=>`<span class="sig">${[6,9,12,15,18].map((h,i)=>`<i class="${i<n?'on':''}" style="height:${h}px"></i>`).join('')}</span>`;
 const icon=x=>!x?'':x.startsWith('img:')?th(x.slice(4)):x.startsWith('sig:')?sig(+x.slice(4)):`<span class="emo">${x}</span>`;
 const stars='<div class="stars">★★★★★</div>';
@@ -285,16 +292,16 @@ const rv=(n,t)=>`<div class="review">${stars}<p>${t}</p><footer>${n}</footer></d
 const SCREENS=[
 {id:'s01',n:1,type:'custom',noCta:true,src:'Возраст: сетка 2×2 круглых фото пар, подпись-пилюля, тап → дальше. Без счётчика и назад.',
  render:()=>`<h1>Walk Indoors to Lose Weight</h1><p class="kicker">ACCORDING TO YOUR AGE</p>
- <div class="agegrid">${[['25-35','couple 25–35 in athletic wear, smiling'],['36-45','couple 36–45, man in peach tee, woman in blue zip jacket'],['46-55','couple 46–55, woman in black tank, man in grey hoodie flexing'],['56+','older couple 56+, man in brown top, woman in orange jacket']].map(([a,d])=>`<button class="agec" data-v="${a}">${ph(d)}<span>${a} <span>&rsaquo;</span></span></button>`).join('')}</div>
+ <div class="agegrid">${[['25-35','couple 25–35','img-001-25-35.png'],['36-45','couple 36–45','img-001-36-45.png'],['46-55','couple 46–55','img-001-46-55.png'],['56+','couple 56+','img-001-56-plus.png']].map(([a,d,f])=>`<button class="agec" data-v="${a}">${ph(d,'',f)}<span>${a} <span>&rsaquo;</span></span></button>`).join('')}</div>
  <p class="fine" style="text-align:center;margin-top:22px">By continuing, you confirm and guarantee that you have read, understood, and agreed to our <u>Terms of Use</u>, <u>Privacy Policy</u>, and <u>Refund Policy</u>.</p>`,
  bind:m=>m.querySelectorAll('.agec').forEach(b=>b.onclick=()=>{S.answers.s01=b.dataset.v;next()})},
 {id:'s02',n:2,p:2,type:'q',q:'Select your gender',opts:[['Female','💁‍♀️'],['Male','💁‍♂️']]},
-{id:'s03',n:3,type:'info',html:()=>`<div class="big" style="margin-top:20px">36 million</div><p class="sub">users have chosen us</p>${ph('cut-out photo: three smiling women of different ethnicities, arms around each other, coral / mint / grey tees, leggings, white sneakers','min-height:300px')}`,cta:'Continue'},
+{id:'s03',n:3,type:'info',html:()=>`<div class="big" style="margin-top:20px">36 million</div><p class="sub">users have chosen us</p>${ph('cut-out photo: three smiling women of different ethnicities, arms around each other, coral / mint / grey tees, leggings, white sneakers','min-height:300px','img-003.png')}`,cta:'Continue'},
 {id:'s04',n:4,type:'info',html:()=>`${ph('plus-size blonde woman in red tank and navy leggings doing a high-knee march in a bright living room','min-height:240px')}<h2>Welcome to your indoor walking journey!</h2><p class="sub">Welcome to ${BRAND}! You are here to embark on a walking journey and achieve your daily step goal without leaving home. Let's better understand your specific goals and needs.</p>`},
-{id:'s05',n:5,p:5,type:'m',q:'What do you want to achieve?',sub:'You can select multiple goals',opts:[['Lose weight','img:woman in coral tank'],['Get firm and toned','img:blonde woman in red sports bra'],['Relieve stress','img:older woman in red, meditation'],['Lower biological age','img:dark-haired woman in sports bra'],['Improve heart health','img:woman in red athletic wear']]},
+{id:'s05',n:5,p:5,type:'m',q:'What do you want to achieve?',sub:'You can select multiple goals',opts:[['Lose weight','img:img-005-lose-weight.png'],['Get firm and toned','img:img-005-get-firm-and-toned.png'],['Relieve stress','img:img-005-relieve-stress.png'],['Lower biological age','img:img-005-lower-biological-age.png'],['Improve heart health','img:img-005-improve-heart-health.png']]},
 {id:'s06',n:6,type:'info',html:()=>`${ph('woman in red tank and navy leggings, arms across chest in a stretch, living room','min-height:240px')}<h2>The first step has been taken!</h2><p class="sub">We have 520+ workouts to help you achieve your goals in the most customized, exciting, and easy way!</p>`},
-{id:'s07',n:7,p:7,type:'q',q:'Choose your current body type',opts:[['Regular','img:female torso, regular'],['Flabby','img:female torso, softer belly'],['Extra','img:female torso, larger belly']]},
-{id:'s08',n:8,p:8,type:'q',q:'Choose your target body type',opts:[['A few pounds lighter','img:torso, slightly slimmer'],['Fit','img:torso, toned abs'],['Flat belly','img:torso, flat belly'],['Shapely','img:torso, hourglass']]},
+{id:'s07',n:7,p:7,type:'q',q:'Choose your current body type',opts:[['Regular','img:img-007-regular.png'],['Flabby','img:img-007-flabby.png'],['Extra','img:img-007-extra.png']]},
+{id:'s08',n:8,p:8,type:'q',q:'Choose your target body type',opts:[['A few pounds lighter','img:img-008-a-few-pounds-lighter.png'],['Fit','img:img-008-fit.png'],['Flat belly','img:img-008-flat-belly.png'],['Shapely','img:img-008-shapely.png']]},
 {id:'s09',n:9,p:9,type:'m',layout:'zones',q:'Choose your target zones',img:'full-body cut-out: smiling blonde older woman in red tank, red leggings, white sneakers',opts:['Lower back','Belly','Buttocks','Hips','Thighs','Knees','Calves','Whole body'],cta:'Continue'},
 {id:'s10',n:10,p:10,type:'q',q:'When were you last happy with your weight?',opts:[['Less than a year ago','🤔'],['1 to 2 years ago','😅'],['More than 3 years ago','😢'],["I'm happy with my weight",'😍'],['Never','❌']]},
 {id:'s11',n:11,type:'info',html:()=>`${ph('smiling blonde woman in red V-neck tee, hands on hips, bright kitchen','min-height:240px')}<h2>You're amazing!</h2><p class="sub">Many people often grapple with the fear of not being good enough. We'll take this into account as we devise your plan to provide you with the confidence-building approach!</p>`},
@@ -304,7 +311,7 @@ const SCREENS=[
 {id:'s15',n:15,p:15,type:'q',q:'How much time do you spend walking on a typical day?',opts:[['Fewer than 20 mins','👌'],['20-60 mins','👍'],['1-2 hours','💪'],['More than 2 hours','🏅']]},
 {id:'s16',n:16,p:16,type:'q',q:'How often do you go for walks?',opts:[['Almost every day','😎'],['3-4 times per week','💪'],['1-2 times per week','🙂'],['Usually about once a month','👍']]},
 {id:'s17',n:17,type:'info',html:()=>`${ph('flat illustration: pair of green running shoes with a yellow sun on a pale-green circle','min-height:200px')}<h2>Why Indoor Walking Works</h2><p class="sub">Indoor home walking for 12 weeks was linked to improved walking endurance. It's a great way to <b>stay fit without leaving your house!</b></p><p class="cite">"Home-Based Walking Exercise and Supervised Treadmill Exercise: An Individual Participant Data Meta-Analysis." JAMA Network Open, JAMA Network, 21 Sept. 2023</p>`},
-{id:'s18',n:18,p:18,type:'q',q:'How would you describe your work schedule?',opts:[['9 to 5','img:city skyline, day'],['Night shifts','img:city at night'],['My schedule is flexible','img:city at sunset'],["I'm retired",'img:mountains and lake']]},
+{id:'s18',n:18,p:18,type:'q',q:'How would you describe your work schedule?',opts:[['9 to 5','img:img-018-9-to-5.png'],['Night shifts','img:img-018-night-shifts.png'],['My schedule is flexible','img:img-018-flexible-schedule.png'],["I'm retired",'img:img-018-retired.png']]},
 {id:'s19',n:19,type:'info',html:()=>`${ph('flat illustration: coral sneakers with an orange flame on a pale pink circle','min-height:200px')}<h2>The myth of 10,000 steps</h2><p class="sub">It's a great goal but not the best starting point. Studies show that slow and moderate paces are optimal for progress and motivation.</p>`},
 {id:'s20',n:20,p:20,type:'q',q:'Do you wear a smartwatch or fitness tracker?',opts:[['Yes','✅'],['No','❌']],skip:v=>v==='No'?'s22':null,src:'Куда ведёт «No», краулер не снял (выбрал Yes). В прототипе «No» пропускает вопрос о модели часов.'},
 {id:'s21',n:21,p:21,type:'m',q:'What kind of smartwatch or fitness tracker do you wear?',opts:['Apple Watch','Fitbit','Samsung Galaxy','Garmin','None of the above'],none:'None of the above'},
@@ -420,7 +427,7 @@ function planCard(p){const [d,c]=p.day.split('.');return `<p class="above">${p.a
 function paywall(){const lvl=S.answers.s12||'Beginner';
  return `<div class="topbar"><div><small>${S.disc}% discount reserved for:</small><b class="tm">${mmss(S.t)}</b></div><button class="btn buy">GET MY PLAN</button></div>
  ${S.disc===71?`<div class="boost"><h3>Get a <s>61%</s> <span class="red">71%</span> discount on your personalized plan</h3><p style="font-size:14px">Get visible results in 30 days</p></div>`:''}
- <div class="ng"><div class="hd"><span>Now</span><span>Goal</span></div><div class="cols" style="padding:0">${ph('same blonde woman, heavier, grey-green sports bra and leggings, hand on belly','margin:0;border-radius:0')}${ph('same woman, slimmer and toned, dark-green sports bra, hands on hips','margin:0;border-radius:0')}</div>
+ <div class="ng"><div class="hd"><span>Now</span><span>Goal</span></div><div class="cols" style="padding:0">${ph('Now','margin:0;border-radius:0','img-paywall-now.jpg')}${ph('Goal','margin:0;border-radius:0','img-paywall-goal.jpg')}</div>
  <div class="cols"><div>Body fat<b>21-24%</b>Fitness level<div class="seg5">${[1,2,3,4,5].map(i=>`<i class="${i<=2?'on':''}"></i>`).join('')}</div></div><div>Body fat<b>14-20%</b>Fitness level<div class="seg5">${[1,2,3,4,5].map(i=>`<i class="${i<=4?'on':''}"></i>`).join('')}</div></div></div></div>
  <p class="disc">This is not a guarantee or promise of results.</p>
  <h2>Your walking plan is ready!</h2><div class="sum2"><div>⚖️ Target weight<b>${goalTxt()}</b></div><div>🚶 Starting level<b>${lvl}</b></div></div>
