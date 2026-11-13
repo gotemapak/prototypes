@@ -456,7 +456,7 @@ const ORIG='orig/';
 const TOTAL=23;
 
 // ---------- state ----------
-const S={answers:{},hu:'cm',wu:'kg',h:null,w:null,goal:null,age:null,event:'',plan:'w4',deadline:0,exitShown:false};
+const S={answers:{},email:'',hu:'cm',wu:'kg',h:null,w:null,goal:null,age:null,event:'',plan:'w4',deadline:0,exitShown:false};
 const pad=n=>String(n).padStart(3,'0');
 const fmtS=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 const iso=d=>d.toISOString().slice(0,10);
@@ -576,6 +576,10 @@ const SCREENS=[
  <h2 style="font-size:22px;margin-bottom:4px">Analyzing your data</h2><p class="sub" style="margin-bottom:0">Please wait while we create your personalized plan</p>
  <div class="mosaic">${[0,1,2].map(c=>`<div>${[1,2,3,1,2,3].map(r=>{const k=c*3+r;return ph(['woman ~65 tai chi stance, living room','woman ~70 arms raised, backyard','couple ~60 practicing together','woman ~55 slow step, park','close-up: soft trousers and flat shoes on grass','woman ~70 arms wide, by the window','two women ~60 side by side','woman ~50 at home, living room','woman ~65 eyes closed, breathing'][k-1],'',`034-${k}`)}).join('')}</div>`).join('')}</div>`,
  bind:m=>{let p=0;const a=m.querySelector('#arc'),t=m.querySelector('#pc');const iv=setInterval(()=>{p=Math.min(100,p+2);t.textContent=p+'%';a.style.strokeDashoffset=263.9*(1-p/100);if(p>=100){clearInterval(iv);setTimeout(next,300)}},70);LOOP=iv}},
+{id:'email',n:0,type:'custom',src:'Не из WalkUp: у WalkUp экрана email нет. Формат — как экран email в walking-v3.',logic:'Email после лоадера, до готового плана: план показываем после ввода. CONTINUE неактивна, пока email не похож на адрес (есть @ и точка после него). Email сохраняем сразу при CONTINUE: с этого момента идёт отсчёт 15 минут до письма «не купил». Этот же email — в чекауте (поля email там нет), в письме и на success. Отдельного экрана согласия на рассылку нет: строка о письмах под полем, отписка — в каждом письме.',
+ render:()=>`<h2>Your plan is ready! Where should we <span class="red">send it</span>?</h2><p class="sub">Enter your email to see your personal Tai Chi Walking plan.</p><div class="field">✉️<input type="email" id="em" placeholder="Your email" autocomplete="email" value="${S.email}" style="font-size:18px;font-weight:600"></div>
+ <p class="fine">🔒 We respect your privacy. We’ll send your plan and helpful tips to this email. You can unsubscribe at any time. See our <u>Privacy Policy</u>.</p>`,
+ cta:'CONTINUE',bind:m=>{const e=m.querySelector('#em'),b=$('#cta');const v=()=>{S.email=e.value.trim();b.disabled=!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(S.email)};e.oninput=v;v()}},
 {id:'s35',n:35,type:'info',cta:'CONTINUE',logic:'Как у WalkUp (PlanReady): «Your Weight», подписи Now и After 4 weeks, ось Week 1–4, чисел из ответов нет. У WalkUp две анимации: цель меньше веса — линия вниз (как здесь), цель больше веса — линия вверх.',html:()=>`<div class="card" style="border:0;padding:0;margin-top:20px"><b style="font-size:18px">Your Weight</b><svg class="chart" viewBox="0 0 320 170"><defs><linearGradient id="yg" x1="0" x2="1"><stop offset="0" stop-color="#3DBE6E"/><stop offset=".5" stop-color="#FFC107"/><stop offset="1" stop-color="#FF2D55"/></linearGradient><linearGradient id="ya" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FFD5DD" stop-opacity=".7"/><stop offset="1" stop-color="#FFD5DD" stop-opacity="0"/></linearGradient></defs>${[50,85,120].map(y=>`<line x1="10" y1="${y}" x2="310" y2="${y}" stroke="#E6E6E6" stroke-dasharray="3 4"/>`).join('')}
  <path d="M30 40 C100 46 130 80 170 92 C220 108 250 118 296 126 L296 145 L30 145Z" fill="url(#ya)"/><path d="M30 40 C100 46 130 80 170 92 C220 108 250 118 296 126" stroke="url(#yg)" stroke-width="4" fill="none"/>
  <circle cx="30" cy="40" r="7" fill="#fff" stroke="#3DBE6E" stroke-width="3"/><rect x="10" y="8" width="44" height="22" rx="10" fill="#0F202E"/><text x="32" y="23" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">Now</text>
@@ -584,11 +588,11 @@ const SCREENS=[
  <h2 style="margin-top:40px">Your 4-week <span class="red">Tai Chi Walking</span> plan is ready!</h2>`},
 {id:'paywall',n:36,file:'050-paywall-full.jpg',sec:-1,type:'custom',noCta:true,logic:'Пейволл 036–050 сверху вниз: бегущая строка Flash Sale, липкая плашка с таймером 10:00, Now/Goal, три тарифа (по умолчанию 4-WEEK), гарантия, отзывы, FAQ, приложение, «What you will get», второй блок тарифов с плашкой «83% off», гарантия, футер. Цены — как у WalkUp. Закрыть чекаут → exit-offer. Подстановки как у WalkUp (Purchase): фото Now — картинка выбранного на 009 типа тела (P01-1…4, та же, что на 028), Your Goal — выбранного на 010 (P02-1…4); Body fat Now — по ИМТ от текущего веса, Your Goal — по ИМТ от целевого: < 18,5 — 8–12%, < 25 — 12–24%, < 30 — 25–31%, < 35 — 32–39%, < 40 — 40–45%, иначе >45%; Level — значение уровня из ответа 019 (в конфиге WalkUp, по умолчанию 3 из 5; на прогоне с Sedentary — 3), у цели все 5. Target Weight — ответ 025 с единицами, Starting Level — текст ответа 019. Ленты MOST POPULAR — зелёной полосой над карточкой, магазин — только App Store, подвал как в walking-v3.',
  render:()=>paywall(),bind:m=>bindPaywall(m)},
-{id:'checkout',n:51,file:'051-checkout.jpg',sec:-1,type:'custom',noCta:true,logic:'Чекаут — шторка поверх пейволла: расшифровка цены, PayPal / G Pay в один клик, карта. У WalkUp email, имени и адреса нет. У нас экрана email в воронке нет, поэтому при оплате картой — поле Email (для чека, письма success и входа в приложение); PayPal и Google Pay отдают email сами. Форма — заглушка.',
+{id:'checkout',n:51,file:'051-checkout.jpg',sec:-1,type:'custom',noCta:true,logic:'Чекаут — шторка поверх пейволла: расшифровка цены, PayPal / G Pay в один клик, карта. У WalkUp email, имени и адреса нет. У нас email уже введён на экране email перед планом, поэтому в форме карты поля email нет; если в PayPal / Google Pay другой email, аккаунт и письма остаются на email из воронки. Форма — заглушка.',
  render:()=>paywall(),bind:m=>{bindPaywall(m);checkout()}},
 {id:'exit',n:53,file:'053-paywall-exit-offer.jpg',sec:-1,type:'custom',noCta:true,logic:'Exit-offer при попытке уйти (закрыть чекаут). У WalkUp после GOT IT ничего не меняется: та же скидка 83% и те же цены.',
  render:()=>paywall(),bind:m=>{bindPaywall(m);exitModal()}},
-{id:'success',n:0,sec:-1,type:'custom',noCta:true,logic:'Не из WalkUp: экран после оплаты краулер не видел. Success как в walking-v3: аккаунта в приложении нет, поэтому без шага Sign in; доступ после покупки — общий раздел «Покупка и доступ в приложении» в черновике разработки. Под строкой «We also sent these steps to your email» — email покупателя: из поля Email в чекауте или из PayPal / Google Pay.',
+{id:'success',n:0,sec:-1,type:'custom',noCta:true,logic:'Не из WalkUp: экран после оплаты краулер не видел. Success как в walking-v3: аккаунта в приложении нет, поэтому без шага Sign in; доступ после покупки — общий раздел «Покупка и доступ в приложении» в черновике разработки. Под строкой «We also sent these steps to your email» — email с экрана email перед планом.',
  render:()=>`<img src="${ICON}" alt="" style="width:72px;height:72px;border-radius:18px;margin:10px auto 14px;display:block"><h1>Welcome!</h1><p class="sub">Your Tai Chi Walking plan is waiting in the app. Two steps and you’re in:</p>
  <ol class="steps2"><li><b>Download the app</b><a class="btn" href="${APP_URL}" target="_blank" rel="noopener">Download on the App Store</a></li><li><b>Start Day 1 — a 7-minute Tai Chi walk today</b><span>Open the app and tap your first Tai Chi walk. Go slowly — you can follow along at home.</span></li></ol>
  <p class="fine" style="text-align:center;font-size:15px">We also sent these steps to your email:</p><p class="uem">${S.email||'jane.miller@gmail.com'}</p>`}
@@ -668,11 +672,10 @@ function checkout(){
  <h3 style="margin:18px 0 2px;font-size:17px">Select your payment method</h3><p class="fine" style="margin-top:0">✓ All transactions are secure and encrypted</p>
  <div class="pm" data-m="pp"><span class="rb"></span>One-click payment <span style="margin-left:auto;font-weight:800;color:#1B3D8F">PayPal · G Pay</span></div>
  <div class="pm sel" data-m="card"><span class="rb"></span>Credit card <span style="margin-left:auto;font-size:12px;color:var(--muted)">VISA · Mastercard · Maestro</span></div>
- <div class="cardf"><input type="email" id="cem" class="cem" placeholder="Email for your receipt and app access" value="${S.email||''}"><div>Card number</div><div>Expiry date<br><small>Front of card in MM/YY format</small></div><div>Security code<br><small>3 digits on back of card</small></div></div>
+ <div class="cardf"><div>Card number</div><div>Expiry date<br><small>Front of card in MM/YY format</small></div><div>Security code<br><small>3 digits on back of card</small></div></div>
  <button class="btn" id="paid">CONTINUE</button><p class="fine" style="text-align:center">Payment form placeholder (prototype)</p></div>`;
  document.body.appendChild(d);
  d.querySelectorAll('.pm').forEach(x=>x.onclick=()=>d.querySelectorAll('.pm').forEach(y=>y.classList.toggle('sel',y===x)));
- d.querySelector('#cem').oninput=e=>S.email=e.target.value;
  d.querySelector('#paid').onclick=()=>{d.remove();go('success')};
  d.querySelector('#cl').onclick=()=>{d.remove();if(!S.exitShown)exitModal();else COMP_PW()};
 }
@@ -734,7 +737,7 @@ function render(){
   h=`<h2>${s.q}</h2>${s.sub?`<p class="sub">${s.sub}</p>`:'<div style="height:12px"></div>'}`+(s.layout==='zones'?`<div class="zones"><div class="zb">${ph(s.img)}${glows}</div><div class="opts">${os}</div></div>`:`<div class="opts multi">${os}</div>`);cta=s.cta||'CONTINUE'}
  else if(s.type==='info'){h=s.html();cta=s.cta||'CONTINUE'}
  else {h=s.render();cta=s.noCta?null:(s.cta||'CONTINUE')}
- const file=s.file||(s.n&&s.n<=35?pad(s.n)+'-screen.jpg':null);
+ const file=s.file||(s.n&&s.n<=35?pad(s.n)+'-screen.png':null);
  const srcTxt=`${s.n?`WalkUp ${pad(s.n)}. `:''}${s.src||''}`;
  const logicH=s.logic?`<div class="logic"><b>Логика экрана</b><br>${s.logic}</div>`:'';
  m.innerHTML=h+logicH+`<div class="src"><b>Источник:</b> <span class="srct">${srcTxt}</span><span class="srci">${file?`<img src="${ORIG+file}" alt="">`:''}</span></div>`+(cta?`<div class="cta"><button class="btn" id="cta">${cta}</button>${s.after||''}</div>`:'');
