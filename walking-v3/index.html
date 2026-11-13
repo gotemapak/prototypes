@@ -306,6 +306,56 @@ header{justify-content:space-between}
 .cardf div{border:1px solid var(--line);border-radius:14px;padding:12px;color:var(--idle);font-size:14px}
 .cardf div:first-child{grid-column:1/3}
 .src img{display:block;width:100%;max-width:260px;margin:8px auto 0;border-radius:12px;border:1px solid var(--line)}
+/* ---------- раунд 2, 12 ноября 2026: фон как у WalkFit, карточки без рамки, крупный текст ответов, картинки во всю высоту, статистика без подложек, кнопка поверх контента, три колонки ---------- */
+:root{--bg:#F7F6F3}
+html,body{background:#F7F6F3}
+.topbar,.foot,.splash{background:var(--bg)}
+main{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+/* кнопка прибита к низу и идёт поверх контента; под ней только градиент в цвет фона */
+.cta{padding:28px 24px calc(20px + env(safe-area-inset-bottom));background:linear-gradient(rgba(247,246,243,0),#F7F6F3 45%)}
+.opts{gap:12px}
+.opt{min-height:64px;border:0;box-shadow:0 1px 6px rgba(15,32,46,.06);font:700 17px/1.3 var(--sans);transition:box-shadow .15s}
+.opt:hover{box-shadow:0 2px 12px rgba(15,32,46,.12)}
+.opt.sel{box-shadow:inset 0 0 0 2px var(--accent),0 1px 6px rgba(15,32,46,.06)}
+.chips .opt,.zones .opt{min-height:46px}
+.card,.note,.agecard,.ng,.field{border-color:transparent;box-shadow:0 1px 6px rgba(15,32,46,.06)}
+.agecard.sel,.agecard:hover{box-shadow:inset 0 0 0 2px var(--accent)}
+/* картинки ответов: крупная фигура справа во всю высоту карточки */
+.opts.pics .opt{min-height:92px;padding:0 0 0 18px;overflow:hidden;align-items:stretch;justify-content:flex-start}
+.opts.pics .opt .lbl{align-self:center;flex:1}
+.opts.pics .opt .box{order:0;align-self:center;margin:0 4px 0 0}
+.opts.pics .thumb{order:3;width:104px;height:92px;border-radius:0;align-self:flex-end;object-fit:contain;object-position:right bottom;margin-right:8px}
+/* статистика s22: крупное число, мелкая серая подпись, тонкие разделители */
+.stat3{gap:0;margin:2px 0 14px}
+.stat3 div{background:none;border-radius:0;padding:2px 10px;text-align:left;font-size:13px;color:var(--muted)}
+.stat3 div:first-child{padding-left:2px}
+.stat3 div+div{border-left:1px solid var(--line)}
+.stat3 b{font-size:24px;font-weight:700;line-height:1.2}
+/* зоны s09: подсветка выбранного на фигуре */
+.zones{grid-template-columns:auto 1fr;align-items:center}
+.zb{position:relative;justify-self:center}
+.zb img.ph.pic{height:438px;width:auto;max-height:none;aspect-ratio:320/1080;object-fit:contain;margin:0}
+.glow{position:absolute;transform:translate(-50%,-50%);border-radius:50%;background:#F43CC6;opacity:.92;filter:blur(1px);pointer-events:none}
+.zones .opt.sel{background:var(--accent);color:#fff;box-shadow:none}
+/* пейволл Now → Goal: стрелка под людьми */
+.ngimg{background:#FDEACA;overflow:hidden}
+.ngimg img.ph.pic{position:relative;z-index:1;max-height:none;object-fit:cover;aspect-ratio:600/900}
+.ngimg .arr{z-index:0;width:84px;height:168px;opacity:.75}
+.uem{text-align:center;font-weight:700;font-size:18px;color:var(--ink);margin-top:4px;word-break:break-all}
+/* логика экрана — отдельная колонка слева: логика | наш экран | конкурент */
+.logic{display:none;margin:22px 0 0;padding:12px 14px;border:1px dashed #C9C9CF;border-radius:12px;background:#fff;font-size:13px;color:#555;line-height:1.45;text-align:left}
+body.showsrc .logic{display:block}
+.logic b{color:var(--ink)}
+.src{background:#fff}
+@media (min-width:1300px){
+ body.showsrc .app{margin:0 auto 0 calc(50% - 270px)}
+ body.showsrc .cta{left:calc(50% - 270px);transform:none}
+ body.showsrc .modal{left:calc(50% - 270px)}
+ body.showsrc .logic{position:fixed;left:calc(50% - 650px);top:0;width:360px;height:100vh;overflow-y:auto;margin:0;border:0;border-right:1px dashed #C9C9CF;border-radius:0;padding:16px 20px 110px;z-index:5;font-size:14px}
+ body.showsrc .src{left:calc(50% + 190px)}
+ body.showsrc .toggle{left:calc(50% - 640px);right:auto;top:auto;bottom:12px}
+ body.showsrc .jump{left:calc(50% - 640px);right:auto;top:auto;bottom:56px}
+}
 </style>
 </head>
 <body>
@@ -341,7 +391,7 @@ const goalTxt=()=>`${S.goal||89} ${S.wu}`;
 const pace=b=>b<=24.9?1:b<30?1.5:b<35?1.7:2;
 const weeks=()=>{const d=wkg()-gkg();return Math.round(d>0?d/pace(bmi()):d<0?-d/0.5:0)};
 let CUR=1;
-const IMG={4:'img-004.jpg',6:'img-006.jpg',9:'img-009.png',11:'img-011.jpg',13:'img-013.jpg',17:'img-017.png',19:'img-019.png',25:'img-025.jpg',28:'img-028.jpg',33:'img-033.jpg',38:'img-038.jpg',39:'img-039.png',40:'img-040.png',43:'img-043.jpg'};
+const IMG={4:'img-004.jpg',6:'img-006.jpg',9:'img-009-zones.png',11:'img-011.jpg',13:'img-013.jpg',17:'img-017.png',19:'img-019.png',25:'img-025.jpg',28:'img-028.jpg',33:'img-033.jpg',38:'img-038.jpg',39:'img-039.png',40:'img-040.png',43:'img-043.jpg'};
 const ph=(t,st='',f)=>{f=f||IMG[CUR];return f?`<img class="ph pic${f.endsWith('.png')?' cut':''}" src="img/${f}" alt="${t.replace(/"/g,'')}" style="${st}">`:`<div class="ph" style="${st}"><span><b>Image ${String(CUR).padStart(3,'0')}</b> · ${t}</span></div>`};
 const th=t=>/\.(png|jpg)$/.test(t)?`<img class="thumb pic" src="img/${t}" alt="">`:`<span class="thumb">${t}</span>`;
 const sig=n=>`<span class="sig">${[6,9,12,15,18].map((h,i)=>`<i class="${i<n?'on':''}" style="height:${h}px"></i>`).join('')}</span>`;
@@ -371,11 +421,11 @@ const SCREENS=[
 {id:'s02',n:2,p:2,type:'q',q:'Select your gender',opts:[['Female','💁‍♀️'],['Male','💁‍♂️']]},
 {id:'s03',n:3,type:'info',html:()=>`<div class="big" style="margin-top:20px">36 million</div><p class="sub">users have chosen us</p>${ph('cut-out photo: three smiling women of different ethnicities, arms around each other, coral / mint / grey tees, leggings, white sneakers','min-height:300px','img-003.png')}`,cta:'Continue'},
 {id:'s04',n:4,type:'info',html:()=>`${ph('plus-size blonde woman in red tank and navy leggings doing a high-knee march in a bright living room','min-height:240px')}<h2>Welcome to your indoor walking journey!</h2><p class="sub">Welcome to ${BRAND}! You are here to embark on a walking journey and achieve your daily step goal without leaving home. Let's better understand your specific goals and needs.</p>`},
-{id:'s05',n:5,p:5,type:'m',q:'What do you want to achieve?',sub:'You can select multiple goals',opts:[['Lose weight','img:img-005-lose-weight.png'],['Get firm and toned','img:img-005-get-firm-and-toned.png'],['Relieve stress','img:img-005-relieve-stress.png'],['Lower biological age','img:img-005-lower-biological-age.png'],['Improve heart health','img:img-005-improve-heart-health.png']]},
+{id:'s05',n:5,p:5,type:'m',layout:'pics',q:'What do you want to achieve?',sub:'You can select multiple goals',opts:[['Lose weight','img:img-005-lose-weight.png'],['Get firm and toned','img:img-005-get-firm-and-toned.png'],['Relieve stress','img:img-005-relieve-stress.png'],['Lower biological age','img:img-005-lower-biological-age.png'],['Improve heart health','img:img-005-improve-heart-health.png']]},
 {id:'s06',n:6,type:'info',html:()=>`${ph('woman in red tank and navy leggings, arms across chest in a stretch, living room','min-height:240px')}<h2>The first step has been taken!</h2><p class="sub">We have 520+ workouts to help you achieve your goals in the most customized, exciting, and easy way!</p>`},
-{id:'s07',n:7,p:7,type:'q',q:'Choose your current body type',opts:[['Regular','img:img-007-regular.png'],['Flabby','img:img-007-flabby.png'],['Extra','img:img-007-extra.png']]},
-{id:'s08',n:8,p:8,type:'q',q:'Choose your target body type',opts:[['A few pounds lighter','img:img-008-a-few-pounds-lighter.png'],['Fit','img:img-008-fit.png'],['Flat belly','img:img-008-flat-belly.png'],['Shapely','img:img-008-shapely.png']]},
-{id:'s09',n:9,p:9,type:'m',layout:'zones',q:'Choose your target zones',img:'full-body cut-out: smiling blonde older woman in red tank, red leggings, white sneakers',opts:['Lower back','Belly','Buttocks','Hips','Thighs','Knees','Calves','Whole body'],cta:'Continue'},
+{id:'s07',n:7,p:7,type:'q',layout:'pics',q:'Choose your current body type',opts:[['Regular','img:img-007-regular.png'],['Flabby','img:img-007-flabby.png'],['Extra','img:img-007-extra.png']]},
+{id:'s08',n:8,p:8,type:'q',layout:'pics',q:'Choose your target body type',opts:[['A few pounds lighter','img:img-008-a-few-pounds-lighter.png'],['Fit','img:img-008-fit.png'],['Flat belly','img:img-008-flat-belly.png'],['Shapely','img:img-008-shapely.png']]},
+{id:'s09',n:9,p:9,type:'m',layout:'zones',q:'Choose your target zones',img:'full-body cut-out: smiling blonde older woman in red tank, red leggings, white sneakers',opts:['Lower back','Belly','Buttocks','Hips','Thighs','Knees','Calves','Whole body'],none:'Whole body',cta:'Continue',logic:'Как у WalkFit (живой прогон 12 ноября 2026, кадры s09-zones/00–08): выбор подсвечивает зону на фигуре размытым пятном (#F43CC6), выбранная кнопка заливается красным; парные зоны — с двух сторон. Whole body снимает остальные отметки и подсвечивает живот, бёдра, ноги, колени и икры сразу; выбор любой зоны снимает Whole body. Continue неактивна, пока ничего не выбрано. Фото стоит в фиксированном кадре (обрезано по фигуре, 320×1080), чтобы пятна попадали на зоны.'},
 {id:'s10',n:10,p:10,type:'q',q:'When were you last happy with your weight?',opts:[['Less than a year ago','🤔'],['1 to 2 years ago','😅'],['More than 3 years ago','😢'],["I'm happy with my weight",'😍'],['Never','❌']]},
 {id:'s11',n:11,type:'info',html:()=>`${ph('smiling blonde woman in red V-neck tee, hands on hips, bright kitchen','min-height:240px')}<h2>You're amazing!</h2><p class="sub">Many people often grapple with the fear of not being good enough. We'll take this into account as we devise your plan to provide you with the confidence-building approach!</p>`},
 {id:'s12',n:12,p:12,type:'q',q:'What is your activity level?',opts:[['Beginner','sig:1',"I'm just starting out"],['Intermediate','sig:2','I exercise somewhat consistently'],['Advanced','sig:5','I do regular workouts']]},
@@ -388,7 +438,7 @@ const SCREENS=[
 {id:'s19',n:19,type:'info',html:()=>`${ph('flat illustration: coral sneakers with an orange flame on a pale pink circle','min-height:200px')}<h2>The myth of 10,000 steps</h2><p class="sub">It's a great goal but not the best starting point. Studies show that slow and moderate paces are optimal for progress and motivation.</p>`},
 {id:'s20',n:20,p:20,type:'q',q:'Do you wear a smartwatch or fitness tracker?',opts:[['Yes','✅'],['No','❌']],skip:v=>v==='No'?'s22':null,src:'Куда ведёт «No», краулер не снял (выбрал Yes). В прототипе «No» пропускает вопрос о модели часов.'},
 {id:'s21',n:21,p:21,type:'m',q:'What kind of smartwatch or fitness tracker do you wear?',opts:['Apple Watch','Fitbit','Samsung Galaxy','Garmin','None of the above'],none:'None of the above'},
-{id:'s22',n:22,p:22,type:'info',html:()=>`<div class="card"><div class="stat3"><div><b>14 days</b>finished</div><div><b>6,304</b>avg. steps</div><div><b>120,980</b>total steps</div></div>
+{id:'s22',n:22,p:22,type:'info',html:()=>`<div class="card"><div class="stat3"><div><b>14</b>days finished</div><div><b>6,304</b>avg. steps</div><div><b>120,980</b>total steps</div></div>
  <div class="wk wkh">${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d,i)=>`<span class="${i===6?'red':''}">${d}</span>`).join('')}</div>
  <div class="wk">${[[5239,'d'],[4211,2],[0,'r'],[2980,4],[1210,5],[4910,6],[6890,'ds']].map(([s,t])=>`<div><i>${t==='r'?CHAIR:t==='d'||t==='ds'?DONE(t==='ds'):RING(s,t)}</i><em class="${t==='r'?'rest':typeof t==='number'?'part':''}">${t==='r'?'Rest':s.toLocaleString('en-US')}</em></div>`).join('')}</div>
  <div class="wk streak">${[[6017],[8000,1],[5029],[7300],[5239],[7890,1],['r']].map(([s,st])=>`<div><i>${s==='r'?CHAIR:DONE(st)}</i><em class="${s==='r'?'rest':''}">${s==='r'?'Rest':s.toLocaleString('en-US')}</em></div>`).join('')}</div></div>
@@ -419,7 +469,7 @@ const SCREENS=[
  <div class="hint"><b>👉 We ask your age to create your personal plan</b>Older people tend to have more body fat than younger people with the same BMI.</div>`,
  bind:m=>bindNum(m,'age',()=>[16,99,''])},
 {id:'s38',n:38,type:'info',html:()=>`${ph('blonde woman in red tee and navy leggings, arms wide, living room','min-height:240px')}<h2>Thank you!</h2><p class="sub">Thank you for your remarkable honesty. We're nearly finished!</p>`},
-{id:'s39',n:39,type:'info',cta:'Continue',src:'Логика из конфига WalkFit (все 5 прогонов краулера шли по первым ответам и совпали с ним). Плашка BMI — 3 версии: меньше 25 зелёная 👌, 25–30 жёлтая 🤔, больше 30 красная ☝️. Lifestyle — из s30 (sleepy / tired → Sedentary, good / energized → Change seeker); Exercise — из s12 (Beginner → Little or no, Intermediate → Light, Advanced → Moderate exercise); Activity level — из s15 (до 20 мин → Low, 20–60 мин и 1–2 ч → Intermediate, больше 2 ч → High). Картинка у WalkFit — 6 версий: пол (s02) × BMI (до 25, 25–30, от 30); в прототипе пока одна.',
+{id:'s39',n:39,type:'info',cta:'Continue',logic:'Логика из конфига WalkFit (все 5 прогонов краулера шли по первым ответам и совпали с ним). Плашка BMI — 3 версии: меньше 25 зелёная 👌, 25–30 жёлтая 🤔, больше 30 красная ☝️. Lifestyle — из s30 (sleepy / tired → Sedentary, good / energized → Change seeker); Exercise — из s12 (Beginner → Little or no, Intermediate → Light, Advanced → Moderate exercise); Activity level — из s15 (до 20 мин → Low, 20–60 мин и 1–2 ч → Intermediate, больше 2 ч → High). Картинка у WalkFit — 6 версий: пол (s02) × BMI (до 25, 25–30, от 30); в прототипе пока одна.',
  html:()=>{const b=bmi(),pos=Math.min(96,Math.max(4,(b-18.5)/(40-18.5)*100));
  const g=(map,k,d)=>map[S.answers[k]]||map[d];const L=g(S39.life,'s30','I get sleepy when I\'m hungry'),E=g(S39.ex,'s12','Beginner'),A=g(S39.act,'s15','Fewer than 20 mins');const [pc,pe,pt,px]=bmiPlaque(b);
  const row=(lab,[v,ic])=>`<div class="r39"><small>${lab}</small><b><img src="img/s39/${ic}.png" alt="">${v}</b></div>`;
@@ -441,7 +491,7 @@ const SCREENS=[
  <p class="left" style="font-size:13px;color:var(--muted);margin-bottom:6px">Date</p><div class="field"><input type="date" id="dt" data-demo="2027-10-02" value="${S.event}" style="font-size:18px"></div>`,
  cta:'CONTINUE',after:'<button class="link" id="skip">SKIP THIS QUESTION</button>',
  bind:m=>{const e=m.querySelector('#dt'),b=$('#cta');const v=()=>{S.event=e.value;b.disabled=!e.value};e.oninput=e.onchange=v;v();$('#skip').onclick=next}},
-{id:'s46',n:46,p:45,type:'info',cta:'Continue',src:'Дата цели — по коду WalkFit: сегодня + разница весов / темп по BMI (до 24.9 → 1 кг в неделю, 25–29.9 → 1.5, 30–34.9 → 1.7, от 35 → 2; набор веса — 0.5 кг в неделю), округление до недель. От даты события на s45 не зависит. Строка «Get ready to amaze everyone at your …» — только если на s44 выбран повод, не «No».',
+{id:'s46',n:46,p:45,type:'info',cta:'Continue',logic:'Дата цели — по коду WalkFit: сегодня + разница весов / темп по BMI (до 24.9 → 1 кг в неделю, 25–29.9 → 1.5, 30–34.9 → 1.7, от 35 → 2; набор веса — 0.5 кг в неделю), округление до недель. От даты события на s45 не зависит. Строка «Get ready to amaze everyone at your …» — только если на s44 выбран повод, не «No».',
  html:()=>{const ev=S.answers.s44&&S.answers.s44!=='No'?`<p class="sub">Get ready to amaze everyone at your ${S.answers.s44.toLowerCase()}</p>`:'';const d=plus(weeks()*7);
  return `<h2>The one and only plan you’ll ever need to ${Math.round(wkg())!==Math.round(gkg())?'get':'stay'} in shape</h2><p class="sub" style="margin-bottom:4px">According to the information you have provided us, you’ll achieve your goal weight of</p><h2><u>${goalTxt()} by ${fmtS(d)}</u></h2>${ev}
  <div class="card"><svg class="chart" viewBox="0 0 320 150"><path d="M20 30 C120 40 180 110 300 118 L300 140 L20 140Z" fill="#3DBE6E" fill-opacity=".12"/><path d="M20 30 C120 40 180 110 300 118" stroke="#3DBE6E" stroke-width="3" fill="none"/><circle cx="300" cy="118" r="7" fill="#3DBE6E"/><rect x="246" y="80" width="64" height="24" rx="10" fill="#0F202E"/><text x="278" y="97" text-anchor="middle" font-size="13" fill="#fff" font-weight="700">${goalTxt()}</text><text x="20" y="148" font-size="12" fill="#8A8A8E">${new Date().toLocaleDateString('en-US',{month:'short'})}</text><text x="300" y="148" font-size="12" fill="#8A8A8E" text-anchor="end">${d.toLocaleDateString('en-US',{month:'short'})}</text></svg></div>`}},
@@ -477,10 +527,10 @@ const SCREENS=[
  render:()=>paywall(),bind:m=>{bindPaywall(m);exitModal()}},
 {id:'checkout',n:65,sec:-1,type:'custom',noCta:true,src:'Чекаут — шторка поверх пейволла: расшифровка цены, PayPal в один клик, карта. Форма — заглушка.',
  render:()=>paywall(),bind:m=>{bindPaywall(m);checkout()}},
-{id:'success',n:0,sec:-1,type:'custom',noCta:true,src:'Не из WalkFit: экран после оплаты WalkFit краулер не видел. Аккаунта в приложении нет, поэтому без шага Sign in: в первой версии доступ — по ссылке на приложение после покупки.',
+{id:'success',n:0,sec:-1,type:'custom',noCta:true,src:'Не из WalkFit: экран после оплаты WalkFit краулер не видел.',logic:'Аккаунта в приложении нет, поэтому без шага Sign in: в первой версии доступ — по ссылке на приложение после покупки. Под строкой «We also sent these steps to your email» — email, который человек ввёл на экране email (048).',
  render:()=>`<img src="${ICON}" alt="" style="width:72px;height:72px;border-radius:18px;margin:10px auto 14px;display:block"><h1>Welcome, ${S.name||'Mary'}!</h1><p class="sub">Your plan is waiting in the app. Two steps and you’re in:</p>
  <ol class="steps2"><li><b>Download the app</b><a class="btn" href="${APP_URL}" target="_blank" rel="noopener">Download on the App Store</a></li><li><b>Start Day 1 — 10-minute walk today</b><span>Open the app and tap your first walk.</span></li></ol>
- <p class="fine" style="text-align:center">We also sent these steps to your email.</p>`}
+ <p class="fine" style="text-align:center;font-size:15px">We also sent these steps to your email:</p><p class="uem">${S.email||'mary.miller@gmail.com'}</p>`}
 ];
 
 // ---------- paywall ----------
@@ -505,7 +555,7 @@ function planCard(p){const [d,c]=p.day.split('.');return `<p class="above">${p.a
 function paywall(){const lvl=S.answers.s12||'Beginner';
  return `<div class="topbar"><div><small>${S.disc}% discount reserved for:</small><b class="tm">${mmss(S.t)}</b></div><button class="btn buy">GET MY PLAN</button></div>
  ${S.disc===71?`<div class="boost"><h3>Get a <s>61%</s> <span class="red">71%</span> discount on your personalized plan</h3><p style="font-size:14px">Get visible results in 30 days</p></div>`:''}
- <div class="ng"><div class="hd"><span>Now</span><span>Goal</span></div><div class="cols ngimg" style="padding:0">${ph('Now','margin:0;border-radius:0','img-paywall-now.jpg')}${ph('Goal','margin:0;border-radius:0','img-paywall-goal.jpg')}<svg class="arr" viewBox="0 0 60 120"><path d="M6 6 L44 60 L6 114 L22 114 L60 60 L22 6Z" fill="#fff"/></svg></div>
+ <div class="ng"><div class="hd"><span>Now</span><span>Goal</span></div><div class="cols ngimg" style="padding:0">${ph('Now','margin:0;border-radius:0','img-paywall-now.png')}${ph('Goal','margin:0;border-radius:0','img-paywall-goal.png')}<svg class="arr" viewBox="0 0 60 120"><path d="M6 6 L44 60 L6 114 L22 114 L60 60 L22 6Z" fill="#fff"/></svg></div>
  <div class="cols"><div>Body fat<b>21-24%</b>Fitness level<div class="seg5">${[1,2,3,4,5].map(i=>`<i class="${i<=2?'on':''}"></i>`).join('')}</div></div><div>Body fat<b>14-20%</b>Fitness level<div class="seg5">${[1,2,3,4,5].map(i=>`<i class="${i<=4?'on':''}"></i>`).join('')}</div></div></div></div>
  <p class="disc">This is not a guarantee or promise of results.</p>
  <h2 style="margin-top:34px">Your walking plan is ready!</h2><div class="sum2"><div><small>Target weight</small><b><span class="ic">⚖️</span>${goalTxt()}</b></div><div><small>Starting level</small><b><span class="ic">🚶</span>${lvl}</b></div></div>
@@ -532,12 +582,13 @@ function paywall(){const lvl=S.answers.s12||'Beginner';
  <div class="logos"><span class="visa">VISA</span><svg viewBox="0 0 40 24" width="36" height="22"><circle cx="15" cy="12" r="10" fill="#EB001B"/><circle cx="25" cy="12" r="10" fill="#F79E1B" fill-opacity=".9"/></svg><span class="ppl"><i>Pay</i><i>Pal</i></span><span class="ssl">SSL<br>Secure<br>Connection</span></div>
  <p class="co">[Company name, City, Country]</p></div>`}
 function bindPaywall(m){
- startTimer();
+ startTimer();if(S.exitShown)COMP_PW();
  m.querySelectorAll('.buy').forEach(b=>b.onclick=checkout);
  m.querySelectorAll('.pl').forEach(c=>c.onclick=()=>{S.plan=c.dataset.p;m.querySelectorAll('.pl').forEach(x=>x.classList.toggle('sel',x===c));m.querySelector('#bill').textContent=BILL[S.plan]});
 }
 function checkout(){
  const p=cur(),full=num(p.full),pr=num(p.price),off=full-pr,pct=Math.round(off/full*100);
+ comp(S.disc===71?'WalkFit 065–066. Чекаут после exit-offer: та же шторка, цены со скидкой 71% (15,19 → 11,29 USD за 4 недели).':'WalkFit 065–066. Чекаут — шторка поверх пейволла.',['065-checkout.png','066-checkout.png']);
  const d=document.createElement('div');d.className='modal';
  d.innerHTML=`<div class="sheet chk"><button class="x" id="cl" aria-label="Close">×</button><h2>Checkout</h2>
  <div class="rowkv"><span>${p.label}</span><b>${p.full} USD</b></div><div class="rowkv"><span>${pct}% introductory price discount</span><b class="red">-${money(off)} USD</b></div>
@@ -551,10 +602,10 @@ function checkout(){
  document.body.appendChild(d);
  d.querySelectorAll('.pm').forEach(x=>x.onclick=()=>d.querySelectorAll('.pm').forEach(y=>y.classList.toggle('sel',y===x)));
  d.querySelector('#paid').onclick=()=>{d.remove();go('success')};
- d.querySelector('#cl').onclick=()=>{d.remove();if(!S.exitShown)exitModal()};
+ d.querySelector('#cl').onclick=()=>{d.remove();if(!S.exitShown)exitModal();else COMP_PW()};
 }
 function exitModal(){
- S.exitShown=true;
+ S.exitShown=true;comp('WalkFit 067. Exit-offer при закрытии чекаута.',['067-paywall-exit-offer.png']);
  const d=document.createElement('div');d.className='modal';
  d.innerHTML=`<div class="sheet"><h2>Did you know?</h2><p class="sub">A Columbia University study showed that 73% of dieters have lost weight and then gained it back at least once.</p>
  <svg class="chart" viewBox="0 0 320 180"><defs><linearGradient id="eg" x1="0" x2="1"><stop offset="0" stop-color="#FF2D55" stop-opacity=".35"/><stop offset=".45" stop-color="#FFC107" stop-opacity=".25"/><stop offset="1" stop-color="#3DBE6E" stop-opacity=".25"/></linearGradient></defs>
@@ -595,21 +646,28 @@ function render(){
  $('#barw').style.display=s.p?'':'none';$('#bar').style.width=s.p?Math.round(s.p/total*100)+'%':'0';
  document.querySelector('header').style.display=s.sec<0?'none':'';
  let h='',cta=null;
- if(s.type==='q'){h=`<h2>${s.q}</h2>${s.sub?`<p class="sub">${s.sub}</p>`:'<div style="height:12px"></div>'}<div class="opts">${s.opts.map(o=>optHTML(o,false,S.answers[s.id]===(Array.isArray(o)?o[0]:o),s.iconLeft)).join('')}</div>`}
+ if(s.type==='q'){h=`<h2>${s.q}</h2>${s.sub?`<p class="sub">${s.sub}</p>`:'<div style="height:12px"></div>'}<div class="opts${s.layout?' '+s.layout:''}">${s.opts.map(o=>optHTML(o,false,S.answers[s.id]===(Array.isArray(o)?o[0]:o),s.iconLeft)).join('')}</div>`}
  else if(s.type==='m'){const c=S.answers[s.id]||[];const os=s.opts.map(o=>optHTML(o,true,c.includes(Array.isArray(o)?o[0]:o))).join('');
-  h=`<h2>${s.q}</h2>${s.sub?`<p class="sub">${s.sub}</p>`:'<div style="height:12px"></div>'}`+(s.layout==='zones'?`<div class="zones">${ph(s.img)}<div class="opts">${os}</div></div>`:s.layout==='chips'?`<div class="chips">${os}</div>`:`<div class="opts multi">${os}</div>`);cta=s.cta||'Continue'}
+  h=`<h2>${s.q}</h2>${s.sub?`<p class="sub">${s.sub}</p>`:'<div style="height:12px"></div>'}`+(s.layout==='zones'?`<div class="zones"><div class="zb">${ph(s.img)}${zoneGlows(c)}</div><div class="opts">${os}</div></div>`:s.layout==='chips'?`<div class="chips">${os}</div>`:`<div class="opts multi${s.layout==='pics'?' pics':''}">${os}</div>`);cta=s.cta||'Continue'}
  else if(s.type==='info'){h=s.html();cta=s.cta||'Continue'}
  else {h=s.render();cta=s.noCta?null:(s.cta||'Continue')}
  const file=s.n?Object.keys(ORIGF).find(f=>+f.slice(0,3)===s.n):null;
  const srcTxt=`${s.n?`WalkFit ${String(s.n).padStart(3,'0')}. `:''}${s.src||''}`;
- m.innerHTML=h+`<div class="src"><b>Источник:</b> ${srcTxt}${file?`<img src="${ORIG+file}" alt="">`:''}</div>`+(cta?`<div class="cta"><button class="btn" id="cta">${cta}</button>${s.after||''}</div>`:'');
+ const logicH=s.logic?`<div class="logic"><b>Логика экрана</b><br>${s.logic}</div>`:'';
+ m.innerHTML=h+logicH+`<div class="src"><b>Источник:</b> <span class="srct">${srcTxt}</span><span class="srci">${file?`<img src="${ORIG+file}" alt="">`:''}</span></div>`+(cta?`<div class="cta"><button class="btn" id="cta">${cta}</button>${s.after||''}</div>`:'');
  if(s.type==='q')m.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const v=b.dataset.v;S.answers[s.id]=v;b.classList.add('sel');setTimeout(()=>{const k=s.skip&&s.skip(v);k?go(k):next()},180)});
  if(s.type==='m'){const btn=$('#cta');btn.disabled=!(S.answers[s.id]||[]).length;m.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const v=b.dataset.v;let c=S.answers[s.id]||[];if(s.none&&v===s.none)c=c.includes(v)?[]:[v];else{c=c.filter(x=>x!==s.none);c=c.includes(v)?c.filter(x=>x!==v):[...c,v]}S.answers[s.id]=c;render()})}
  if(cta)$('#cta').addEventListener('click',()=>{if(!$('#cta').disabled){if(s.id==='s49')S.answers.s49='yes';next()}});
  if(s.bind)s.bind(m);
  $('#jump').value=s.id;history.replaceState(null,'','#'+s.id);
 }
-const ORIGF={'001-screen.jpg':1,'002-screen.jpg':1,'003-screen.jpg':1,'004-screen.jpg':1,'005-screen.jpg':1,'006-screen.jpg':1,'007-screen.jpg':1,'008-screen.jpg':1,'009-screen.jpg':1,'010-screen.jpg':1,'011-screen.jpg':1,'012-screen.jpg':1,'013-screen.jpg':1,'014-screen.jpg':1,'015-screen.jpg':1,'016-screen.jpg':1,'017-screen.jpg':1,'018-screen.jpg':1,'019-screen.jpg':1,'020-screen.jpg':1,'021-screen.jpg':1,'022-screen.jpg':1,'023-screen.jpg':1,'024-screen.jpg':1,'025-screen.jpg':1,'026-screen.jpg':1,'027-screen.jpg':1,'028-screen.jpg':1,'029-screen.jpg':1,'030-screen.jpg':1,'031-screen.jpg':1,'032-screen.jpg':1,'033-screen.jpg':1,'034-screen.jpg':1,'035-screen.jpg':1,'036-screen.jpg':1,'037-screen.jpg':1,'038-screen.jpg':1,'039-screen.jpg':1,'040-screen.jpg':1,'041-screen.jpg':1,'042-screen.jpg':1,'043-screen.jpg':1,'044-screen.jpg':1,'045-screen.jpg':1,'046-screen.jpg':1,'047-screen.jpg':1,'048-email.jpg':1,'049-screen.jpg':1,'050-screen.jpg':1,'051-screen.jpg':1,'052-screen.jpg':1,'053-screen.jpg':1,'054-paywall.jpg':1,'064-paywall-full.jpg':1,'065-checkout.jpg':1,'067-paywall-exit-offer.jpg':1};
+const ORIGF={'001-screen.jpg':1,'002-screen.jpg':1,'003-screen.jpg':1,'004-screen.jpg':1,'005-screen.jpg':1,'006-screen.jpg':1,'007-screen.jpg':1,'008-screen.jpg':1,'009-screen.jpg':1,'010-screen.jpg':1,'011-screen.jpg':1,'012-screen.jpg':1,'013-screen.jpg':1,'014-screen.jpg':1,'015-screen.jpg':1,'016-screen.jpg':1,'017-screen.jpg':1,'018-screen.jpg':1,'019-screen.jpg':1,'020-screen.jpg':1,'021-screen.jpg':1,'022-screen.jpg':1,'023-screen.jpg':1,'024-screen.jpg':1,'025-screen.jpg':1,'026-screen.jpg':1,'027-screen.jpg':1,'028-screen.jpg':1,'029-screen.jpg':1,'030-screen.jpg':1,'031-screen.jpg':1,'032-screen.jpg':1,'033-screen.jpg':1,'034-screen.jpg':1,'035-screen.jpg':1,'036-screen.jpg':1,'037-screen.jpg':1,'038-screen.jpg':1,'039-screen.jpg':1,'040-screen.jpg':1,'041-screen.jpg':1,'042-screen.jpg':1,'043-screen.jpg':1,'044-screen.jpg':1,'045-screen.jpg':1,'046-screen.jpg':1,'047-screen.jpg':1,'048-email.jpg':1,'049-screen.jpg':1,'050-screen.jpg':1,'051-screen.jpg':1,'052-screen.jpg':1,'053-screen.jpg':1,'054-paywall.jpg':1,'064-paywall-full.jpg':1,'065-checkout.jpg':1,'066-checkout.jpg':1,'067-paywall-exit-offer.jpg':1,'068-paywall-exit-offer-applied.jpg':1,'069-paywall-exit-offer-applied-full.jpg':1};
+function comp(t,files){const p=document.querySelector('#main .src');if(!p)return;p.querySelector('.srct').textContent=t;p.querySelector('.srci').innerHTML=files.map(f=>`<img src="${ORIG+f}" alt="">`).join('');p.scrollTop=0}
+const COMP_PW=()=>comp('WalkFit 068–069. Пейволл после exit-offer: плашка «Get a 61% → 71% discount», скидка 71% на все тарифы, таймер снова 10:00 (живой прогон 12 ноября 2026).',['068-paywall-exit-offer-applied.png','069-paywall-exit-offer-applied-full.png']);
+// зоны s09: пятна [x, y, ширина, высота] в % от кадра img-009-zones (320×1080, фигура обрезана по краям)
+const GLOW={'Lower back':[[28,36,14,5],[72,36,14,5]],Belly:[[50,40,36,6]],Buttocks:[[36,45,18,5],[64,45,18,5]],Hips:[[24,46,12,8],[77,46,12,8]],Thighs:[[38,55,17,11],[62,55,17,11]],Knees:[[38,68,15,5],[64,68,15,5]],Calves:[[37,78,13,8],[70,77,13,8]]};
+GLOW['Whole body']=[...GLOW.Belly,...GLOW.Hips,...GLOW.Thighs,...GLOW.Knees,...GLOW.Calves];
+const zoneGlows=c=>c.flatMap(z=>(GLOW[z]||[]).map(([x,y,w,h])=>`<i class="glow" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%"></i>`)).join('');
 $('#back').onclick=back;
 $('#tg').onclick=()=>document.body.classList.toggle('showsrc');
 $('#jump').innerHTML=SCREENS.map(s=>`<option value="${s.id}">${s.n?String(s.n).padStart(3,'0'):'—'} · ${s.id}</option>`).join('');
