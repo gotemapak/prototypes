@@ -737,7 +737,7 @@ function render(){
   h=`<h2>${s.q}</h2>${s.sub?`<p class="sub">${s.sub}</p>`:'<div style="height:12px"></div>'}`+(s.layout==='zones'?`<div class="zones"><div class="zb">${ph(s.img)}${glows}</div><div class="opts">${os}</div></div>`:`<div class="opts multi">${os}</div>`);cta=s.cta||'CONTINUE'}
  else if(s.type==='info'){h=s.html();cta=s.cta||'CONTINUE'}
  else {h=s.render();cta=s.noCta?null:(s.cta||'CONTINUE')}
- const file=s.file||(s.n&&s.n<=35?pad(s.n)+'-screen.png':null);
+ const file=s.file||(s.n&&s.n<=35?pad(s.n)+'-screen.jpg':null);
  const srcTxt=`${s.n?`WalkUp ${pad(s.n)}. `:''}${s.src||''}`;
  const logicH=s.logic?`<div class="logic"><b>Логика экрана</b><br>${s.logic}</div>`:'';
  m.innerHTML=h+logicH+`<div class="src"><b>Источник:</b> <span class="srct">${srcTxt}</span><span class="srci">${file?`<img src="${ORIG+file}" alt="">`:''}</span></div>`+(cta?`<div class="cta"><button class="btn" id="cta">${cta}</button>${s.after||''}</div>`:'');
