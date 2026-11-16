@@ -136,6 +136,7 @@ header{justify-content:space-between}
 .sig{display:flex;gap:3px;align-items:flex-end;flex:none}
 .sig i{width:5px;background:var(--line);border-radius:1px}
 .sig i.on{background:var(--accent)}
+.sum2 .sig i:not(.on){background:#BCC6D1}
 .chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
 .chips .opt{width:auto;min-height:44px;padding:10px 16px;justify-content:center;text-align:center}
 .chips .box,.zones .box{display:none}
@@ -636,11 +637,10 @@ function planCard(p){const [d,c]=p.day.split('.');return `<div class="pl${p.rib?
  <div class="pd"><span class="o">$${p.dold}</span><sup>$</sup><b>${d}</b><em>${c}<small>per day</small></em></div></div>`}
 const payLogos=`<p class="gsc">Guaranteed Safe Checkout <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z" fill="#9AA3B5"/><path d="M8.5 12l2.5 2.5 4.5-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></p><div class="logos"><span class="visa">VISA</span><svg viewBox="0 0 40 24" width="36" height="22"><circle cx="15" cy="12" r="10" fill="#EB001B"/><circle cx="25" cy="12" r="10" fill="#F79E1B" fill-opacity=".9"/></svg><span class="ppl"><i>Pay</i><i>Pal</i></span><span class="ssl">SSL<br>Secure<br>Connection</span></div>`;
 const APPLE=`<svg viewBox="0 0 384 512" width="30" height="36"><path fill="#000" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>`;
-/* как у WalkUp: слева от веса — значок весов; Starting Level — ответ на s17 «How often do you exercise?», слева пирамидка из 5 ярусов, закрашено столько, какой по счёту ответ (Sedentary 1 … Almost every day 5) */
+/* как у WalkUp: слева от веса — значок весов; Starting Level — ответ на s17 «How often do you exercise?», слева наша красная шкала из 5 столбиков, как в вариантах ответа на s17 (Sedentary 1 … Almost every day 5) */
 const SCALE_ICO=`<svg class="sico" viewBox="0 0 24 24" width="22" height="22"><rect x="2" y="2" width="20" height="20" rx="5" fill="#0F202E"/><path d="M7 9.5a7 7 0 0 1 10 0l-1.6 2.1a4.4 4.4 0 0 0-6.8 0z" fill="#fff"/><path d="M12 11.6l1.6-2.4" stroke="#0F202E" stroke-width="1.3" stroke-linecap="round"/></svg>`;
 const LEVELS=['Sedentary','1-2 times a month','1-2 times a week','3-4 times a week','Almost every day'];
-const lvlIcon=()=>{const n=Math.max(1,LEVELS.indexOf(S.answers.s17)+1);
- return `<svg class="sico" viewBox="0 0 24 24" width="22" height="22">${[0,1,2,3,4].map(i=>{const y=2+i*4.2,h=3.4,w0=4+i*3.6,w1=w0+3.6*h/4.2;return `<polygon points="${12-w0/2},${y} ${12+w0/2},${y} ${12+w1/2},${y+h} ${12-w1/2},${y+h}" fill="${4-i<n?'#0F202E':'#D5D9E0'}"/>`}).join('')}</svg>`};
+const lvlIcon=()=>sig(Math.max(1,LEVELS.indexOf(S.answers.s17)+1));
 function planBlock(ticket){
  return `<h2 style="margin-top:8px">Your Personalized Plan is Ready!</h2><p class="sub" style="margin-bottom:10px">Based on your current fitness intensity level:</p>
  <div class="sum2"><div>Target Weight<b>${SCALE_ICO}${goalTxt()}</b></div><div>Starting Level<b>${lvlIcon()}${S.answers.s17||'Sedentary'}</b></div></div>
