@@ -261,9 +261,13 @@ header{justify-content:space-between}
 .carousel.auto{scrollbar-width:none}.carousel.auto::-webkit-scrollbar{display:none}
 .carousel.rv{margin:14px -24px 0;padding:0 24px 4px;scroll-padding:0 24px}
 .carousel.rv .rcard{flex:0 0 100%}
-.phwrap{position:relative}
-.carousel.ph5{padding:0 19% 4px}
-.carousel.ph5 img.ph.pic.cut{max-height:420px;width:100%;height:auto}
+.phwrap{position:relative;container-type:inline-size}
+.carousel.ph5{padding:0 calc(.025*(100cqw + 48px)) 4px;gap:0}
+.carousel.ph5 img.ph.pic.cut{max-height:none;width:100%;height:auto}
+.carousel.ph5>div{transform:scale(.8);transition:transform .35s;transform-origin:center}
+.carousel.ph5>div.bl{transform:translateX(25%) scale(.8)}
+.carousel.ph5>div.br{transform:translateX(-25%) scale(.8)}
+.carousel.ph5>div.cur{transform:none;position:relative;z-index:1}
 .dots .arr{width:28px;height:28px;margin:0 10px;border-radius:50%;border:0;background:rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.15);font:700 22px/1 var(--sans);color:var(--ink);cursor:pointer;z-index:2}
 .dots{align-items:center}
 .dots{display:flex;justify-content:center;gap:7px;margin:10px 0 4px}
@@ -662,7 +666,7 @@ function paywall(){
  <div><span><b>How do I see my program?</b><p>Every plan is personalized and our fitness experts work hard to make sure you will love them. It normally takes a few hours to get access to your plan via email.</p></span></div>
  <div><span><b>Are there any device requirements?</b><p>To be able to access and use your plan, you need an iPhone with iOS 14.0 or later.</p></span></div></div>
  <h2 style="margin-top:28px">Maximize your results using our Easy-to-Use mobile app</h2>
- <div class="phwrap"><div class="carousel auto ph5">${['phone: workout list — “TaiChi: Awakening Vital Energy 54 kcal/7 min/Beginner”, “TaiChi: Harmonizing Mind and Body 46 kcal/6 min/Beginner”','phone: “Homeworkout” list','phone: “Activity” — Results, AVG. STEPS 2450, AVG. CALORIES 130','phone: “TaiChi: Stabilizing Energy Flow 54 kcal/7 min/Beginner”','phone: “TaiChi: Cultivating Lifeforce 54 kcal/7 min/Beginner”'].map((t,i)=>`<div style="flex:0 0 62%;scroll-snap-align:center">${ph(t,'min-height:300px;margin:0 auto',`P0${5+i}`)}</div>`).join('')}</div></div><div class="dots"></div>
+ <div class="phwrap"><div class="carousel auto ph5">${['phone: workout list — “TaiChi: Awakening Vital Energy 54 kcal/7 min/Beginner”, “TaiChi: Harmonizing Mind and Body 46 kcal/6 min/Beginner”','phone: “Homeworkout” list','phone: “Activity” — Results, AVG. STEPS 2450, AVG. CALORIES 130','phone: “TaiChi: Stabilizing Energy Flow 54 kcal/7 min/Beginner”','phone: “TaiChi: Cultivating Lifeforce 54 kcal/7 min/Beginner”'].map((t,i)=>`<div style="flex:0 0 calc(.95*(100cqw + 48px));scroll-snap-align:center">${ph(t,'min-height:300px;margin:0 auto',`P0${5+i}`)}</div>`).join('')}</div></div><div class="dots"></div>
  <h2 style="margin-top:28px">Our users love our plan</h2>
  ${trev('🥰','Margaret Collins','I’ve tried many fitness apps, but the Tai Chi Plan stands out for its emphasis on mindfulness. The slow, deliberate movements help me sync my breath with motion—something I never mastered in other workouts. After a stressful day, 20 minutes of this plan leaves me centered and refreshed. It’s like meditation in motion!')}
  ${trev('🤩','Susan Whitaker','As a retiree with knee issues, I worried about finding a workout I could stick to. The Tai Chi Plan’s seated modifications are a blessing! The instructor explains every detail, and I can adjust the intensity. Now, my grandkids join me—it’s become our bonding time!')}
@@ -677,18 +681,19 @@ function paywall(){
  <h2 style="margin-top:30px">100% Money-Back Guarantee</h2><div class="seal big"><i>30 DAY MONEY-BACK</i></div>
  <p class="left" style="font-size:15px">We are confident that our program will deliver for you, promising noticeable outcomes within a month! If you don't experience the desired results and can demonstrate compliance with our guidelines, we're committed to offering a full refund. Be sure to review our <u>Refund Policy</u> for all the necessary details.</p>
  <div class="foot"><p><a href="#">Privacy Policy</a>, <a href="#">Terms of Service</a>, <a href="#">Refund Policy</a></p><p><a href="#">Manage Privacy Preferences</a></p>${payLogos}<p class="co">[Company name, City, Country]</p></div></div>`}
-/* автокарусель как у WalkUp: листается сама каждые 3,5 с, точки под каруселью, после касания пауза 8 с */
+/* автокарусель как у WalkUp: листается сама каждые 3,5 с, точки под каруселью, после касания пауза 8 с; у телефонов центральная картинка 95% ширины (сам телефон около 70–75%), боковые уменьшены до 80% и придвинуты к центру */
 function autoCarousel(c){
  const items=[...c.children],box=c.closest('.phwrap')||c,dots=box.nextElementSibling,center=c.classList.contains('ph5');let idx=0,hold=0;
  dots.innerHTML=(center?'<button class="arr l" aria-label="Previous">‹</button>':'')+items.map((_,i)=>`<i data-i="${i}"></i>`).join('')+(center?'<button class="arr r" aria-label="Next">›</button>':'');
- const mark=i=>{idx=i;dots.querySelectorAll('i').forEach((d,k)=>d.classList.toggle('on',k===i))};
+ const cur=i=>center&&items.forEach((it,k)=>{it.classList.toggle('cur',k===i);it.classList.toggle('bl',k<i);it.classList.toggle('br',k>i)});
+ const mark=i=>{idx=i;cur(i);dots.querySelectorAll('i').forEach((d,k)=>d.classList.toggle('on',k===i))};
  const rel=it=>c.scrollLeft+it.getBoundingClientRect().left-c.getBoundingClientRect().left;
  const to=i=>{i=(i+items.length)%items.length;const it=items[i];c.scrollTo({left:center?rel(it)-(c.clientWidth-it.offsetWidth)/2:rel(it)-parseFloat(getComputedStyle(c).paddingLeft),behavior:'smooth'});mark(i)};
  mark(0);
  dots.onclick=e=>{const d=e.target.closest('i');if(d){hold=Date.now();to(+d.dataset.i)}};
  dots.querySelectorAll('.arr').forEach(b=>b.onclick=()=>{hold=Date.now();to(idx+(b.classList.contains('l')?-1:1))});
  c.addEventListener('pointerdown',()=>hold=Date.now());c.addEventListener('touchstart',()=>hold=Date.now(),{passive:true});
- c.addEventListener('scroll',()=>{const mid=c.scrollLeft+c.clientWidth/2;let b=0,bd=1e9;items.forEach((it,i)=>{const d=Math.abs(rel(it)+it.offsetWidth/2-mid);if(d<bd){bd=d;b=i}});if(Date.now()-hold<8000)mark(b)},{passive:true});
+ c.addEventListener('scroll',()=>{const mid=c.scrollLeft+c.clientWidth/2;let b=0,bd=1e9;items.forEach((it,i)=>{const d=Math.abs(rel(it)+it.offsetWidth/2-mid);if(d<bd){bd=d;b=i}});cur(b);if(Date.now()-hold<8000)mark(b)},{passive:true});
  const iv=setInterval(()=>{if(!c.isConnected)return clearInterval(iv);if(Date.now()-hold<8000||document.querySelector('.modal'))return;to(idx+1)},3500);
 }
 function bindPaywall(m){
