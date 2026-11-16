@@ -258,6 +258,22 @@ header{justify-content:space-between}
 .chk .rowkv{font-size:14px}
 .pm{border:1.5px solid var(--line);border-radius:18px;padding:14px;margin:10px 0;display:flex;align-items:center;gap:10px;font-weight:600}
 .pm.sel{border-color:var(--accent)}
+.carousel.auto{scrollbar-width:none}.carousel.auto::-webkit-scrollbar{display:none}
+.carousel.rv{margin:14px -24px 0;padding:0 24px 4px;scroll-padding:0 24px}
+.carousel.rv .rcard{flex:0 0 100%}
+.phwrap{position:relative}
+.carousel.ph5{padding:0 19% 4px}
+.carousel.ph5 img.ph.pic.cut{max-height:420px;width:100%;height:auto}
+.dots .arr{width:28px;height:28px;margin:0 10px;border-radius:50%;border:0;background:rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.15);font:700 22px/1 var(--sans);color:var(--ink);cursor:pointer;z-index:2}
+.dots{align-items:center}
+.dots{display:flex;justify-content:center;gap:7px;margin:10px 0 4px}
+.dots i{width:7px;height:7px;border-radius:50%;background:#C9CFD8;cursor:pointer;transition:all .2s}
+.dots i.on{background:var(--accent);width:18px;border-radius:4px}
+.pm .pmlogos{margin-left:auto;display:flex;gap:6px}
+.pm .pmlogos span{height:26px;min-width:40px;padding:0 6px;border:1px solid var(--line);border-radius:6px;background:#fff;display:grid;place-items:center}
+.steps2 li .btn{margin:4px 0 0 -48px;width:calc(100% + 48px);display:flex;align-items:center;justify-content:center;gap:10px;line-height:1.2;min-height:56px;color:#fff}
+.steps2 li .btn svg{flex:none}
+
 .pm .rb{width:20px;height:20px;border-radius:50%;border:2px solid var(--idle);flex:none}
 .pm.sel .rb{border:6px solid var(--accent)}
 .cardf{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 10px}
@@ -350,7 +366,7 @@ header{justify-content:space-between}
 .ticket .tl2{flex:1;font-size:13px;font-weight:600}
 .ticket .tiles{display:flex;gap:3px;align-items:center;font-weight:800}
 .ticket .tiles b{background:#0F202E;color:#fff;border-radius:6px;padding:4px 5px;font-size:15px;font-variant-numeric:tabular-nums;min-width:26px;text-align:center}
-.rcard{flex:0 0 84%;scroll-snap-align:start;background:#fff;border:1px solid var(--line);border-radius:var(--rc);padding:14px;text-align:left}
+.rcard{flex:0 0 100%;scroll-snap-align:start;background:#fff;border:1px solid var(--line);border-radius:var(--rc);padding:14px;text-align:left}
 .rcard h4{font-size:16px;margin-bottom:2px}
 .rcard .meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px}
 .rcard p{font-size:14px;font-weight:300;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
@@ -474,7 +490,7 @@ const BODY_CUR=['Slim','Mid-sized','Full-figured','Extended size'],BODY_TGT=['Th
 const bodyIdx=id=>{const L=id==='s09'?BODY_CUR:BODY_TGT,i=L.indexOf(S.answers[id]);return i<0?(id==='s09'?2:2):i+1};
 const wTxt=()=>`${S.w||89} ${S.wu}`, goalTxt=()=>`${S.goal||80} ${S.wu}`;
 /* как у WalkUp (OccasionResult): дней до цели = ceil(|вес − цель| / 0.14 кг в день); у нас всегда в кг — фунты переводим (0.14 кг ≈ 0.31 lb в день); дата цели = сегодня + дни */
-const goalDays=()=>Math.ceil(Math.round(Math.abs(wkg()-gkg())*1000)/1000/0.14);
+const goalDays=()=>{const d=Math.ceil(Math.round(Math.abs(wkg()-gkg())*1000)/1000/0.14);return d||28}; // цель = вес: у WalkUp дата = сегодня и одна точка; у нас 4 недели плана и ровная линия
 /* дробь месяцев между сегодня и датой цели — как dayjs diff 'month' (целые месяцы, вниз) */
 const monthDiff=(a,b)=>{let m=(b.getFullYear()-a.getFullYear())*12+b.getMonth()-a.getMonth();if(b.getDate()<a.getDate())m--;return m};
 /* график 033: шаблон и подписи зависят от направления (сбросить / набрать / держать) и от числа месяцев до цели */
@@ -484,7 +500,7 @@ function goalChart(){
  const SM=(goal.getFullYear()-now.getFullYear())*12+goal.getMonth()-now.getMonth(); // месяц цели от текущего
  const r1=v=>Math.round(v*10)/10, mo=monthDiff(now,goal);
  let tpl,pts,months;
- if(g===st){tpl='keep_weight';pts=[g];months=[M(0)]}
+ if(g===st){tpl='keep_weight';pts=[st,g];months=[M(0),M(1)]}
  else if(g>st){tpl='low_to_high';pts=[st,g];months=[M(0),M(SM)]}
  else if(mo<=0){tpl='high_to_low_two_other';pts=[st,g];months=[M(0),M(0),M(1)]}
  else if(mo===1){tpl='high_to_low_two';pts=[st,g];months=[0,1,2,3,4].map(M)}
@@ -516,7 +532,7 @@ function weekTable(withPeople){
  const W=[['6min<br>Upper body','7min<br>Full body','6min<br>Lower body','Rest','7min<br>Full body','8min<br>Lower body','5min<br>Full body'],
           ['5min<br>Full body','7min<br>Upper body','6min<br>Full body','Rest','7min<br>Full body','8min<br>Lower body','6min<br>Upper body'],
           ['7min<br>Full body','Rest','8min<br>Upper body','7min<br>Lower body','Rest','8min<br>Full body','6min<br>Full body']];
- return `<div class="wk"><table><tr><th></th>${[1,2,3,4,5,6,7].map(d=>`<th>Day ${d}</th>`).join('')}</tr>${W.map((r,i)=>`<tr><td class="w">WEEK ${i+1}</td>${r.map(c=>`<td class="${c==='Rest'?'r':''}">${c}</td>`).join('')}</tr>`).join('')}</table>${withPeople?`<div class="ppl">${ph('cut-out from the waist up: woman ~60 and man ~65 in light tai chi wear, arms spread wide in a tai chi pose, overlapping the table')}</div>`:''}</div>`}
+ return `<div class="wk"><table><tr><th></th>${[1,2,3,4,5,6,7].map(d=>`<th>Day ${d}</th>`).join('')}</tr>${W.map((r,i)=>`<tr><td class="w">WEEK ${i+1}</td>${r.map(c=>`<td class="${c==='Rest'?'r':''}">${c}</td>`).join('')}</tr>`).join('')}</table>${withPeople?`<div class="ppl">${ph('cut-out from the waist up: woman ~60 and man ~65 in light tai chi wear, arms spread wide in a tai chi pose, overlapping the table','','004')}</div>`:''}</div>`}
 
 // ---------- screens ----------
 // n — номер экрана WalkUp; p — счётчик «p/23» (у WalkUp числа идут с пропусками: инфо-экраны тоже съедают номер); type: q (одиночный, автопереход), m (мульти + CONTINUE), info, custom
@@ -569,7 +585,7 @@ const SCREENS=[
  render:()=>`<h2>When's your event?</h2><p class="sub">Once we know this, we'll be able to put together your plan to help you get in fit. Your data will not be shared with any third parties.</p><div class="field"><input type="date" id="dt" value="${S.event||iso(plus(92))}" style="font-size:18px"></div>`,
  cta:'CONTINUE',after:'<button class="link" id="skip">SKIP THIS QUESTION</button>',
  bind:m=>{const e=m.querySelector('#dt'),b=$('#cta');const v=()=>{S.event=e.value;b.disabled=!e.value};e.oninput=e.onchange=v;v();$('#skip').onclick=next}},
-{id:'s33',n:33,type:'info',cta:'CONTINUE',logic:'Как у WalkUp (OccasionResult). Дней до цели = ceil(|текущий вес − целевой| в кг / 0,14); фунты переводим в кг (0,14 кг ≈ 0,31 lb в день, план в фунтах и кг одинаковый; у WalkUp для lb ошибочно 0,14 lb в день); дата цели = сегодня + дни. Проверено на прогоне: 89 → 80 кг 10 ноября → 65 дней → 14 января 2027. Заголовок «{цель} {kg|lb} by {дата}». Шаблон графика: цель = вес — keep_weight (одна точка, текущий месяц); цель > вес — low_to_high (вес → цель, текущий месяц и месяц цели); цель < вес — по целым месяцам до цели: 0 — две точки, месяцы M, M, M+1; 1 — две точки, M…M+4; 2 — три точки (вес, вес − 4,2 с округлением, цель), M…M+4; 3 и больше — четыре точки (вес, вес − 4,2, цель + 4,2, цель), месяцы M, M+1, S−1, S, S+1, где S — месяц цели. Последняя точка — «Expected Result». Подсказка «Get ready to amaze everyone at …» — повод из 029; у WalkUp повод не подставился (на прогоне пусто), у нас подставляем, при «Other» и «No» — без хвоста.',
+{id:'s33',n:33,type:'info',cta:'CONTINUE',logic:'Как у WalkUp (OccasionResult). Дней до цели = ceil(|текущий вес − целевой| в кг / 0,14); фунты переводим в кг (0,14 кг ≈ 0,31 lb в день, план в фунтах и кг одинаковый; у WalkUp для lb ошибочно 0,14 lb в день); дата цели = сегодня + дни. Проверено на прогоне: 89 → 80 кг 10 ноября → 65 дней → 14 января 2027. Заголовок «{цель} {kg|lb} by {дата}». Шаблон графика: цель = вес — keep_weight: у WalkUp одна точка и дата = сегодня, у нас (наш выбор) дата = сегодня + 28 дней (длина плана), ровная линия из двух точек: текущий месяц → следующий; цель > вес — low_to_high (вес → цель, текущий месяц и месяц цели); цель < вес — по целым месяцам до цели: 0 — две точки, месяцы M, M, M+1; 1 — две точки, M…M+4; 2 — три точки (вес, вес − 4,2 с округлением, цель), M…M+4; 3 и больше — четыре точки (вес, вес − 4,2, цель + 4,2, цель), месяцы M, M+1, S−1, S, S+1, где S — месяц цели. Последняя точка — «Expected Result». Подсказка «Get ready to amaze everyone at …» — повод из 029; у WalkUp повод не подставился (на прогоне пусто), у нас подставляем, при «Other» и «No» — без хвоста.',
  html:()=>{const c=goalChart(),oc=S.answers.s29,tail=oc&&oc!=='No'&&oc!=='Other'?` at your ${oc.toLowerCase()}`:'';
  return `<h2>We believe this is the plan you'll ever need unlike any other.</h2><p class="sub" style="margin-bottom:6px">According to the information you have provided us, you'll achieve your goal weight of</p><h2>${goalTxt()} by ${fmtS(c.goal)}</h2><p class="sub" style="font-size:14px">Get ready to amaze everyone${tail}!</p>
  <div class="card">${c.svg}</div>`}},
@@ -596,14 +612,14 @@ const SCREENS=[
  render:()=>paywall(),bind:m=>{bindPaywall(m);exitModal()}},
 {id:'success',n:0,sec:-1,type:'custom',noCta:true,logic:'Не из WalkUp: экран после оплаты краулер не видел. Success как в walking-v3: аккаунта в приложении нет, поэтому без шага Sign in; доступ после покупки — общий раздел «Покупка и доступ в приложении» в черновике разработки. Под строкой «We also sent these steps to your email» — email с экрана email перед планом.',
  render:()=>`<img src="${ICON}" alt="" style="width:72px;height:72px;border-radius:18px;margin:10px auto 14px;display:block"><h1>Welcome!</h1><p class="sub">Your Tai Chi Walking plan is waiting in the app. Two steps and you’re in:</p>
- <ol class="steps2"><li><b>Download the app</b><a class="btn" href="${APP_URL}" target="_blank" rel="noopener">Download on the App Store</a></li><li><b>Start Day 1 — a 7-minute Tai Chi walk today</b><span>Open the app and tap your first Tai Chi walk. Go slowly — you can follow along at home.</span></li></ol>
+ <ol class="steps2"><li><b>Download the app</b><a class="btn" href="${APP_URL}" target="_blank" rel="noopener">${APPLE.replace('fill="#000"','fill="#fff"').replace('width="30" height="36"','width="18" height="22"')}Download on the App Store</a></li><li><b>Start Day 1 — a 7-minute Tai Chi walk today</b><span>Open the app and tap your first Tai Chi walk. Go slowly — you can follow along at home.</span></li></ol>
  <p class="fine" style="text-align:center;font-size:15px">We also sent these steps to your email:</p><p class="uem">${S.email||'jane.miller@gmail.com'}</p>`}
 ];
 
 // ---------- paywall ----------
 const PLANS=[
  {id:'w1',title:'7-DAY-TRIAL',full:'59.90',price:'5.99',dold:'8.56',day:'0.86',label:'7-day trial',per:'7-day'},
- {id:'w4',title:'4-WEEK PLAN',rib:'🎉 MOST POPULAR',bonus:'🎁 Bonus fat-burning walking classes',full:'61.71',price:'10.49',dold:'2.20',day:'0.37',label:'Regular 4-week trial',per:'4-week'},
+ {id:'w4',title:'4-WEEK PLAN',rib:'🎉 MOST POPULAR',full:'61.71',price:'10.49',dold:'2.20',day:'0.37',label:'Regular 4-week trial',per:'4-week'},
  {id:'w12',title:'12-WEEK PLAN',full:'79.45',price:'17.48',dold:'0.95',day:'0.21',label:'12-week plan',per:'12-week'}];
 const BILL={
  w1:'To avoid any disruption, you agree that the plan you selected will automatically be extended at the full price for successive renewal periods and you will be charged $59.99 every 4-week. Cancel anytime.',
@@ -632,33 +648,48 @@ function paywall(){
  <div class="cols"><div class="t">Body fat<b>${fatRange(bmi())}</b>Level<div class="seg5">${[1,2,3,4,5].map(i=>`<i class="${i<=3?'on':''}"></i>`).join('')}</div></div><div class="t">Body fat<b>${fatRange(tbmi())}</b>Level<div class="seg5">${[1,2,3,4,5].map(i=>`<i class="on"></i>`).join('')}</div></div></div></div>
  ${planBlock(false)}
  <h2 style="margin-top:30px">Our users meet their goals</h2>
- <div class="carousel">${rcard('Karen','A Gentle Way to Start Again','Aug. 10th','As someone new to tai chi, I was nervous at first. But this Tai Chi Plan made it so easy! The instructions are clear, the pace is gentle, and I never felt overwhelmed. Now I look forward to my daily practice—it’s truly beginner-friendly!')}
- ${rcard('Doris','A Little Less Sitting, a Little More Moving','Nov. 17th','Most evenings, I’d end up on the sofa, telling myself I’d exercise tomorrow. Starting at home made it easier to finally give Tai Chi walking a go. I’m still learning, but I don’t feel rushed to keep up. It’s become a little part of my day that helps me unwind and feel good about doing something for myself.')}
- ${rcard('David','Moving Feels Good Again','Oct. 1st','I used to wake up feeling stiff and take a while to get going. I wanted a gentle way to be more active, so I gave beginner Tai Chi walking a try. The slower pace suits me, and I like being able to ease into it. These days, I feel less stiff and more willing to get outside and move.','before/after: man ~55, grey henley and jeans vs black tee and shorts, beige hallway')}</div>
+ <div class="carousel auto rv">${rcard('Linda','A Gentle Way to Start Again','Aug. 10th','As someone new to tai chi, I was nervous at first. But this Tai Chi Plan made it so easy! The instructions are clear, the pace is gentle, and I never felt overwhelmed. Now I look forward to my daily practice—it’s truly beginner-friendly!')}
+ ${rcard('Patricia','A Little Less Sitting, a Little More Moving','Nov. 17th','Most evenings, I’d end up on the sofa, telling myself I’d exercise tomorrow. Starting at home made it easier to finally give Tai Chi walking a go. I’m still learning, but I don’t feel rushed to keep up. It’s become a little part of my day that helps me unwind and feel good about doing something for myself.')}
+ ${rcard('Richard','Moving Feels Good Again','Oct. 1st','I used to wake up feeling stiff and take a while to get going. I wanted a gentle way to be more active, so I gave beginner Tai Chi walking a try. The slower pace suits me, and I like being able to ease into it. These days, I feel less stiff and more willing to get outside and move.','before/after: man ~55, grey henley and jeans vs black tee and shorts, beige hallway')}</div><div class="dots"></div>
  <h2 style="margin-top:28px">people often ask</h2><div class="faq">
  <div><span><b>How is my plan created?</b><p>We use the answers you provided and our unique algorithms to target your program specifically to your individual needs and goals. Our programs are verified by experts, so you can rest assured that your program will work for you.</p></span></div>
  <div><span><b>How do I see my program?</b><p>Every plan is personalized and our fitness experts work hard to make sure you will love them. It normally takes a few hours to get access to your plan via email.</p></span></div>
  <div><span><b>Are there any device requirements?</b><p>To be able to access and use your plan, you need an iPhone with iOS 14.0 or later.</p></span></div></div>
  <h2 style="margin-top:28px">Maximize your results using our Easy-to-Use mobile app</h2>
- <div class="carousel">${['phone: workout list — “TaiChi: Awakening Vital Energy 54 kcal/7 min/Beginner”, “TaiChi: Harmonizing Mind and Body 46 kcal/6 min/Beginner”','phone: “Homeworkout” list','phone: “Activity” — Results, AVG. STEPS 2450, AVG. CALORIES 130','phone: “TaiChi: Stabilizing Energy Flow 54 kcal/7 min/Beginner”','phone: “TaiChi: Cultivating Lifeforce 54 kcal/7 min/Beginner”'].map((t,i)=>`<div style="flex:0 0 66%;scroll-snap-align:center">${ph(t,'min-height:300px;margin:0',`P0${5+i}`)}</div>`).join('')}</div>
+ <div class="phwrap"><div class="carousel auto ph5">${['phone: workout list — “TaiChi: Awakening Vital Energy 54 kcal/7 min/Beginner”, “TaiChi: Harmonizing Mind and Body 46 kcal/6 min/Beginner”','phone: “Homeworkout” list','phone: “Activity” — Results, AVG. STEPS 2450, AVG. CALORIES 130','phone: “TaiChi: Stabilizing Energy Flow 54 kcal/7 min/Beginner”','phone: “TaiChi: Cultivating Lifeforce 54 kcal/7 min/Beginner”'].map((t,i)=>`<div style="flex:0 0 62%;scroll-snap-align:center">${ph(t,'min-height:300px;margin:0 auto',`P0${5+i}`)}</div>`).join('')}</div></div><div class="dots"></div>
  <h2 style="margin-top:28px">Our users love our plan</h2>
- ${trev('🥰','Leo Dean','I’ve tried many fitness apps, but the Tai Chi Plan stands out for its emphasis on mindfulness. The slow, deliberate movements help me sync my breath with motion—something I never mastered in other workouts. After a stressful day, 20 minutes of this plan leaves me centered and refreshed. It’s like meditation in motion!')}
- ${trev('🤩','Brandon Lloyd','As a retiree with knee issues, I worried about finding a workout I could stick to. The Tai Chi Plan’s seated modifications are a blessing! The instructor explains every detail, and I can adjust the intensity. Now, my grandkids join me—it’s become our bonding time!')}
- ${trev('🥰','Lewis','My doctor recommended Tai Chi for balance, and this plan delivers. The step-by-step breakdowns (like ‘weight shift drills’) made it easy to learn. Within weeks, I noticed fewer stumbles and better posture. Even my physical therapist approved!')}
+ ${trev('🥰','Margaret Collins','I’ve tried many fitness apps, but the Tai Chi Plan stands out for its emphasis on mindfulness. The slow, deliberate movements help me sync my breath with motion—something I never mastered in other workouts. After a stressful day, 20 minutes of this plan leaves me centered and refreshed. It’s like meditation in motion!')}
+ ${trev('🤩','Susan Whitaker','As a retiree with knee issues, I worried about finding a workout I could stick to. The Tai Chi Plan’s seated modifications are a blessing! The instructor explains every detail, and I can adjust the intensity. Now, my grandkids join me—it’s become our bonding time!')}
+ ${trev('🥰','Carol','My doctor recommended Tai Chi for balance, and this plan delivers. The step-by-step breakdowns (like ‘weight shift drills’) made it easy to learn. Within weeks, I noticed fewer stumbles and better posture. Even my physical therapist approved!')}
  <div class="laurel">🌿 15+ million 🌿</div><p>started their walking journey with us</p>
  <div class="rate"><div class="stars">★★★★★</div><b>4.8 out of 5</b><a class="store" href="${APP_URL}" target="_blank" rel="noopener">${APPLE}<span>App Store</span></a><p class="fine" style="text-align:center;margin:0">over 22.2K 5-star ratings</p></div>
  <h2 style="margin-top:24px">What you will get</h2><p class="left" style="margin-bottom:8px">Our program combines AI-powered insights with fitness science to make every walk count. Designed by movement experts and data scientists, ${BRAND} ensures your walking routine is effective, enjoyable, and tailored to you.</p>
  <div class="devpill">💡 Mobile phone📱 + Pad + PC 💻 All Available</div>${ph('devices mock-up: monitor + tablet + phone with the Depfit app','min-height:180px','P10')}
  <ul class="list"><li><b>Smart Step Tracking:</b> Precision step counting with real-time feedback, so you never miss progress.</li><li><b>AI Music Sync:</b> Automatically matches music tempo to your walking pace, keeping you motivated and in rhythm.</li><li><b>Personalized Plans:</b> Adapts to your fitness level, goals (weight loss, endurance, recovery), and even weather conditions.</li><li><b>Data-Driven Coaching:</b> Analyzes your walking patterns (speed, distance, calories) to optimize future sessions.</li><li><b>50+ Guided Walks:</b> From scenic virtual routes to power-walking challenges, all with expert audio guidance.</li></ul>
- ${weekTable(false)}
+ ${weekTable(true)}
  ${planBlock(true)}
  <h2 style="margin-top:30px">100% Money-Back Guarantee</h2><div class="seal big"><i>30 DAY MONEY-BACK</i></div>
  <p class="left" style="font-size:15px">We are confident that our program will deliver for you, promising noticeable outcomes within a month! If you don't experience the desired results and can demonstrate compliance with our guidelines, we're committed to offering a full refund. Be sure to review our <u>Refund Policy</u> for all the necessary details.</p>
  <div class="foot"><p><a href="#">Privacy Policy</a>, <a href="#">Terms of Service</a>, <a href="#">Refund Policy</a></p><p><a href="#">Manage Privacy Preferences</a></p>${payLogos}<p class="co">[Company name, City, Country]</p></div></div>`}
+/* автокарусель как у WalkUp: листается сама каждые 3,5 с, точки под каруселью, после касания пауза 8 с */
+function autoCarousel(c){
+ const items=[...c.children],box=c.closest('.phwrap')||c,dots=box.nextElementSibling,center=c.classList.contains('ph5');let idx=0,hold=0;
+ dots.innerHTML=(center?'<button class="arr l" aria-label="Previous">‹</button>':'')+items.map((_,i)=>`<i data-i="${i}"></i>`).join('')+(center?'<button class="arr r" aria-label="Next">›</button>':'');
+ const mark=i=>{idx=i;dots.querySelectorAll('i').forEach((d,k)=>d.classList.toggle('on',k===i))};
+ const rel=it=>c.scrollLeft+it.getBoundingClientRect().left-c.getBoundingClientRect().left;
+ const to=i=>{i=(i+items.length)%items.length;const it=items[i];c.scrollTo({left:center?rel(it)-(c.clientWidth-it.offsetWidth)/2:rel(it)-parseFloat(getComputedStyle(c).paddingLeft),behavior:'smooth'});mark(i)};
+ mark(0);
+ dots.onclick=e=>{const d=e.target.closest('i');if(d){hold=Date.now();to(+d.dataset.i)}};
+ dots.querySelectorAll('.arr').forEach(b=>b.onclick=()=>{hold=Date.now();to(idx+(b.classList.contains('l')?-1:1))});
+ c.addEventListener('pointerdown',()=>hold=Date.now());c.addEventListener('touchstart',()=>hold=Date.now(),{passive:true});
+ c.addEventListener('scroll',()=>{const mid=c.scrollLeft+c.clientWidth/2;let b=0,bd=1e9;items.forEach((it,i)=>{const d=Math.abs(rel(it)+it.offsetWidth/2-mid);if(d<bd){bd=d;b=i}});if(Date.now()-hold<8000)mark(b)},{passive:true});
+ const iv=setInterval(()=>{if(!c.isConnected)return clearInterval(iv);if(Date.now()-hold<8000||document.querySelector('.modal'))return;to(idx+1)},3500);
+}
 function bindPaywall(m){
  startTimer();
  m.querySelectorAll('.buy').forEach(b=>b.onclick=checkout);
  m.querySelectorAll('.more').forEach(b=>b.onclick=()=>{const c=b.closest('.rcard');c.classList.toggle('open');b.textContent=c.classList.contains('open')?'Show Less ⌃':'Show All ⌄'});
+ m.querySelectorAll('.carousel.auto').forEach(autoCarousel);
  m.querySelectorAll('.pl').forEach(c=>c.onclick=()=>{S.plan=c.dataset.p;m.querySelectorAll('.pl').forEach(x=>x.classList.toggle('sel',x.dataset.p===S.plan));m.querySelectorAll('.bill').forEach(x=>x.textContent=BILL[S.plan])});
 }
 function comp(t,files){const p=document.querySelector('#main .src');if(!p)return;p.querySelector('.srct').textContent=t;p.querySelector('.srci').innerHTML=files.map(f=>`<img src="${ORIG+f}" alt="">`).join('');p.scrollTop=0}
@@ -672,8 +703,8 @@ function checkout(){
  ${p.bonus?'<div class="rowkv"><span>Additional fat-burning walking classes</span><b class="green">FREE</b></div>':''}
  <div class="rowkv"><b>Total today:</b><b>$${p.price} <span style="font-weight:400;color:var(--muted)">for ${p.per}</span></b></div><p class="red" style="font-size:14px;text-align:right">🔥 You just saved $${off.toFixed(2)} (${pct}% off)</p>
  <h3 style="margin:18px 0 2px;font-size:17px">Select your payment method</h3><p class="fine" style="margin-top:0">✓ All transactions are secure and encrypted</p>
- <div class="pm" data-m="pp"><span class="rb"></span>One-click payment <span style="margin-left:auto;font-weight:800;color:#1B3D8F">PayPal · G Pay</span></div>
- <div class="pm sel" data-m="card"><span class="rb"></span>Credit card <span style="margin-left:auto;font-size:12px;color:var(--muted)">VISA · Mastercard · Maestro</span></div>
+ <div class="pm" data-m="pp"><span class="rb"></span>One-click payment <span class="pmlogos"><span><svg viewBox="0 0 24 24" width="18" height="18"><path fill="#003087" d="M7.3 21.5H3.6c-.3 0-.5-.3-.4-.5L5.9 3.4c.1-.4.4-.7.8-.7h6.6c3.3 0 5.4 1.7 4.9 4.9-.6 3.8-3.2 5.6-6.7 5.6H9.6c-.4 0-.7.3-.8.7z"/><path fill="#009CDE" d="M19.4 8.1c-.6 3.6-3.1 5.4-6.6 5.4h-1.5c-.4 0-.7.3-.8.7l-1 6.5-.3 1.6c0 .3.2.5.4.5h2.9c.4 0 .7-.3.7-.6l.6-3.8c.1-.4.4-.6.7-.6h.5c3 0 5.3-1.2 6-4.8.3-1.6.1-2.9-.6-3.8z"/></svg></span><span><svg viewBox="0 0 40 16" width="38" height="16"><text x="0" y="13" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="700"><tspan fill="#4285F4">G</tspan><tspan fill="#5F6368" dx="2">Pay</tspan></text></svg></span></span></div>
+ <div class="pm sel" data-m="card"><span class="rb"></span>Credit card <span class="pmlogos"><span><svg viewBox="0 0 40 14" width="36" height="13"><text x="20" y="12" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-style="italic" font-weight="900" fill="#1A1F71">VISA</text></svg></span><span><svg viewBox="0 0 32 20" width="28" height="18"><circle cx="12" cy="10" r="8" fill="#EB001B"/><circle cx="20" cy="10" r="8" fill="#F79E1B"/><path d="M16 3.6a8 8 0 0 1 0 12.8 8 8 0 0 1 0-12.8z" fill="#FF5F00"/></svg></span><span><svg viewBox="0 0 32 20" width="28" height="18"><circle cx="12" cy="10" r="8" fill="#EB001B"/><circle cx="20" cy="10" r="8" fill="#00A2E5"/><path d="M16 3.6a8 8 0 0 1 0 12.8 8 8 0 0 1 0-12.8z" fill="#7375CF"/></svg></span></span></div>
  <div class="cardf"><div>Card number</div><div>Expiry date<br><small>Front of card in MM/YY format</small></div><div>Security code<br><small>3 digits on back of card</small></div></div>
  <button class="btn" id="paid">CONTINUE</button><p class="fine" style="text-align:center">Payment form placeholder (prototype)</p></div>`;
  document.body.appendChild(d);
