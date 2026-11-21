@@ -103,7 +103,7 @@ const FLOWS = {
             ['q1','2. Question 1 of 40','same','Без изменений.']]},
   C:{name:'C — кнопка старта + пол плашками', what:'Первый экран — копия «Ready when you are», но вместо Male / Female одна кнопка «Start test». Второй экран — выбор пола горизонтальными плашками в стиле экранов вопросов. Дальше тест как обычно.',
      steps:[['startBtn','1. Ready when you are · одна кнопка','new','Копия второго экрана A. Убрать «To begin, choose:» и Male / Female, поставить одну синюю кнопку «Start test» внизу.'],
-            ['gender','2. Выбор пола плашками','new','Новый экран по сетке экрана вопроса: белая карточка, заголовок, три плашки с радио, кнопка Next (серая, пока нет выбора). Счётчика «Question N of 40» нет.'],
+            ['gender','2. Выбор пола плашками','new','Новый экран по сетке экрана вопроса: белая карточка, заголовок, две плашки Women / Men, варианта «не отвечать» нет. Кнопки Next нет: нажатие на плашку сразу ведёт к вопросу 1. Счётчика «Question N of 40» нет.'],
             ['q1','3. Question 1 of 40','same','Без изменений.']]},
 };
 
@@ -131,10 +131,9 @@ function screen(kind, hl){
     }
     case 'gender': return `<div class="scr q">${hdr}<div class="card${H()}">
         <h2>What is your gender?</h2>
-        <div class="opts" data-opts>
-          ${['Women','Men','Don’t want to answer'].map(o=>`<button class="opt"><span class="rd"></span>${o}</button>`).join('')}
-        </div>
-        <button class="btn mt" data-next disabled>Next</button></div></div>`;
+        <div class="opts" data-opts data-auto>
+          ${['Women','Men'].map(o=>`<button class="opt"><span class="rd"></span>${o}</button>`).join('')}
+        </div></div></div>`;
     case 'q1': return `<div class="scr q">${hdr}<div class="card">
         <p class="qn">Question 1 of 40</p><div class="qbar"><i></i></div>
         <h2>Anna is older than Ben. Ben is older than Carl. Who is the youngest?</h2>
@@ -181,7 +180,9 @@ function show(seq, i){
   }
   ph.querySelectorAll('[data-go]').forEach(b=>b.onclick=next);
   const opts = ph.querySelectorAll('[data-opts] .opt'), nb = ph.querySelector('[data-next]');
-  opts.forEach(o=>o.onclick=()=>{opts.forEach(x=>x.classList.remove('sel'));o.classList.add('sel');nb.disabled=false;});
+  const auto = ph.querySelector('[data-auto]');
+  opts.forEach(o=>o.onclick=()=>{opts.forEach(x=>x.classList.remove('sel'));o.classList.add('sel');
+    if (auto){ opts.forEach(x=>x.onclick=null); setTimeout(next,250); } else nb.disabled=false;});
   if (nb) nb.onclick=next;
 }
 renderTabs(); renderBoard(); startLive('C');
