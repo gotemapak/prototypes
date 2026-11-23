@@ -1,0 +1,20 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Certificates — 16 types</title>
+<style>:root{--bg:#edf3fe;--card:#fff;--ink:#131a35;--mute:#5b6480;--acc:#2168ff;--line:#dde5f3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11141c;--card:#1b1f2b;--ink:#e8ebf3;--mute:#9aa3bb;--acc:#7fa4ff;--line:#2b3142}}
+:root[data-theme="dark"]{--bg:#11141c;--card:#1b1f2b;--ink:#e8ebf3;--mute:#9aa3bb;--acc:#7fa4ff;--line:#2b3142}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,-apple-system,sans-serif}main{max-width:1200px;margin:0 auto;padding:24px 16px 60px}
+h1{font-size:22px;margin:0 0 6px}.m{color:var(--mute)}.note{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:12px 0 18px}
+.note b{color:var(--acc)}.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:16px}
+.c{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px}.c h3{margin:2px 4px 8px;font-size:14px}
+.fr{position:relative;width:100%;aspect-ratio:1123/794;overflow:hidden;border-radius:8px}.fr iframe{position:absolute;left:0;top:0;width:1163px;height:834px;border:0;transform-origin:0 0}</style></head>
+<body><main><h1>Сертификаты — 16 типов</h1>
+<div class="note">Шаблон один. По типу меняются только <b>название типа</b> и <b>строка со сторонами</b>. Поля в квадратных скобках — <b>[Email]</b>, <b>[Serial number]</b>, <b>[Date]</b> — подставляет сервер при выдаче. На пейволле email заблюрен, на success-странице виден.</div>
+<div class="g" id="g"></div></main>
+<script>
+var T=[["the-strategist", "The Strategist", "Quiet · Visionary · Logic · Planner"], ["the-inventor", "The Inventor", "Quiet · Visionary · Logic · Flexible"], ["the-captain", "The Captain", "Social · Visionary · Logic · Planner"], ["the-innovator", "The Innovator", "Social · Visionary · Logic · Flexible"], ["the-guide", "The Guide", "Quiet · Visionary · Heart · Planner"], ["the-dreamer", "The Dreamer", "Quiet · Visionary · Heart · Flexible"], ["the-mentor", "The Mentor", "Social · Visionary · Heart · Planner"], ["the-spark", "The Spark", "Social · Visionary · Heart · Flexible"], ["the-anchor", "The Anchor", "Quiet · Grounded · Logic · Planner"], ["the-keeper", "The Keeper", "Quiet · Grounded · Heart · Planner"], ["the-organizer", "The Organizer", "Social · Grounded · Logic · Planner"], ["the-host", "The Host", "Social · Grounded · Heart · Planner"], ["the-problem-solver", "The Problem-Solver", "Quiet · Grounded · Logic · Flexible"], ["the-artist", "The Artist", "Quiet · Grounded · Heart · Flexible"], ["the-go-getter", "The Go-Getter", "Social · Grounded · Logic · Flexible"], ["the-charmer", "The Charmer", "Social · Grounded · Heart · Flexible"]];
+var g=document.getElementById('g');
+T.forEach(function(t){var c=document.createElement('div');c.className='c';
+c.innerHTML='<h3>'+t[1]+' — '+t[0]+'</h3><div class="fr"><iframe loading="lazy" title="'+t[1]+'" src="certificate.html?type='+encodeURIComponent(t[1])+'&sides='+encodeURIComponent(t[2])+'"></iframe></div>';g.appendChild(c);});
+function fit(){document.querySelectorAll('.fr').forEach(function(f){f.querySelector('iframe').style.transform='translate(-20px,-20px) scale('+(f.clientWidth/1123)+')';});}
+addEventListener('resize',fit);setTimeout(fit,50);fit();
+</script></body></html>

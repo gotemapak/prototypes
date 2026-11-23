@@ -1,0 +1,806 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Depfit — tai chi walking prototype v1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FFFFFF; --card:#FFFFFF; --ink:#0F202E; --text:#414142; --muted:#8A8A8E; --line:#E6E6E6; --idle:#BCBCBC;
+  --accent:#FF2D55; --accent-top:#FF2D55; --accent-bot:#FF2D55; --accent-ink:#FFFFFF; --accent-soft:#FFF0F3; --accent-track:#FFD5DD; --coral:#FF5E50; --coral-soft:#FBB9B4; --lime:#3DBE6E; --lime-ink:#23994F; --lime-soft:#E8F7EE; /* один зелёный на всю воронку, как в walking-v3 */
+  --dot:#E3E6EC; --ok:#3DBE6E; --star:#FFC107; --zebra:#FAFBF6; --warn:#FF2D55;
+  --grad:linear-gradient(180deg,var(--accent-top),var(--accent-bot));
+  --r:14px; --rc:16px; --serif:-apple-system,BlinkMacSystemFont,"SF Pro Display",Inter,system-ui,sans-serif; --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,Segoe UI,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#F2F2F4;color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.app{max-width:440px;min-height:100vh;margin:0 auto;background:var(--bg);position:relative;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:12px;padding:12px 16px 0;min-height:44px}
+.back{width:36px;height:36px;border:0;background:transparent;font-size:30px;line-height:1;color:var(--idle);cursor:pointer}
+.back[hidden]{visibility:hidden;display:block}
+.logo,.count{display:none}
+.bar{display:none}
+.sections{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;padding:10px 24px 0;min-height:16px}
+.sections i{width:6px;height:6px;border-radius:50%;background:var(--dot)}
+.sections i.on{background:var(--accent)}
+main{flex:1;padding:24px 24px 130px;text-align:center}
+h1,h2{font-family:var(--sans);font-weight:800;color:var(--ink);letter-spacing:-.01em}
+h1{font-size:30px;line-height:1.3;margin-bottom:12px}
+h2{font-size:28px;line-height:1.3;margin-bottom:12px}
+.sub{color:var(--text);font-weight:300;font-size:16px;line-height:1.55;margin:0 auto 24px;max-width:340px}
+.sub b{font-weight:700;color:var(--ink)}.sub b.red{color:var(--accent)}
+p{color:var(--text)}
+.opts{display:flex;flex-direction:column;gap:16px;text-align:left}
+.opt{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:54px;padding:14px 16px 14px 18px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);font:600 16px var(--sans);color:var(--ink);text-align:left;cursor:pointer;transition:border-color .15s}
+.opt:hover{border-color:#D0D0D0}
+.opt.sel{border-color:var(--accent);background:var(--card)}
+.opt .box{order:2;width:22px;height:22px;border:2px solid var(--idle);border-radius:50%;flex:none;display:grid;place-items:center;margin-left:auto}
+.opt.sel .box{border-color:var(--accent)}
+.opt.sel .box:after{content:"";width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.opts.multi .opt .box{border-radius:7px}
+.opts.multi .opt.sel .box{background:var(--accent)}
+.opts.multi .opt.sel .box:after{width:5px;height:10px;border-radius:0;background:none;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.opt small{display:block;color:var(--muted);font-size:14px;font-weight:400}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.agecard{background:var(--card);border:1px solid var(--line);border-radius:var(--rc);overflow:hidden;cursor:pointer;font:inherit;color:inherit;padding:0;text-align:left;transition:border-color .15s}
+.agecard.sel,.agecard:hover{border-color:var(--accent)}
+.agecard .ph{aspect-ratio:4/5;border-radius:0;margin:0}
+.agecard>span{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;font-weight:700;background:var(--grad);color:#fff}
+.ph{background:linear-gradient(160deg,#F4F4F6,#E7E7EB);border-radius:var(--rc);display:flex;align-items:flex-end;padding:10px;color:#8A8A8E;font-size:12px;line-height:1.3;margin:6px 0 20px;min-height:120px;text-align:left}
+.ph b{font-weight:700}
+img.ph.pic{display:block;width:100%;height:auto;min-height:0!important;padding:0;background:none;object-fit:cover;aspect-ratio:1200/780}
+img.ph.pic.cut{aspect-ratio:auto;object-fit:contain;max-height:300px}
+img.thumb.pic{padding:0;background:none;object-fit:cover}
+.agec img.ph.pic{aspect-ratio:1;object-fit:cover}
+.zones img.ph.pic{max-height:none;height:100%;object-fit:contain}
+.ng img.ph.pic{aspect-ratio:600/900;height:auto}
+.cta{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:440px;padding:12px 24px calc(28px + env(safe-area-inset-bottom));background:linear-gradient(rgba(255,255,255,0),#fff 30%)}
+.btn{display:block;width:100%;min-height:48px;border:0;border-radius:var(--r);background:var(--grad);color:var(--accent-ink);font:600 16px var(--sans);cursor:pointer;box-shadow:0 8px 20px rgba(255,45,85,.28)}
+.btn:disabled{background:#FFB8C6;box-shadow:none;cursor:default}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:none;font-weight:600;margin-top:12px}
+.note{background:var(--card);border:1px solid var(--line);border-radius:var(--rc);padding:16px 18px;margin:16px 0;text-align:left}
+.big{font-family:var(--sans);font-size:44px;line-height:1.1;color:var(--accent);font-weight:800}
+.cite{font-size:13px;color:var(--muted);margin-top:8px}
+.field{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:0 20px;min-height:56px;margin-bottom:16px;text-align:left}
+.field:focus-within{border-color:var(--accent)}
+.field{min-width:0}
+.field input{flex:1;width:100%;border:0;outline:0;font:700 22px var(--sans);background:transparent;color:var(--ink);min-width:0}
+.field label{color:var(--muted);font-size:16px}
+.seg{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:3px;margin-bottom:20px}
+.seg button{border:0;background:transparent;padding:8px 20px;border-radius:var(--r);font:600 15px var(--sans);color:var(--muted);cursor:pointer}
+.seg button.on{background:var(--grad);color:#fff}
+.bmi{position:relative;height:8px;border-radius:4px;background:linear-gradient(90deg,#4BCBF6,#3DBE6E 35%,#FFC107 65%,#FF2D55);margin:34px 0 8px}
+.bmi i{position:absolute;top:-32px;transform:translateX(-50%);background:var(--ink);color:#fff;font:700 13px var(--sans);padding:3px 9px;border-radius:10px;white-space:nowrap}
+.bmi i:after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--ink);border-bottom:0}
+.scale{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0;text-align:left}
+.kv div{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 14px;font-size:14px;color:var(--muted)}
+.kv b{display:block;color:var(--ink);font-size:18px;font-weight:800}
+.steps{list-style:none;margin:24px 0;text-align:left}
+.steps li{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--line);font-weight:600}
+.steps li span{color:var(--muted);font-size:14px;font-weight:400}
+.steps li.done span{color:var(--accent);font-weight:700}
+.track{height:4px;background:#E6E6E6;border-radius:2px;overflow:hidden;margin-top:8px}
+.track i{display:block;height:100%;width:0;background:var(--accent);transition:width .6s}
+.review{background:var(--card);border:1px solid var(--line);border-radius:var(--rc);padding:16px;margin:12px 0;text-align:left}
+.review p{font-size:15px;font-weight:300;line-height:1.6}
+.review footer{margin-top:10px;font-size:14px;color:var(--muted);display:flex;align-items:center;gap:10px}
+.av{width:44px;height:44px;border-radius:50%;background:#EDEDF0;flex:none;display:grid;place-items:center;font-size:10px;color:#8A8A8E}
+.stars{color:var(--star);letter-spacing:3px;font-size:17px}
+svg.chart{width:100%;height:auto;margin:8px 0 6px}
+.sticky{position:sticky;top:0;z-index:5;background:var(--grad);color:#fff;margin:-24px -24px 20px;padding:10px 24px;display:flex;align-items:center;justify-content:space-between;font-size:15px;font-weight:600}
+.sticky b{font-variant-numeric:tabular-nums;font-size:18px}
+.nowgoal{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.nowgoal div{background:var(--card);border:1px solid var(--line);border-radius:var(--rc);padding:10px;text-align:center;font-size:14px;color:var(--muted)}
+.nowgoal .ph{min-height:150px;margin:0 0 8px}
+.nowgoal b{display:block;color:var(--ink);font-size:16px}
+.plan{border:2px solid var(--accent);background:var(--card);border-radius:var(--rc);padding:18px;margin:16px 0;position:relative;text-align:left}
+.plan .tag{position:absolute;top:-12px;left:16px;background:var(--grad);color:#fff;font-size:12px;font-weight:700;padding:3px 12px;border-radius:12px}
+.plan .row{display:flex;justify-content:space-between;align-items:baseline}
+.plan .price{font-size:34px;font-weight:800}
+.plan s{color:var(--muted);font-size:16px}
+.fine{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5;text-align:left}
+.list{list-style:none;margin:10px 0;text-align:left}
+.list li{padding:9px 0 9px 30px;position:relative;font-weight:500}
+.list li:nth-child(odd){background:var(--zebra)}
+.list li:before{content:"";position:absolute;left:8px;top:15px;width:12px;height:7px;border:solid var(--ok);border-width:0 0 2px 2px;transform:rotate(-45deg)}
+details{border-bottom:1px solid var(--line);padding:14px 0;text-align:left}
+summary{font-weight:700;cursor:pointer}
+details p{color:var(--text);margin-top:8px;font-size:15px;font-weight:300}
+.pay{display:flex;gap:8px;justify-content:center;margin:12px 0;font-size:12px;color:var(--muted)}
+.pay span{border:1px solid var(--line);border-radius:8px;padding:4px 8px;background:var(--card)}
+.src{display:none;margin:22px 0 0;padding:12px 14px;border:1px dashed #C9C9CF;border-radius:12px;background:#F6F6F8;font-size:13px;color:#555;line-height:1.45;text-align:left}
+body.showsrc .src{display:block}
+.toggle{position:fixed;right:12px;top:12px;z-index:50;background:var(--ink);color:#fff;border:0;border-radius:20px;padding:8px 12px;font:500 13px var(--sans);cursor:pointer;opacity:.85}
+.jump{position:fixed;right:12px;top:52px;z-index:50;font:13px var(--sans);max-width:150px}
+@media (max-width:700px){.toggle{top:auto;right:auto;left:10px;bottom:96px;padding:6px 10px;font-size:12px;opacity:.7}.jump{display:none}}
+.modal{position:fixed;inset:0;background:rgba(15,32,46,.5);display:flex;align-items:flex-end;justify-content:center;z-index:40}
+.sheet{background:#fff;width:100%;max-width:440px;border-radius:32px 32px 0 0;padding:26px 24px 28px;text-align:center}
+.mock{border:1.5px dashed #D0D0D6;border-radius:var(--rc);padding:18px;text-align:center;color:var(--muted);font-size:15px;margin:16px 0}
+
+/* ---------- v3: структура WalkFit indoor в стиле v2 ---------- */
+header{justify-content:space-between}
+.logo{display:flex;align-items:center;gap:8px;height:30px}.logo img{height:26px;display:block}.logo img.ic{height:30px;width:30px;border-radius:8px}
+.count{display:block;min-width:36px;text-align:right;font-size:14px;font-weight:600;color:var(--muted)}
+.bar{display:block;height:4px;background:var(--line);margin:10px 16px 0;border-radius:2px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--lime);border-radius:2px;transition:width .3s}
+.sections{display:none}
+.btn{text-transform:none;letter-spacing:0;font-weight:600}
+.link{display:block;margin:14px auto 0;background:none;border:0;font:600 14px var(--sans);color:var(--muted);text-transform:uppercase;letter-spacing:.04em;cursor:pointer}
+.opt .box{order:0;margin-left:0}
+.opt .lbl{flex:1}
+.opt .emo{font-size:26px;line-height:1;flex:none}
+.thumb{width:56px;height:56px;border-radius:14px;background:linear-gradient(160deg,#F4F4F6,#E7E7EB);font-size:9px;line-height:1.15;color:#8A8A8E;display:grid;place-items:center;text-align:center;padding:4px;flex:none;font-weight:400}
+.sig{display:flex;gap:3px;align-items:flex-end;flex:none}
+.sig i{width:5px;background:var(--line);border-radius:1px}
+.sig i.on{background:var(--accent)}
+.sum2 .sig i:not(.on){background:var(--accent);opacity:.25}
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.chips .opt{width:auto;min-height:44px;padding:10px 16px;justify-content:center;text-align:center}
+.chips .box,.zones .box{display:none}
+.zones{display:grid;grid-template-columns:1fr 1.15fr;gap:14px;align-items:stretch}
+.zones .ph{margin:0;min-height:100%}
+.zones .opts{gap:10px}
+.zones .opt{justify-content:center;text-align:center;min-height:46px;padding:10px}
+.agegrid{display:grid;grid-template-columns:1fr 1fr;gap:18px 14px;margin-top:8px}
+.agec{background:none;border:0;cursor:pointer;font:inherit;padding:0}
+.agec .ph{aspect-ratio:1;border-radius:50%;margin:0 0 -16px;min-height:0;align-items:center;justify-content:center;text-align:center}
+.agec>span{position:relative;display:inline-flex;gap:8px;align-items:center;padding:8px 18px;border-radius:20px;background:var(--grad);color:#fff;font-weight:700}
+.kicker{font-size:13px;font-weight:700;letter-spacing:.12em;color:var(--accent);margin:-6px 0 18px}
+.left{text-align:left}
+.left .sub{margin-left:0}
+.hint{background:#FFF8EC;border-radius:var(--rc);padding:14px 16px;text-align:left;margin-top:8px;font-size:15px}
+.hint b{display:block;margin-bottom:4px;color:var(--ink)}
+.err{color:var(--warn);font-size:14px;min-height:20px;margin:-6px 0 8px;text-align:left}
+.field.big input{font-size:34px;text-align:center}
+.field.big{justify-content:center}
+.stat3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0 12px}
+.stat3 div{background:var(--accent-soft);border-radius:16px;padding:10px 6px;font-size:12px;color:var(--muted);text-align:center}
+.stat3 b{display:block;color:var(--ink);font-size:16px}
+.weekrow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:10px;color:var(--muted);text-align:center;margin:6px 0}
+.weekrow i{display:grid;place-items:center;width:30px;height:30px;margin:0 auto 3px;border-radius:50%;border:2px solid var(--accent-track);font-style:normal;font-size:11px;color:var(--ink)}
+.weekrow i.d{background:var(--accent);border-color:var(--accent);color:#fff}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--rc);padding:16px;margin:12px 0;text-align:left}
+.rowkv{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.rowkv:last-child{border-bottom:0}
+.rowkv b{color:var(--ink)}
+.risk{background:var(--accent-soft);border-radius:var(--rc);padding:14px 16px;text-align:left;font-size:14px}
+.risk b{display:block;color:var(--ink);margin-bottom:4px}
+.ring{width:170px;height:170px;margin:6px auto 10px;position:relative}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-size:40px;font-weight:800;color:var(--ink)}
+.carousel{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;margin:14px -24px 0;padding:0 24px 8px}
+.carousel .review{flex:0 0 82%;scroll-snap-align:start;margin:0}
+.pill{display:inline-flex;gap:8px;align-items:center;background:var(--lime-soft);color:var(--lime-ink);font-size:13px;font-weight:800;letter-spacing:.04em;padding:8px 14px;border-radius:20px;margin:4px 0 14px}
+.red{color:var(--accent)}
+.green{color:var(--lime-ink)}
+.splash{position:fixed;inset:0;z-index:30;background:#fff;color:var(--ink);overflow:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:32px}
+.splash small{font-size:18px;color:var(--text);position:relative}
+.splash img.lg{height:44px;margin:8px 0 28px;position:relative}
+.splash:before,.splash:after{content:"";position:absolute;border-radius:50%;right:-120px;bottom:-140px;width:360px;height:360px;background:var(--coral-soft)}
+.splash:after{right:-170px;bottom:-170px;width:330px;height:330px;background:var(--coral)}
+
+.splash p{color:var(--ink);font-size:19px;font-weight:600;margin:6px 0;opacity:0;animation:fi .5s forwards;position:relative;z-index:1}
+.splash .btn{margin-top:30px;max-width:340px;opacity:0;animation:fi .5s 2.2s forwards;position:relative;z-index:1}
+@keyframes fi{to{opacity:1}}
+.spin{width:44px;height:44px;border-radius:50%;border:4px solid var(--accent-track);border-top-color:var(--accent);margin:40vh auto 0;animation:sp 0.8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.thumb.pic[src$="depfit-logo.png"]{object-fit:contain;padding:8px 6px;background:#fff;border:1px solid var(--line)}
+/* paywall */
+.topbar{position:sticky;top:0;z-index:6;background:#fff;margin:-24px -24px 16px;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);text-align:left}
+.topbar small{display:block;font-size:12px;color:var(--text)}
+.topbar b{font-size:24px;font-variant-numeric:tabular-nums}
+.topbar .btn{width:auto;min-height:42px;padding:0 18px;font-size:14px}
+.ng{border:1px solid var(--line);border-radius:var(--rc);overflow:hidden;margin-bottom:6px}
+.ng .hd{display:grid;grid-template-columns:1fr 1fr;background:#F6F1EA;font-weight:700;padding:8px 0}
+.ng .ph{margin:0;border-radius:0;min-height:170px}
+.ng .cols{display:grid;grid-template-columns:1fr 1fr}
+.ng .cols>div{padding:10px 12px;text-align:left;font-size:13px;color:var(--muted)}
+.ng .cols>div+div{border-left:1px solid var(--line)}
+.ng .cols b{display:block;color:var(--ink);font-size:16px;margin-bottom:6px}
+.seg5{display:flex;gap:3px;margin-top:4px}
+.seg5 i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.seg5 i.on{background:var(--accent)}
+.disc{font-size:12px;color:var(--muted);margin:6px 0 16px}
+.sum2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.sum2 div{border:1px solid var(--line);border-radius:18px;padding:10px 12px;text-align:left;font-size:13px;color:var(--muted)}
+.sum2 b{display:block;color:var(--ink);font-size:17px}
+.offer{background:var(--ink);color:#fff;border-radius:16px;padding:12px;font-weight:700;margin:12px 0 4px}
+.boost{background:var(--accent-soft);border-radius:var(--rc);padding:14px;margin:6px 0 6px}
+.boost h3{font-size:20px;line-height:1.3}
+.boost s{color:var(--muted)}
+.above{font-size:13px;color:var(--muted);text-align:left;margin:18px 0 6px;font-weight:600}
+.pl{border:1.5px solid var(--line);border-radius:20px;padding:16px 14px;position:relative;display:flex;align-items:center;gap:12px;cursor:pointer;text-align:left;background:#fff}
+.pl.sel{border-color:var(--accent);background:var(--accent-soft)}
+.pl .rb{width:22px;height:22px;border-radius:50%;border:2px solid var(--idle);flex:none;display:grid;place-items:center}
+.pl.sel .rb{border-color:var(--accent)}
+.pl.sel .rb:after{content:"";width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.pl .rib{position:absolute;bottom:100%;left:-1.5px;right:-1.5px;background:var(--lime);color:#fff;font-size:12px;font-weight:800;padding:4px 0;border-radius:14px 14px 0 0;text-align:center;white-space:nowrap;letter-spacing:.06em}
+.pl .mid{flex:1}
+.pl .mid b{display:block;font-size:17px}
+.pl .tag2{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:8px;background:#F6F1EA;color:var(--text);margin:3px 0}
+.pl.sel .tag2.save{background:var(--accent);color:#fff}
+.pl .pr{font-size:14px;color:var(--muted)}
+.pl .pr s{margin-right:6px}
+.pl .pr span{color:var(--ink);font-weight:700}
+.pd{display:flex;align-items:flex-start;gap:1px;background:#F2F2F4;border-radius:12px;padding:6px 10px;flex:none;position:relative;min-width:84px;justify-content:center}
+.pd .o{position:absolute;top:-17px;right:4px;font-size:11px;color:var(--muted);text-decoration:line-through}
+.pd sup{font-size:13px;font-weight:700;margin-top:4px}
+.pd b{font-size:34px;line-height:1;font-weight:800}
+.pd em{display:flex;flex-direction:column;font-style:normal;font-weight:800;font-size:15px;line-height:1.1;margin-top:3px}
+.pd em small{font-size:9px;font-weight:500}
+.pl.sel .pd{background:var(--grad);color:#fff}
+.pl.sel .pd em small{color:#fff}
+.go{font-weight:700;margin:22px 0 10px}
+.pulse{animation:pu 1.6s infinite}
+@keyframes pu{0%,100%{box-shadow:0 0 0 0 rgba(255,45,85,.45)}50%{box-shadow:0 0 0 10px rgba(255,45,85,0)}}
+.badge1{background:#FFF1E8;border-radius:var(--rc);padding:18px;margin:22px 0}
+.badge1 .lw{font-size:22px;font-weight:800}
+.foot{font-size:13px;color:var(--muted);margin:30px -24px 0;padding:24px 24px 8px;line-height:1.8;background:#fff;border-top:1px solid var(--line);text-align:center}
+.foot a{color:var(--muted);text-decoration:none}
+.gsc{display:flex;align-items:center;justify-content:center;gap:6px;color:var(--ink);font-weight:700;font-size:15px;margin:16px 0 10px}
+.logos{display:flex;align-items:center;justify-content:space-around;gap:10px;margin-bottom:12px}
+.logos .visa{font:italic 900 20px/1 Arial,sans-serif;color:#1A1F71;letter-spacing:-.5px}
+.logos .ppl{font:italic 800 18px/1 Arial,sans-serif}.logos .ppl i:first-child{color:#003087}.logos .ppl i:last-child{color:#009CDE}
+.logos .ssl{font-size:7px;line-height:1.1;font-weight:700;color:#2E7D32;border:1px solid #2E7D32;border-radius:3px;padding:2px 4px;text-align:left;background:#F1F8E9}
+.foot .co{font-size:14px;color:var(--text)}
+.store{display:inline-flex;flex-direction:column;align-items:center;gap:4px;margin:6px auto 8px;color:var(--text);font-size:14px;text-decoration:none}
+.steps2{list-style:none;counter-reset:st;text-align:left;margin:24px 0}
+.steps2 li{counter-increment:st;position:relative;padding:0 0 22px 48px}
+.steps2 li:before{content:counter(st);position:absolute;left:0;top:-2px;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;display:grid;place-items:center}
+.steps2 li b{display:block;font-size:18px;color:var(--ink);margin-bottom:10px}
+.steps2 li span{color:var(--muted);font-size:15px}
+.steps2 .btn{text-align:center;line-height:48px;text-decoration:none}
+.chk{text-align:left;max-height:88vh;overflow:auto;position:relative}
+.chk .x{position:absolute;left:16px;top:14px;border:0;background:none;font-size:26px;color:var(--idle);cursor:pointer}
+.chk h2{text-align:center}
+.chk .rowkv{font-size:14px}
+.pm{border:1.5px solid var(--line);border-radius:18px;padding:14px;margin:10px 0;display:flex;align-items:center;gap:10px;font-weight:600}
+.pm.sel{border-color:var(--accent)}
+.carousel.auto{scrollbar-width:none}.carousel.auto::-webkit-scrollbar{display:none}
+.carousel.rv{margin:14px -24px 0;padding:0 24px 4px;scroll-padding:0 24px}
+.carousel.rv .rcard{flex:0 0 100%}
+.phwrap{position:relative;container-type:inline-size}
+.carousel.ph5{padding:0 calc(.025*(100cqw + 48px)) 4px;gap:0}
+.carousel.ph5 img.ph.pic.cut{max-height:none;width:100%;height:auto}
+.carousel.ph5>div{transform:scale(.8);transition:transform .35s;transform-origin:center}
+.carousel.ph5>div.bl{transform:translateX(25%) scale(.8)}
+.carousel.ph5>div.br{transform:translateX(-25%) scale(.8)}
+.carousel.ph5>div.cur{transform:none;position:relative;z-index:1}
+.dots .arr{width:28px;height:28px;margin:0 10px;border-radius:50%;border:0;background:rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.15);font:700 22px/1 var(--sans);color:var(--ink);cursor:pointer;z-index:2}
+.dots{align-items:center}
+.dots{display:flex;justify-content:center;gap:7px;margin:10px 0 4px}
+.dots i{width:7px;height:7px;border-radius:50%;background:#C9CFD8;cursor:pointer;transition:all .2s}
+.dots i.on{background:var(--accent);width:18px;border-radius:4px}
+.pm .pmlogos{margin-left:auto;display:flex;gap:6px}
+.pm .pmlogos span{height:26px;min-width:40px;padding:0 6px;border:1px solid var(--line);border-radius:6px;background:#fff;display:grid;place-items:center}
+.steps2 li .btn{margin:4px 0 0 -48px;width:calc(100% + 48px);display:flex;align-items:center;justify-content:center;gap:10px;line-height:1.2;min-height:56px;color:#fff}
+.steps2 li .btn svg{flex:none}
+
+.pm .rb{width:20px;height:20px;border-radius:50%;border:2px solid var(--idle);flex:none}
+.pm.sel .rb{border:6px solid var(--accent)}
+.cardf{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 10px}
+.cardf div{border:1px solid var(--line);border-radius:14px;padding:12px;color:var(--idle);font-size:14px}
+.cardf div:first-of-type,.cardf .cem{grid-column:1/3}
+.uem{text-align:center;font-weight:700;font-size:18px;color:var(--ink);margin-top:4px;word-break:break-all}
+.cem{border:1px solid var(--line);border-radius:14px;padding:12px;font:500 15px var(--sans);color:var(--ink);outline:0;min-width:0}.cem:focus{border-color:var(--accent)}
+.src img{display:block;width:100%;max-width:260px;margin:8px auto 0;border-radius:12px;border:1px solid var(--line)}
+
+/* ---------- taichi-v1: структура WalkUp Tai Chi Walking в бренде Depfit ---------- */
+.c{text-align:center}
+.grid .agecard>span{justify-content:center;background:var(--accent);font-size:15px}
+.grid .agecard .ph{aspect-ratio:1;min-height:0}
+.consent{display:flex;gap:10px;align-items:flex-start;text-align:left;font-size:13px;color:var(--text);margin:20px 0 6px}
+.consent i{width:20px;height:20px;border-radius:6px;background:var(--lime);flex:none;display:grid;place-items:center;color:#fff;font-style:normal;font-size:13px;font-weight:800}
+.consent u{color:var(--accent);text-decoration:none}
+.copy{font-size:12px;color:var(--muted);margin-top:18px}
+.checks{list-style:none;text-align:left;margin:6px 0 0}
+.checks li{display:flex;gap:10px;align-items:flex-start;padding:7px 0;font-weight:500;color:var(--ink)}
+.checks li:before{content:"✓";width:22px;height:22px;border-radius:50%;background:var(--lime);color:#fff;font-size:13px;font-weight:800;display:grid;place-items:center;flex:none;margin-top:1px}
+.thumb.tall{width:46px;height:78px;border-radius:10px;background:#fff;object-fit:contain;padding:2px}
+.zb{position:relative}
+.zb .ph{min-height:380px!important;height:100%}
+.glow{position:absolute;width:34%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(rgba(255,140,40,.85),rgba(255,140,40,0) 70%);filter:blur(6px);mix-blend-mode:multiply;pointer-events:none}
+.glow.all{inset:0;width:auto;transform:none;border-radius:var(--rc);background:radial-gradient(ellipse at center,rgba(255,94,80,.45),rgba(255,94,80,0) 75%)}
+.opts.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opts.g2 .opt{min-height:70px;font-size:15px;align-items:flex-start}
+.unitrow{display:flex;justify-content:center}
+.hintline{font-size:14px;color:var(--muted);margin:-6px 0 18px}
+.hintline.bad{color:var(--warn)}
+.tip{display:flex;gap:12px;background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;text-align:left;font-size:14px;color:var(--text);margin-top:8px}
+.tip .tl{width:42px;height:42px;border-radius:12px;background:var(--lime-soft);display:grid;place-items:center;font-size:22px;flex:none}
+.tip b{display:block;color:var(--ink);font-size:15px;margin-bottom:2px}
+.ft2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wk{position:relative;border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden;margin:6px 0 18px;font-size:9px;line-height:1.2}
+.wk table{border-collapse:collapse;width:100%}
+.wk td,.wk th{border:1px solid #F0F0F2;padding:5px 2px;text-align:center;color:var(--text);font-weight:500}
+.wk th{background:#FAFAFB;color:var(--muted);font-weight:700}
+.wk td.w{background:var(--lime-soft);color:var(--lime-ink);font-weight:800;writing-mode:vertical-rl;transform:rotate(180deg);width:18px}
+.wk td.r{color:var(--idle)}
+.wk:after{content:"";position:absolute;left:0;right:0;bottom:0;height:40%;background:linear-gradient(rgba(255,255,255,0),#fff)}
+.wk .ppl{position:absolute;left:8%;right:8%;bottom:0;z-index:1}
+.wk .ppl .ph{margin:0;min-height:120px;background:rgba(231,231,235,.92)}
+.wk .ppl img.ph{background:none}
+.prof{display:grid;grid-template-columns:.9fr 1.4fr;gap:12px;background:linear-gradient(160deg,var(--lime-soft),#fff);border:1px solid var(--line);border-radius:var(--rc);padding:12px;text-align:left;margin-bottom:12px}
+.prof .ph{margin:0;min-height:170px}
+.prof .st{display:flex;flex-direction:column;gap:10px;justify-content:center}
+.prof .st small{display:block;font-size:12px;color:var(--muted)}
+.prof .st b{font-size:16px}
+.bmi5{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:3px;margin:40px 0 6px}
+.bmi5 span{height:8px;border-radius:4px}
+.bmi5 .mk{position:absolute;top:-34px;transform:translateX(-50%);background:var(--ink);color:#fff;font:700 13px var(--sans);padding:3px 9px;border-radius:10px;white-space:nowrap}
+.bmi5 .mk:after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--ink);border-bottom:0}
+.lvl{font:800 12px var(--sans);letter-spacing:.06em;color:var(--ink);margin-top:4px}
+.ldr{display:flex;align-items:center;gap:14px;background:var(--accent-soft);border-radius:20px;padding:12px 16px;text-align:left;font-weight:600;margin-bottom:22px}
+.ldr .ring{width:64px;height:64px;margin:0;flex:none}
+.ldr .ring span{font-size:16px}
+.mosaic{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;height:360px;overflow:hidden;margin:18px -8px 0;-webkit-mask-image:linear-gradient(#000 70%,transparent)}
+.mosaic>div{display:flex;flex-direction:column;gap:8px;animation:up 9s linear infinite}
+.mosaic>div:nth-child(2){margin-top:40px;animation-duration:11s}
+.mosaic .ph{margin:0;min-height:150px;font-size:10px;border-radius:12px}
+.mosaic img.ph.pic{aspect-ratio:3/4}
+@keyframes up{to{transform:translateY(-35%)}}
+/* paywall */
+.flash{position:sticky;top:0;z-index:7;margin:-24px -24px 0;overflow:hidden;white-space:nowrap;background:linear-gradient(90deg,var(--coral),#FFC107);color:#fff;font-weight:800;font-size:14px;padding:6px 0}
+.flash span{display:inline-block;animation:mq 14s linear infinite}
+@keyframes mq{to{transform:translateX(-50%)}}
+.pw .topbar{top:31px;margin:0 -24px 16px}
+.nowgoal2{position:relative;border:1px solid var(--line);border-radius:var(--rc);overflow:hidden;margin-bottom:18px}
+.nowgoal2 .hd{display:grid;grid-template-columns:1fr 1fr;font-weight:800;padding:8px 0;background:var(--lime-soft)}
+.nowgoal2 .cols{display:grid;grid-template-columns:1fr 1fr}
+.nowgoal2 .cols .ph{margin:0;border-radius:0;min-height:180px}
+.nowgoal2 .chev{position:absolute;left:50%;top:120px;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15);display:grid;place-items:center;font-weight:800;color:var(--accent)}
+.nowgoal2 .cols>div.t{padding:10px 12px;text-align:left;font-size:13px;color:var(--muted)}
+.nowgoal2 .cols>div.t+div.t{border-left:1px solid var(--line)}
+.nowgoal2 .cols b{display:block;color:var(--ink);font-size:16px;margin-bottom:4px}
+.seg5 i.on{background:var(--lime)}
+.pl.hasrib{margin-top:26px;border-radius:0 0 20px 20px;border-color:var(--lime)}
+.pl.hasrib.sel{border-color:var(--lime);background:var(--lime-soft)}
+.pl .bonus{display:inline-block;border:1.5px dashed var(--accent);color:var(--accent);border-radius:8px;font-size:11px;font-weight:700;padding:2px 8px;margin-top:6px}
+.pls{display:flex;flex-direction:column;gap:12px;margin:14px 0}
+.banner{background:#FFF8EC;border-radius:14px;padding:12px;font-weight:600;font-size:15px;margin:4px 0 12px}
+.seal{display:flex;align-items:center;justify-content:center;gap:10px;margin:12px 0;font-weight:700}
+.seal i{width:46px;height:46px;border-radius:50%;background:var(--lime);color:#fff;font-style:normal;font-size:8px;font-weight:800;display:grid;place-items:center;text-align:center;line-height:1.1;padding:4px}
+.seal.big i{width:96px;height:96px;font-size:14px}
+.seal u{color:var(--ink)}
+.ticket{display:flex;align-items:center;gap:12px;background:linear-gradient(90deg,var(--coral),#FFB020);color:#fff;border-radius:16px;padding:12px 14px;text-align:left;margin:12px 0}
+.ticket .pc{font-size:30px;font-weight:800;line-height:1}
+.ticket .pc small{display:block;font-size:13px}
+.ticket .tl2{flex:1;font-size:13px;font-weight:600}
+.ticket .tiles{display:flex;gap:3px;align-items:center;font-weight:800}
+.ticket .tiles b{background:#0F202E;color:#fff;border-radius:6px;padding:4px 5px;font-size:15px;font-variant-numeric:tabular-nums;min-width:26px;text-align:center}
+.rcard{flex:0 0 100%;scroll-snap-align:start;background:#fff;border:1px solid var(--line);border-radius:var(--rc);padding:14px;text-align:left}
+.rcard h4{font-size:16px;margin-bottom:2px}
+.rcard .meta{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px}
+.rcard p{font-size:14px;font-weight:300;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.rcard.open p{-webkit-line-clamp:unset}
+.rcard button{border:0;background:none;color:var(--accent);font:600 13px var(--sans);margin-top:6px;cursor:pointer}
+.rcard .ph{min-height:120px;margin:8px 0}
+.faq{text-align:left}
+.faq div{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--line)}
+.faq div:before{content:"?";width:24px;height:24px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;display:grid;place-items:center;flex:none}
+.faq b{display:block;margin-bottom:4px}
+.faq p{font-size:14px;font-weight:300}
+.trev{display:flex;gap:12px;align-items:flex-start;text-align:left;padding:12px 0;border-bottom:1px solid var(--line)}
+.trev .av{font-size:24px;background:var(--accent-soft)}
+.trev p{font-size:14px;font-weight:300}
+.laurel{font-size:30px;font-weight:800;margin:26px 0 0}
+.rate{background:#fff;border:1px solid var(--line);border-radius:var(--rc);padding:14px;margin:14px 0}
+.rate .store{display:flex;margin:8px auto}
+.devpill{display:inline-block;background:var(--lime-soft);color:var(--lime-ink);font-weight:700;font-size:13px;padding:6px 12px;border-radius:14px;margin:6px 0 12px}
+.chkx .rowkv{font-size:14px}
+.ebars{display:flex;justify-content:center;align-items:flex-end;gap:36px;height:170px;margin:10px 0 4px}
+.ebars div{width:84px;border-radius:12px 12px 0 0;display:flex;align-items:flex-start;justify-content:center;color:#fff;font-weight:800;padding-top:8px}
+.ebars small{display:block;font-size:11px;font-weight:700;color:var(--ink);margin-top:6px}
+/* бенчмарк справа: на широком экране скрин конкурента — колонкой рядом с нашим экраном, скролл синхронный */
+@media (min-width:920px){
+ body.showsrc .app{margin:0 auto 0 calc(50% - 450px)}
+ body.showsrc .cta{left:calc(50% - 450px);transform:none}
+ body.showsrc .src{position:fixed;left:calc(50% + 10px);top:0;width:440px;height:100vh;overflow-y:auto;margin:0;border:0;border-left:1px dashed #C9C9CF;border-radius:0;padding:16px 20px 40px;z-index:5}
+ body.showsrc .src img{max-width:100%;margin-top:10px}
+ body.showsrc .modal{left:calc(50% - 450px);right:auto;width:440px}
+ body.showsrc .toggle,body.showsrc .jump{right:auto;left:calc(50% + 480px)}
+}
+/* s27 — крупнее для 55+, ближе к бенчмарку */
+.quote{font-size:20px;line-height:1.45;color:var(--ink);text-align:left;margin:4px 0 10px}
+.quote b{color:var(--accent);font-weight:800}
+.qby{font-size:18px;font-weight:800;color:var(--ink);text-align:left}
+.ph.port{aspect-ratio:4/5;width:78%;min-height:0;margin:8px auto 18px;border-radius:28px}
+/* ---------- раунд 2, 12 ноября 2026: фон и шрифт как у WalkUp, картинки во всю высоту, статистика без подложек, кнопка поверх, три колонки ---------- */
+html{background:#D3E6FC}
+body{background:linear-gradient(180deg,#D7F2F8 0%,#D3E6FC 100%) fixed;min-height:100vh}
+.app{background:transparent}
+main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+h2{font-size:24px;line-height:1.25}
+.opts{gap:12px}
+.opt{min-height:68px;padding:12px 16px 12px 20px;border:0;border-radius:14px;box-shadow:0 2px 10px rgba(28,24,53,.07);font:700 18px/1.3 var(--sans);transition:box-shadow .15s}
+.opt:hover{box-shadow:0 3px 14px rgba(28,24,53,.13)}
+.opt.sel{box-shadow:inset 0 0 0 2px var(--accent),0 2px 10px rgba(28,24,53,.07)}
+.opt small{font-size:15px;font-weight:500;margin-top:2px}
+.opt:has(.thumb){padding-right:0;overflow:hidden;align-items:stretch;min-height:76px}
+.opt:has(.thumb) .lbl,.opt:has(.thumb) .box{align-self:center}
+.opt .thumb,.opt .thumb.tall{width:84px;height:auto;min-height:76px;margin:-12px 0;border-radius:0;align-self:stretch;padding:4px}
+.opt .thumb.pic{object-fit:cover;object-position:center top;padding:0}
+.agecard,.card,.note,.field,.sum2 div{border:0;box-shadow:0 2px 10px rgba(28,24,53,.07)}
+.agecard.sel,.agecard:hover{box-shadow:inset 0 0 0 2px var(--accent),0 2px 10px rgba(28,24,53,.07)}
+/* статистика: крупное число, мелкая серая подпись, тонкие разделители, без подложек */
+.prof{background:none;border:0;padding:0;box-shadow:none}
+.prof .st{gap:0}
+.prof .st>div{padding:10px 0;border-bottom:1px solid rgba(28,24,53,.12)}
+.prof .st>div:last-child{border-bottom:0}
+.prof .st small{font-size:13px;color:var(--muted);font-weight:500}
+.prof .st b{display:block;font-size:20px;font-weight:800;line-height:1.25}
+.sum2{gap:0;margin:14px 0 18px}
+.sum2 div{background:none;box-shadow:none;border-radius:0;padding:4px 8px;text-align:center;font-size:13px;font-weight:500}
+.sum2 div+div{border-left:1px solid rgba(28,24,53,.12)}
+.sum2 b{font-size:18px;font-weight:800;margin-top:4px;white-space:nowrap;display:flex!important;align-items:center;justify-content:center;gap:8px}
+.sum2 .sico{flex:none}
+.nowgoal2{border:0;background:#fff;box-shadow:0 2px 10px rgba(28,24,53,.07)}
+.nowgoal2 .cols>div.t{font-size:13px;font-weight:500}
+.nowgoal2 .cols b{font-size:20px;font-weight:800}
+/* кнопка прибита к низу и идёт поверх контента; под ней только градиент в цвет низа страницы */
+.cta{padding:28px 24px calc(20px + env(safe-area-inset-bottom));background:linear-gradient(rgba(211,230,252,0),#D3E6FC 45%)}
+.btn{min-height:56px;font-size:18px;font-weight:700}
+.logic{display:none;margin:22px 0 0;padding:12px 14px;border:1px dashed #9FB3C8;border-radius:12px;background:#fff;font-size:13px;color:#555;line-height:1.45;text-align:left}
+body.showsrc .logic{display:block}
+.logic b{color:var(--ink)}
+.src{background:#fff}
+@media (min-width:1300px){
+ body.showsrc .app{margin:0 auto 0 calc(50% - 270px)}
+ body.showsrc .cta{left:calc(50% - 270px);transform:none}
+ body.showsrc .modal{left:calc(50% - 270px)}
+ body.showsrc .logic{position:fixed;left:calc(50% - 650px);top:0;width:360px;height:100vh;overflow-y:auto;margin:0;border:0;border-right:1px dashed #9FB3C8;border-radius:0;padding:16px 20px 40px;z-index:5;font-size:14px}
+ body.showsrc .src{left:calc(50% + 190px)}
+ body.showsrc .toggle{left:calc(50% - 640px);right:auto;top:auto;bottom:12px}
+ body.showsrc .jump{left:calc(50% - 640px);right:auto;top:auto;bottom:56px}
+ body.showsrc .logic{padding-bottom:110px}
+}
+</style>
+</head>
+<body>
+<button class="toggle" id="tg">Источник экрана</button>
+<select class="jump" id="jump"></select>
+<div class="app">
+  <header>
+    <button class="back" id="back" aria-label="Back">&#8249;</button>
+    <div class="logo" id="logo"></div>
+    <div class="count" id="count"></div>
+  </header>
+  <div class="bar" id="barw"><i id="bar"></i></div>
+  <div class="sections" id="sections"></div>
+  <main id="main"></main>
+</div>
+<script>
+// Прототип taichi-v1: воронка WalkUp «Tai Chi Walking For Beginners» (прогон 10 ноября 2026) экран в экран, тексты 1 в 1, бренд Depfit как в прототипе v3.
+// Картинок пока нет: плашки «Image NNN», список — content-plan.md. Готовые картинки класть в img/ и вписывать в IMG по номеру плашки.
+const BRAND='Depfit', DOMAIN='our website' /* домен Depfit — TBD */, LOGO='img/depfit-logo.png', ICON='img/depfit-icon.png', APP_URL='https://apps.apple.com/app/id1456357156';
+const ORIG='orig/';
+const TOTAL=23;
+
+// ---------- state ----------
+const S={answers:{},email:'',hu:'cm',wu:'kg',h:null,w:null,goal:null,age:null,event:'',plan:'w4',deadline:0,exitShown:false};
+const pad=n=>String(n).padStart(3,'0');
+const fmtS=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+const iso=d=>d.toISOString().slice(0,10);
+const plus=n=>{const d=new Date();d.setDate(d.getDate()+n);return d};
+const kg=v=>S.wu==='kg'?v:v*0.45359237;
+const hm=()=>S.h?(S.hu==='cm'?S.h/100:S.h*0.0254):1.80;
+const wkg=()=>S.w?kg(S.w):89, gkg=()=>S.goal?kg(S.goal):80;
+const bmi=()=>wkg()/(hm()*hm());
+const tbmi=()=>gkg()/(hm()*hm());
+/* WalkUp Purchase: процент жира по ИМТ — для «Now» от текущего веса, для «Your Goal» от целевого */
+const fatRange=b=>b<18.5?'8–12%':b<25?'12–24%':b<30?'25–31%':b<35?'32–39%':b<40?'40–45%':'>45%';
+const BODY_CUR=['Slim','Mid-sized','Full-figured','Extended size'],BODY_TGT=['Thin','Toned','Average','Curvy'];
+const bodyIdx=id=>{const L=id==='s09'?BODY_CUR:BODY_TGT,i=L.indexOf(S.answers[id]);return i<0?(id==='s09'?2:2):i+1};
+const wTxt=()=>`${S.w||89} ${S.wu}`, goalTxt=()=>`${S.goal||80} ${S.wu}`;
+/* как у WalkUp (OccasionResult): дней до цели = ceil(|вес − цель| / 0.14 кг в день); у нас всегда в кг — фунты переводим (0.14 кг ≈ 0.31 lb в день); дата цели = сегодня + дни */
+const goalDays=()=>{const d=Math.ceil(Math.round(Math.abs(wkg()-gkg())*1000)/1000/0.14);return d||28}; // цель = вес: у WalkUp дата = сегодня и одна точка; у нас 4 недели плана и ровная линия
+/* дробь месяцев между сегодня и датой цели — как dayjs diff 'month' (целые месяцы, вниз) */
+const monthDiff=(a,b)=>{let m=(b.getFullYear()-a.getFullYear())*12+b.getMonth()-a.getMonth();if(b.getDate()<a.getDate())m--;return m};
+/* график 033: шаблон и подписи зависят от направления (сбросить / набрать / держать) и от числа месяцев до цели */
+function goalChart(){
+ const now=new Date(),goal=plus(goalDays()),st=+(S.w||89),g=+(S.goal||80),u=S.wu;
+ const M=k=>new Date(now.getFullYear(),now.getMonth()+k,1).toLocaleDateString('en-US',{month:'short'});
+ const SM=(goal.getFullYear()-now.getFullYear())*12+goal.getMonth()-now.getMonth(); // месяц цели от текущего
+ const r1=v=>Math.round(v*10)/10, mo=monthDiff(now,goal);
+ let tpl,pts,months;
+ if(g===st){tpl='keep_weight';pts=[st,g];months=[M(0),M(1)]}
+ else if(g>st){tpl='low_to_high';pts=[st,g];months=[M(0),M(SM)]}
+ else if(mo<=0){tpl='high_to_low_two_other';pts=[st,g];months=[M(0),M(0),M(1)]}
+ else if(mo===1){tpl='high_to_low_two';pts=[st,g];months=[0,1,2,3,4].map(M)}
+ else if(mo===2){tpl='high_to_low_three';pts=[st,Math.round(st-4.2),g];months=[0,1,2,3,4].map(M)}
+ else {tpl='high_to_low_four';pts=[st,r1(st-4.2),r1(g+4.2),g];months=[M(0),M(1),M(SM-1),M(SM),M(SM+1)]}
+ const X0=34,X1=290,n=pts.length,xp=i=>n===1?(X0+X1)/2:X0+i*(X1-X0)/(n-1);
+ const hi=Math.max(...pts),lo=Math.min(...pts),Y0=46,Y1=124,yp=w=>hi===lo?(Y0+Y1)/2:Y0+(hi-w)/(hi-lo)*(Y1-Y0);
+ const P=pts.map((w,i)=>[xp(i),yp(w)]);
+ let line=`M${P[0][0]} ${P[0][1]}`;for(let i=1;i<n;i++){const [x0,y0]=P[i-1],[x1,y1]=P[i],cx=(x0+x1)/2;line+=` C${cx} ${y0} ${cx} ${y1} ${x1} ${y1}`}
+ const tag=(cx,cy,w,fill,txt,col='#fff',fs=12)=>{const l=Math.min(320-w,Math.max(0,cx-w/2));return `<rect x="${l}" y="${cy}" width="${w}" height="22" rx="10" fill="${fill}"/><text x="${l+w/2}" y="${cy+15}" text-anchor="middle" font-size="${fs}" fill="${col}" font-weight="700">${txt}</text>`};
+ const mx=i=>months.length===1?(X0+X1)/2:X0+i*(X1-X0)/(months.length-1);
+ const cols=['#FF5E50','#FF9800','#FFC107','#3DBE6E'];
+ const svg=`<svg class="chart" viewBox="0 0 320 170"><defs><linearGradient id="cg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FF5E50" stop-opacity=".35"/><stop offset="1" stop-color="#FF2D55" stop-opacity="0"/></linearGradient></defs>${months.map((m,i)=>`<line x1="${mx(i)}" y1="20" x2="${mx(i)}" y2="145" stroke="#E6E6E6" stroke-dasharray="3 4"/>`).join('')}
+ ${n>1?`<path d="${line} L${X1} 145 L${X0} 145Z" fill="url(#cg)"/><path d="${line}" stroke="#FF5E50" stroke-width="3" fill="none"/>`:''}
+ ${P.map(([x,y],i)=>{const last=i===n-1,c=last?'#FF2D55':cols[Math.min(i,2)];return `<circle cx="${x}" cy="${y}" r="${last||i===0?7:5}" fill="#fff" stroke="${c}" stroke-width="3"/>${last?tag(x,y-62,96,'#FF2D55','Expected Result','#fff',11):''}${tag(x,y-32,58,last?'#0F202E':c,pts[i]+' '+u)}`}).join('')}
+ ${months.map((m,i)=>`<text x="${mx(i)}" y="163" font-size="12" fill="#8A8A8E" text-anchor="middle">${m}</text>`).join('')}</svg>`;
+ return {goal,svg,tpl};
+}
+let CUR=1;
+// готовые картинки: ключ — номер плашки ('003', '005-1', 'P01'), значение — файл в img/
+const IMG={"001-1": "img-001-1.jpg", "001-2": "img-001-2.jpg", "001-3": "img-001-3.jpg", "001-4": "img-001-4.jpg", "003": "img-003.png", "004": "img-004.png", "005-1": "img-005-1.png", "005-2": "img-005-2.png", "005-3": "img-005-3.png", "005-4": "img-005-4.png", "006": "img-006.png", "008": "img-008.png", "009-1": "img-009-1.png", "009-2": "img-009-2.png", "009-3": "img-009-3.png", "009-4": "img-009-4.png", "010-1": "img-010-1.png", "010-2": "img-010-2.png", "010-3": "img-010-3.png", "010-4": "img-010-4.png", "011": "img-011.png", "016": "img-016.png", "018-1": "img-018-1.png", "018-2": "img-018-2.png", "018-3": "img-018-3.png", "022": "img-022.jpg", "027": "img-027.jpg", "028": "img-028.png", "034-1": "img-034-1.jpg", "034-2": "img-034-2.jpg", "034-3": "img-034-3.jpg", "034-4": "img-034-4.jpg", "034-5": "img-034-5.jpg", "034-6": "img-034-6.jpg", "034-7": "img-034-7.jpg", "034-8": "img-034-8.jpg", "034-9": "img-034-9.jpg", "P01-1": "img-P01.png", "P01-2": "img-P01.png", "P01-3": "img-P01.png", "P01-4": "img-P01.png", "P02-1": "img-P02.png", "P02-2": "img-P02.png", "P02-3": "img-P02.png", "P02-4": "img-P02.png", "P04": "img-P04.jpg", "P05": "img-P05.png", "P06": "img-P06.png", "P07": "img-P07.png", "P08": "img-P08.png", "P09": "img-P09.png", "P10": "img-P10.png"};
+const ph=(t,st='',id)=>{id=id||pad(CUR);const f=IMG[id];return f?`<img class="ph pic${f.endsWith('.png')?' cut':''}" src="img/${f}" alt="${t.replace(/"/g,'')}" style="${st}">`:`<div class="ph" style="${st}"><span><b>Image ${id}</b> · ${t}</span></div>`};
+const th=t=>/\.(png|jpg)$/.test(t)?`<img class="thumb pic${t.startsWith('body-')?' tall':''}" src="img/${t}" alt="">`:`<span class="thumb">${t}</span>`;
+const sig=n=>`<span class="sig">${[6,9,12,15,18].map((h,i)=>`<i class="${i<n?'on':''}" style="height:${h}px"></i>`).join('')}</span>`;
+const icon=x=>!x?'':x.startsWith('img:')?th(x.slice(4)):x.startsWith('ph:')?th(IMG[x.slice(3)]||`Image<br>${x.slice(3)}`):x.startsWith('sig:')?sig(+x.slice(4)):`<span class="emo">${x}</span>`;
+const checks=a=>`<ul class="checks">${a.map(x=>`<li>${x}</li>`).join('')}</ul>`;
+const tip=(e,b,t)=>`<div class="tip"><span class="tl">${e}</span><div><b>${b}</b>${t}</div></div>`;
+function weekTable(withPeople){
+ const W=[['6min<br>Upper body','7min<br>Full body','6min<br>Lower body','Rest','7min<br>Full body','8min<br>Lower body','5min<br>Full body'],
+          ['5min<br>Full body','7min<br>Upper body','6min<br>Full body','Rest','7min<br>Full body','8min<br>Lower body','6min<br>Upper body'],
+          ['7min<br>Full body','Rest','8min<br>Upper body','7min<br>Lower body','Rest','8min<br>Full body','6min<br>Full body']];
+ return `<div class="wk"><table><tr><th></th>${[1,2,3,4,5,6,7].map(d=>`<th>Day ${d}</th>`).join('')}</tr>${W.map((r,i)=>`<tr><td class="w">WEEK ${i+1}</td>${r.map(c=>`<td class="${c==='Rest'?'r':''}">${c}</td>`).join('')}</tr>`).join('')}</table>${withPeople?`<div class="ppl">${ph('cut-out from the waist up: woman ~60 and man ~65 in light tai chi wear, arms spread wide in a tai chi pose, overlapping the table','','004')}</div>`:''}</div>`}
+
+// ---------- screens ----------
+// n — номер экрана WalkUp; p — счётчик «p/23» (у WalkUp числа идут с пропусками: инфо-экраны тоже съедают номер); type: q (одиночный, автопереход), m (мульти + CONTINUE), info, custom
+const SCREENS=[
+{id:'s01',n:1,type:'custom',noCta:true,logic:'Возраст: сетка 2×2 карточек с фото пары и плашкой «Age: …», тап → дальше. Без счётчика и назад. Галочка согласия стоит заранее. У WalkUp справа меню и кнопка «?» (Help), переключатель языка — их не переносим.',
+ render:()=>`<h1 class="left">Tai Chi Walking For <span class="red">Beginners</span></h1><p class="sub">Choose your age range to get started</p>
+ <div class="grid">${['30-39','40-49','50-59','60+'].map((a,i)=>`<button class="agecard" data-v="Age: ${a}">${ph(`couple ${a}, head to chest, light tai chi wear`,'',`001-${i+1}`)}<span>Age: ${a}</span></button>`).join('')}</div>
+ <label class="consent"><i>✓</i><span>By continuing, you confirm and guarantee that you agree to our <u>Terms of Use</u> and <u>Privacy Policy</u>.<br><b>Please review before continuing</b></span></label>
+ <p class="copy">Copyright © 2026 ${BRAND}. All rights reserved.</p>`,
+ bind:m=>m.querySelectorAll('.agecard').forEach(b=>b.onclick=()=>{S.answers.s01=b.dataset.v;b.classList.add('sel');setTimeout(next,180)})},
+{id:'s02',n:2,p:1,type:'q',q:'What\'s your gender?',sub:'we match coaches based on gender',opts:['Female','Male'],src:'Подзаголовок со строчной буквы — как у WalkUp.'},
+{id:'s03',n:3,type:'info',cta:'CONTINUE',html:()=>`<div class="big" style="margin-top:8px">Over 10+ Million women</div><p class="sub" style="margin-top:8px">Join us to start <span class="red">Tai Chi Walking</span> journey</p>${ph('round photo, bright living room, three people breaking out of the circle: woman ~65 in the centre, women ~50 and ~45 at the sides, all in a tai chi stance, palms forward','min-height:320px;border-radius:50%;aspect-ratio:1;max-width:340px;margin:10px auto')}`},
+{id:'s04',n:4,type:'info',cta:'CONTINUE',html:()=>`<h2 class="left">Welcome to <span class="red">Tai Chi Walking</span> World!</h2>${weekTable(true)}<p class="sub left" style="text-align:left">We <b class="red">specialize in Tai Chi Walking</b> to help you move with joy, overcome limits, and feel your best. Let’s start by learning about your goals.</p>`,src:'Таблица недель собрана вёрсткой (у WalkUp — картинка), поверх неё пара по пояс — картинка.'},
+{id:'s05',n:5,p:3,type:'q',q:'Choose your goal',opts:[['Lose weight','ph:005-1'],['Energy and vitality','ph:005-2'],['Wellness and longevity','ph:005-3'],['Improve flexibility','ph:005-4'],["I'm not sure"]]},
+{id:'s06',n:6,type:'info',cta:'CONTINUE',html:()=>`<h2 class="left">The perfect approach is right here!</h2>${ph('round photo: woman ~65 in a tai chi stance in a sunlit living room, three small round 3D bubbles (neck, spine, lower back) at the right edge','min-height:240px')}<p class="sub" style="text-align:left;margin-bottom:8px"><span class="red"><b>Tai Chi Walking</b></span> cultivates <b class="red">inner balance and physical vitality</b>. It nurtures:</p>${checks(['Improved stability for effortless, fluid movement.','Reduced risk of falls and injuries.','A foundation for a healthier, more vibrant life.'])}`},
+{id:'s07',n:7,p:4,type:'q',q:'Have you tried Tai Chi?',opts:[['Yes','🤗'],['No','🙅']]},
+{id:'s08',n:8,type:'info',cta:'CONTINUE',html:()=>`<h2 class="left">Joint Health for Life!</h2>${ph('round photo: woman ~65 in a slow tai chi step, arm forward; three round 3D bubbles with red pain spots (neck/shoulder, upper back, lower back)','min-height:260px')}<p class="sub" style="text-align:left">For those with joint pain, strenuous exercise can be a barrier. <b class="red">Tai Chi Walking</b> offers a gentle alternative, a low-impact art that can be <b class="red">practiced for a lifetime</b>, providing <b class="red">soothing relief and lasting wellness.</b></p>`},
+{id:'s09',n:9,p:7,type:'q',q:'Choose your current body type',sub:'Choose the best option for you',opts:[['Slim','ph:009-1'],['Mid-sized','ph:009-2'],['Full-figured','ph:009-3'],['Extended size','ph:009-4']],src:'У WalkUp — фото торса одной модели в 4 размерах: серый спортивный топ и леггинсы, кадр от груди до колен, одинаковый масштаб. Нужно сгенерировать 4 таких фото (заглушки 009-1…009-4).'},
+{id:'s10',n:10,p:8,type:'q',q:'Choose the body type you want to have',opts:[['Thin','ph:010-1'],['Toned','ph:010-2'],['Average','ph:010-3'],['Curvy','ph:010-4']],src:'У WalkUp — фото торса той же модели, что на 009, в 4 желаемых формах. Нужно сгенерировать 4 фото в том же кадре (заглушки 010-1…010-4).'},
+{id:'s11',n:11,p:10,type:'m',layout:'zones',q:'Choose your target zones',img:'full-body cut-out: woman ~60 standing straight, arms down, light tai chi wear, frontal, head to feet',opts:['Arms','Chest','Abs','Butt','Legs','Full Body'],cta:'CONTINUE',logic:'Экраны 011–014 — один экран в разных состояниях. Выбор подсвечивает зону на фигуре размытым оранжевым пятном (руки — оба плеча, ноги — оба бедра), кнопка — голубая с синей рамкой. Full Body — подсветка всей фигуры. Фото 011 должно стоять в фиксированном кадре, чтобы пятна попадали на зоны. CONTINUE неактивна, пока ничего не выбрано.'},
+{id:'s15',n:15,p:11,type:'q',q:'How long was the last time you were in the best shape of your life?',opts:[['Less than a year ago','🤔'],['1 to 2 years ago','😅'],['More than 3 years ago','🥲'],['I am confident in my body','😌'],['Never','❌']],src:'Варианта «2 to 3 years ago» у WalkUp нет — так и оставлено.'},
+{id:'s16',n:16,type:'info',cta:'CONTINUE',html:()=>`<h2 class="left">The <span class="red">Tai Chi Walking Plan</span> makes you painless and healthier</h2>${ph('round park photo: woman ~60 in a deep slow tai chi step, 3/4 side view, orange glow on the hip; small inset of a pelvis with a red zone and three tiny joint icons','min-height:200px')}<p class="sub" style="text-align:left;margin-bottom:8px">The slow, deliberate movements of Tai Chi Walking are key to fall prevention. They strengthen the pelvic floor and leg muscles, improving your body's proprioception and stability.</p>${checks(['Builds leg and core strength.','Enhances joint flexibility.','Refines balance and coordination.'])}`},
+{id:'s17',n:17,p:12,type:'q',q:'How often do you exercise?',opts:[['Sedentary','sig:1'],['1-2 times a month','sig:2'],['1-2 times a week','sig:3'],['3-4 times a week','sig:4'],['Almost every day','sig:5']],src:'У WalkUp справа ступенчатая пирамидка 1–5 уровней; здесь — столбики.'},
+{id:'s18',n:18,p:13,type:'q',q:'How far can you do seated forward bends?',opts:[['Not even close','ph:018-1'],['Close and almost','ph:018-2'],['Easily touch the toes','ph:018-3']]},
+{id:'s19',n:19,p:14,type:'q',q:'What is your activity level?',opts:[['Sedentary','','little or no exercise'],['Mildly active','','sports 1-2 days per week'],['Moderately active','','sports 3-4 days per week'],['Very active','','sports almost every day']]},
+{id:'s20',n:20,p:15,type:'q',q:'Choose your preferred level of workouts',opts:['Keep it light and chill 🧘','Good with some effort 💪','Bring on the intensity 🚀',`Let ${BRAND} decide`]},
+{id:'s21',n:21,p:16,type:'q',q:'Do you follow any of these diets?',opts:[['Vegetarian','🥬','Excludes meat'],['Vegan','🥕','Excludes all animal products'],['Keto','🥑','Low-carb, high-fat'],['Mediterranean','🌾','Rich in plant-based foods'],['No','👀']]},
+{id:'s22',n:22,p:18,type:'q',layout:'g2',q:'How is your sleep ?',opts:["Poor, didn't sleep well",'Okay, woke up a few times','Good, but could need more rest','Great, well-rested'],below:()=>ph('full-bleed photo: woman ~55 sleeping peacefully on her side, white pillow and duvet, soft morning light','min-height:300px;margin:20px -24px 0;border-radius:0;width:calc(100% + 48px);max-width:none'),src:'Пробел перед «?» — как у WalkUp.'},
+{id:'s23',n:23,p:19,type:'custom',logic:'Рост: переключатель FT | CM, по умолчанию CM, подсказка о диапазоне 90–243 cm. CONTINUE неактивна до ввода.',
+ render:()=>`<h2>How tall are you?</h2><div class="unitrow">${seg('hu',[['ft','FT'],['cm','CM']])}</div>${S.hu==='cm'?numField('h','cm','170'):`<div class="ft2">${numField('hft','ft','5',S.h?Math.floor(S.h/12):'')}${numField('hin','in','7',S.h?S.h%12:'')}</div>`}<p class="hintline" id="err"></p>
+ ${tip('👆','Calculating your body mass index (BMI)','BMI is a common tool for assessing the risk of various health issues.')}`,
+ bind:m=>S.hu==='cm'?bindNum(m,'h',()=>[90,243,'cm']):bindFt(m)},
+{id:'s24',n:24,p:20,type:'custom',logic:'Вес: LB | KG, по умолчанию KG, диапазон 25–300 kg.',
+ render:()=>`<h2>What is your current weight?</h2><div class="unitrow">${seg('wu',[['lbs','LB'],['kg','KG']])}</div>${numField('w',S.wu,'89')}<p class="hintline" id="err"></p>`,
+ bind:m=>bindNum(m,'w',()=>S.wu==='kg'?[25,300,'kg']:[55,661,'lb'])},
+{id:'s25',n:25,p:21,type:'custom',
+ render:()=>`<h2>What is your target weight?</h2><div class="unitrow">${seg('wu',[['lbs','LB'],['kg','KG']])}</div>${numField('goal',S.wu,'80')}<p class="hintline" id="err"></p>`,
+ bind:m=>bindNum(m,'goal',()=>S.wu==='kg'?[25,300,'kg']:[55,661,'lb'])},
+{id:'s26',n:26,p:22,type:'custom',src:'Возраст спрашивают второй раз (после диапазона на 001) — как у WalkUp.',
+ render:()=>`<h2>What is your age?</h2>${numField('age','','58')}<p class="hintline" id="err" style="display:none"></p>${tip('👌','We ask for your age to personalize your plan.','We will customize a workout plan tailored to your age group.')}`,
+ bind:m=>bindNum(m,'age',()=>[16,99,''])},
+{id:'s27',n:27,type:'info',cta:'CONTINUE',src:'Шрифт цитаты крупнее, чем у WalkUp (20 px), — аудитория 55+. Фото — вертикальный портрет со скруглением, ~¾ ширины.',html:()=>`<h2 class="left"><span class="red">Tai Chi Walking</span> is an Art of Living Longer</h2>${ph('portrait photo 4:5, rounded: smiling woman ~70, grey hair in a bun, arms stretched to the sides in a tai chi pose, bright home with a window to the garden, warm light','aspect-ratio:4/5;width:78%;min-height:0;margin:8px auto 18px;border-radius:28px','027')}<p class="quote">“Tai Chi <b>reduces mortality rates</b> in older adults by 20-30% over a 10-year period. Mechanisms: <b>Improved heart health, better stress management, and fewer falls.</b>”</p><p class="qby">—— Harvard Health Publishing</p>`},
+{id:'s28',n:28,type:'info',cta:'CONTINUE',logic:'Как у WalkUp (Profile). ИМТ = вес, кг / рост, м² (lb × 0,45359237). Категория: < 18,5 — UNDERWEIGHT, но на экране пишется NORMAL; 18,5–24,9 — NORMAL; до 30 — OVERWEIGHT; от 30 — OBESE. Маркер «You-ИМТ»: (ИМТ − 15) / 25 от ширины шкалы, от 0 до 92%. Подсказка: NORMAL и UNDERWEIGHT — «Good Starting BMI…», OVERWEIGHT и OBESE — «Risks for an unhealthy BMI». Три строки справа: Activity level — ответ 017, Body type — ответ 009, Age Group — ответ 001. Фото слева — картинка выбранного на 009 типа тела (та же, что Now на пейволле), 4 версии: заглушки P01-1…P01-4.',
+ html:()=>{const b=bmi(),cat=b<18.5?'UNDERWEIGHT':b<=24.9?'NORMAL':b<30?'OVERWEIGHT':'OBESE',lbl=cat==='UNDERWEIGHT'?'NORMAL':cat,pos=Math.min(92,Math.max(0,(b-15)/25*100)),ok=cat==='NORMAL'||cat==='UNDERWEIGHT',ci=bodyIdx('s09');
+ return `<h2 class="left">Here's your health profile summary</h2><div class="prof">${ph(`cut-out: woman ~55, current body type «${BODY_CUR[ci-1]}», light linen top, frontal, head to mid-thigh (same image as Now on the paywall)`,'','028')}<div class="st"><div><small>Activity level</small><b>🚶 ${S.answers.s17||'Sedentary'}</b></div><div><small>Body type</small><b>🎯 ${S.answers.s09||'Mid-sized'}</b></div><div><small>Age Group</small><b>📋 ${S.answers.s01||'Age: 50-59'}</b></div></div></div>
+ <div class="card"><b>Body Mass Index(BMI)</b><div class="bmi5">${['#3DBE6E','#FFCC00','#FF9800','#FF5E8A','#5B5BD6'].map(c=>`<span style="background:${c}"></span>`).join('')}<i class="mk" style="left:${pos}%">You-${b.toFixed(1)}</i></div><div class="scale"><span>Normal - 21.5</span><span class="lvl">${lbl}</span></div>
+ ${ok?`<p style="margin-top:12px;font-size:14px"><b style="color:var(--ink)">Good Starting BMI for Fitness Goals</b><br>Based on research, an ideal body fat percentage to start gaining muscle and building a fit body faster is between 18% and 25%.</p>`:`<p style="margin-top:12px;font-size:14px"><b style="color:var(--ink)">Risks for an unhealthy BMI</b><br>Elevated blood pressure, cardiovascular conditions, cerebral vascular accidents, diabetes mellitus type 2, certain cancers, degenerative joint disease, lumbar discomfort, and overall increased risk of mortality.</p>`}</div>`}},
+{id:'s29',n:29,p:23,type:'q',q:'Is there a special occasion coming up?',sub:'With motivation, your goals will be easier to achieve.',opts:[['Vacation','✈️'],['Wedding','🥂'],['Sporting event','🏆'],['Beach trip','🏖️'],['Reunion','🥳'],['Family occasion','👨‍👩‍👧'],['Other','✨'],['No','🙅']],skip:v=>v==='No'?'s33':null,src:'Иконки трёх последних вариантов на скрине не видны (ниже сгиба) — подобраны. Куда ведут «Other» и «No», краулер не снял: в прототипе «No» пропускает дату.'},
+{id:'s30',n:30,type:'custom',logic:'Экраны 030–032 — один экран: поле даты (по умолчанию +3 месяца), календарь по тапу, «SKIP THIS QUESTION». Дата дальше нигде не используется — как у WalkUp.',
+ render:()=>`<h2>When's your event?</h2><p class="sub">Once we know this, we'll be able to put together your plan to help you get in fit. Your data will not be shared with any third parties.</p><div class="field"><input type="date" id="dt" value="${S.event||iso(plus(92))}" style="font-size:18px"></div>`,
+ cta:'CONTINUE',after:'<button class="link" id="skip">SKIP THIS QUESTION</button>',
+ bind:m=>{const e=m.querySelector('#dt'),b=$('#cta');const v=()=>{S.event=e.value;b.disabled=!e.value};e.oninput=e.onchange=v;v();$('#skip').onclick=next}},
+{id:'s33',n:33,type:'info',cta:'CONTINUE',logic:'Как у WalkUp (OccasionResult). Дней до цели = ceil(|текущий вес − целевой| в кг / 0,14); фунты переводим в кг (0,14 кг ≈ 0,31 lb в день, план в фунтах и кг одинаковый; у WalkUp для lb ошибочно 0,14 lb в день); дата цели = сегодня + дни. Проверено на прогоне: 89 → 80 кг 10 ноября → 65 дней → 14 января 2027. Заголовок «{цель} {kg|lb} by {дата}». Шаблон графика: цель = вес — keep_weight: у WalkUp одна точка и дата = сегодня, у нас (наш выбор) дата = сегодня + 28 дней (длина плана), ровная линия из двух точек: текущий месяц → следующий; цель > вес — low_to_high (вес → цель, текущий месяц и месяц цели); цель < вес — по целым месяцам до цели: 0 — две точки, месяцы M, M, M+1; 1 — две точки, M…M+4; 2 — три точки (вес, вес − 4,2 с округлением, цель), M…M+4; 3 и больше — четыре точки (вес, вес − 4,2, цель + 4,2, цель), месяцы M, M+1, S−1, S, S+1, где S — месяц цели. Последняя точка — «Expected Result». Подсказка «Get ready to amaze everyone at …» — повод из 029; у WalkUp повод не подставился (на прогоне пусто), у нас подставляем, при «Other» и «No» — без хвоста.',
+ html:()=>{const c=goalChart(),oc=S.answers.s29,tail=oc&&oc!=='No'&&oc!=='Other'?` at your ${oc.toLowerCase()}`:'';
+ return `<h2>We believe this is the plan you'll ever need unlike any other.</h2><p class="sub" style="margin-bottom:6px">According to the information you have provided us, you'll achieve your goal weight of</p><h2>${goalTxt()} by ${fmtS(c.goal)}</h2><p class="sub" style="font-size:14px">Get ready to amaze everyone${tail}!</p>
+ <div class="card">${c.svg}</div>`}},
+{id:'s34',n:34,type:'custom',noCta:true,logic:'Лоадер: кольцо с процентами, мозаика фото крутится вверх, на 100% автопереход. У WalkUp здесь же меню и Help.',
+ render:()=>`<div class="ldr"><div class="ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" stroke="#FFD5DD" stroke-width="10" fill="none"/><circle id="arc" cx="50" cy="50" r="42" stroke="#FF2D55" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="263.9" stroke-dashoffset="263.9"/></svg><span id="pc">0%</span></div>Creating your personalized plan.</div>
+ <h2 style="font-size:22px;margin-bottom:4px">Analyzing your data</h2><p class="sub" style="margin-bottom:0">Please wait while we create your personalized plan</p>
+ <div class="mosaic">${[0,1,2].map(c=>`<div>${[1,2,3,1,2,3].map(r=>{const k=c*3+r;return ph(['woman ~65 tai chi stance, living room','woman ~70 arms raised, backyard','couple ~60 practicing together','woman ~55 slow step, park','close-up: soft trousers and flat shoes on grass','woman ~70 arms wide, by the window','two women ~60 side by side','woman ~50 at home, living room','woman ~65 eyes closed, breathing'][k-1],'',`034-${k}`)}).join('')}</div>`).join('')}</div>`,
+ bind:m=>{let p=0;const a=m.querySelector('#arc'),t=m.querySelector('#pc');const iv=setInterval(()=>{p=Math.min(100,p+2);t.textContent=p+'%';a.style.strokeDashoffset=263.9*(1-p/100);if(p>=100){clearInterval(iv);setTimeout(next,300)}},70);LOOP=iv}},
+{id:'email',n:0,type:'custom',src:'Не из WalkUp: у WalkUp экрана email нет. Формат — как экран email в walking-v3.',logic:'Email после лоадера, до готового плана: план показываем после ввода. CONTINUE неактивна, пока email не похож на адрес (есть @ и точка после него). Email сохраняем сразу при CONTINUE: с этого момента идёт отсчёт 15 минут до письма «не купил». Этот же email — в чекауте (поля email там нет), в письме и на success. Отдельного экрана согласия на рассылку нет: строка о письмах под полем, отписка — в каждом письме.',
+ render:()=>`<h2>Your plan is ready! Where should we <span class="red">send it</span>?</h2><p class="sub">Enter your email to see your personal Tai Chi Walking plan.</p><div class="field">✉️<input type="email" id="em" placeholder="Your email" autocomplete="email" value="${S.email}" style="font-size:18px;font-weight:600"></div>
+ <p class="fine">🔒 We respect your privacy. We’ll send your plan and helpful tips to this email. You can unsubscribe at any time. See our <u>Privacy Policy</u>.</p>`,
+ cta:'CONTINUE',bind:m=>{const e=m.querySelector('#em'),b=$('#cta');const v=()=>{S.email=e.value.trim();b.disabled=!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(S.email)};e.oninput=v;v()}},
+{id:'s35',n:35,type:'info',cta:'CONTINUE',logic:'Как у WalkUp (PlanReady): «Your Weight», подписи Now и After 4 weeks, ось Week 1–4, чисел из ответов нет. У WalkUp две анимации: цель меньше веса — линия вниз (как здесь), цель больше веса — линия вверх.',html:()=>`<div class="card" style="border:0;padding:0;margin-top:20px"><b style="font-size:18px">Your Weight</b><svg class="chart" viewBox="0 0 320 170"><defs><linearGradient id="yg" x1="0" x2="1"><stop offset="0" stop-color="#3DBE6E"/><stop offset=".5" stop-color="#FFC107"/><stop offset="1" stop-color="#FF2D55"/></linearGradient><linearGradient id="ya" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#FFD5DD" stop-opacity=".7"/><stop offset="1" stop-color="#FFD5DD" stop-opacity="0"/></linearGradient></defs>${[50,85,120].map(y=>`<line x1="10" y1="${y}" x2="310" y2="${y}" stroke="#E6E6E6" stroke-dasharray="3 4"/>`).join('')}
+ <path d="M30 40 C100 46 130 80 170 92 C220 108 250 118 296 126 L296 145 L30 145Z" fill="url(#ya)"/><path d="M30 40 C100 46 130 80 170 92 C220 108 250 118 296 126" stroke="url(#yg)" stroke-width="4" fill="none"/>
+ <circle cx="30" cy="40" r="7" fill="#fff" stroke="#3DBE6E" stroke-width="3"/><rect x="10" y="8" width="44" height="22" rx="10" fill="#0F202E"/><text x="32" y="23" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">Now</text>
+ <circle cx="296" cy="126" r="7" fill="#fff" stroke="#FF2D55" stroke-width="3"/><rect x="214" y="90" width="96" height="24" rx="10" fill="#FF2D55"/><text x="262" y="106" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">After 4 weeks</text>
+ ${['Week 1','Week 2','Week 3','Week 4'].map((w,i)=>`<text x="${40+i*82}" y="164" font-size="11" fill="#8A8A8E" text-anchor="middle">${w}</text>`).join('')}</svg></div>
+ <h2 style="margin-top:40px">Your 4-week <span class="red">Tai Chi Walking</span> plan is ready!</h2>`},
+{id:'paywall',n:36,file:'050-paywall-full.jpg',sec:-1,type:'custom',noCta:true,logic:'Пейволл 036–050 сверху вниз: бегущая строка Flash Sale, липкая плашка с таймером 10:00, Now/Goal, три тарифа (по умолчанию 4-WEEK), гарантия, отзывы, FAQ, приложение, «What you will get», второй блок тарифов с плашкой «83% off», гарантия, футер. Цены — как у WalkUp. Закрыть чекаут → exit-offer. Подстановки как у WalkUp (Purchase): фото Now — картинка выбранного на 009 типа тела (P01-1…4, та же, что на 028), Your Goal — выбранного на 010 (P02-1…4); Body fat Now — по ИМТ от текущего веса, Your Goal — по ИМТ от целевого: < 18,5 — 8–12%, < 25 — 12–24%, < 30 — 25–31%, < 35 — 32–39%, < 40 — 40–45%, иначе >45%; Level — значение уровня из ответа 019 (в конфиге WalkUp, по умолчанию 3 из 5; на прогоне с Sedentary — 3), у цели все 5. Target Weight — ответ 025 с единицами, Starting Level — текст ответа 019. Ленты MOST POPULAR — зелёной полосой над карточкой, магазин — только App Store, подвал как в walking-v3.',
+ render:()=>paywall(),bind:m=>bindPaywall(m)},
+{id:'checkout',n:51,file:'051-checkout.jpg',sec:-1,type:'custom',noCta:true,logic:'Чекаут — шторка поверх пейволла: расшифровка цены, PayPal / G Pay в один клик, карта. У WalkUp email, имени и адреса нет. У нас email уже введён на экране email перед планом, поэтому в форме карты поля email нет; если в PayPal / Google Pay другой email, аккаунт и письма остаются на email из воронки. Форма — заглушка.',
+ render:()=>paywall(),bind:m=>{bindPaywall(m);checkout()}},
+{id:'exit',n:53,file:'053-paywall-exit-offer.jpg',sec:-1,type:'custom',noCta:true,logic:'Exit-offer при попытке уйти (закрыть чекаут). У WalkUp после GOT IT ничего не меняется: та же скидка 83% и те же цены.',
+ render:()=>paywall(),bind:m=>{bindPaywall(m);exitModal()}},
+{id:'success',n:0,sec:-1,type:'custom',noCta:true,logic:'Не из WalkUp: экран после оплаты краулер не видел. Success как в walking-v3: аккаунта в приложении нет, поэтому без шага Sign in; доступ после покупки — общий раздел «Покупка и доступ в приложении» в черновике разработки. Под строкой «We also sent these steps to your email» — email с экрана email перед планом.',
+ render:()=>`<img src="${ICON}" alt="" style="width:72px;height:72px;border-radius:18px;margin:10px auto 14px;display:block"><h1>Welcome!</h1><p class="sub">Your Tai Chi Walking plan is waiting in the app. Two steps and you’re in:</p>
+ <ol class="steps2"><li><b>Download the app</b><a class="btn" href="${APP_URL}" target="_blank" rel="noopener">${APPLE.replace('fill="#000"','fill="#fff"').replace('width="30" height="36"','width="18" height="22"')}Download on the App Store</a></li><li><b>Start Day 1 — a 7-minute Tai Chi walk today</b><span>Open the app and tap your first Tai Chi walk. Go slowly — you can follow along at home.</span></li></ol>
+ <p class="fine" style="text-align:center;font-size:15px">We also sent these steps to your email:</p><p class="uem">${S.email||'jane.miller@gmail.com'}</p>`}
+];
+
+// ---------- paywall ----------
+const PLANS=[
+ {id:'w1',title:'7-DAY-TRIAL',full:'59.90',price:'5.99',dold:'8.56',day:'0.86',label:'7-day trial',per:'7-day'},
+ {id:'w4',title:'4-WEEK PLAN',rib:'🎉 MOST POPULAR',full:'61.71',price:'10.49',dold:'2.20',day:'0.37',label:'Regular 4-week trial',per:'4-week'},
+ {id:'w12',title:'12-WEEK PLAN',full:'79.45',price:'17.48',dold:'0.95',day:'0.21',label:'12-week plan',per:'12-week'}];
+const BILL={
+ w1:'To avoid any disruption, you agree that the plan you selected will automatically be extended at the full price for successive renewal periods and you will be charged $59.99 every 4-week. Cancel anytime.',
+ w4:'To avoid any disruption, you agree that the plan you selected will automatically be extended at the full price for successive renewal periods and you will be charged $59.99 every 4-week. Cancel anytime.',
+ w12:'To avoid any disruption, you agree that the plan you selected will automatically be extended at the full price for successive renewal periods and you will be charged $79.99 every 12-week. Cancel anytime.'};
+const cur=()=>PLANS.find(p=>p.id===S.plan);
+function planCard(p){const [d,c]=p.day.split('.');return `<div class="pl${p.rib?' hasrib':''}${p.id===S.plan?' sel':''}" data-p="${p.id}">${p.rib?`<span class="rib">${p.rib}</span>`:''}<span class="rb"></span>
+ <div class="mid"><b>${p.title}</b><div class="pr"><s>$${p.full}</s><span>$${p.price}</span></div>${p.bonus?`<span class="bonus">${p.bonus}</span>`:''}</div>
+ <div class="pd"><span class="o">$${p.dold}</span><sup>$</sup><b>${d}</b><em>${c}<small>per day</small></em></div></div>`}
+const payLogos=`<p class="gsc">Guaranteed Safe Checkout <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z" fill="#9AA3B5"/><path d="M8.5 12l2.5 2.5 4.5-5" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></p><div class="logos"><span class="visa">VISA</span><svg viewBox="0 0 40 24" width="36" height="22"><circle cx="15" cy="12" r="10" fill="#EB001B"/><circle cx="25" cy="12" r="10" fill="#F79E1B" fill-opacity=".9"/></svg><span class="ppl"><i>Pay</i><i>Pal</i></span><span class="ssl">SSL<br>Secure<br>Connection</span></div>`;
+const APPLE=`<svg viewBox="0 0 384 512" width="30" height="36"><path fill="#000" d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>`;
+/* как у WalkUp: слева от веса — значок весов; Starting Level — ответ на s17 «How often do you exercise?», слева наша красная шкала из 5 столбиков, как в вариантах ответа на s17 (Sedentary 1 … Almost every day 5) */
+const SCALE_ICO=`<svg class="sico" viewBox="0 0 24 24" width="22" height="22"><rect x="2" y="2" width="20" height="20" rx="5" fill="#0F202E"/><path d="M7 9.5a7 7 0 0 1 10 0l-1.6 2.1a4.4 4.4 0 0 0-6.8 0z" fill="#fff"/><path d="M12 11.6l1.6-2.4" stroke="#0F202E" stroke-width="1.3" stroke-linecap="round"/></svg>`;
+const LEVELS=['Sedentary','1-2 times a month','1-2 times a week','3-4 times a week','Almost every day'];
+const lvlIcon=()=>sig(Math.max(1,LEVELS.indexOf(S.answers.s17)+1));
+function planBlock(ticket){
+ return `<h2 style="margin-top:8px">Your Personalized Plan is Ready!</h2><p class="sub" style="margin-bottom:10px">Based on your current fitness intensity level:</p>
+ <div class="sum2"><div>Target Weight<b>${SCALE_ICO}${goalTxt()}</b></div><div>Starting Level<b>${lvlIcon()}${S.answers.s17||'Sedentary'}</b></div></div>
+ ${ticket?`<div class="ticket"><div class="pc">83%<small>off</small></div><div class="tl2">offer awaits you!<br>This offer ends in</div><div class="tiles"><b class="tmm">10</b>:<b class="tms">00</b>:<b class="tmx">000</b></div></div>`:''}
+ <div class="pls">${PLANS.map(planCard).join('')}</div>
+ <div class="banner">👍 Give yourself 4 weeks, you'll see a change.</div>
+ <div class="seal"><i>30 DAY MONEY-BACK</i><u>100% Money-Back Guarantee</u></div>
+ <button class="btn buy pulse">GET MY PLAN ›</button><p class="fine bill">${BILL[S.plan]}</p>${payLogos}`}
+const rcard=(n,t,d,x,pic)=>`<div class="rcard"><h4>${t}</h4><div class="meta"><span>${n}</span><span>${d}</span></div><div class="stars">★★★★★</div>${pic?ph(pic,'','P04'):''}<p>${x}</p><button class="more">Show All ⌄</button></div>`;
+const trev=(e,n,x)=>`<div class="trev"><span class="av">${e}</span><div><b>${n}</b><p>${x}</p></div></div>`;
+function paywall(){
+ return `<div class="pw"><div class="flash"><span>${'⚡️🎁 Flash Sale! &nbsp; '.repeat(16)}</span></div>
+ <div class="topbar"><div><small>83% discount is reserved for:</small><b class="tm">10:00</b></div><button class="btn buy">GET MY PLAN</button></div>
+ <div class="nowgoal2"><div class="hd"><span>Now</span><span>Your Goal</span></div><div class="cols">${ph(`Now: woman ~55, current body type «${BODY_CUR[bodyIdx('s09')-1]}», light linen top, frontal, waist up`,'',`P01-${bodyIdx('s09')}`)}${ph(`Your Goal: same woman, desired body type «${BODY_TGT[bodyIdx('s10')-1]}», more upright, smiling`,'',`P02-${bodyIdx('s10')}`)}</div><span class="chev">›</span>
+ <div class="cols"><div class="t">Body fat<b>${fatRange(bmi())}</b>Level<div class="seg5">${[1,2,3,4,5].map(i=>`<i class="${i<=3?'on':''}"></i>`).join('')}</div></div><div class="t">Body fat<b>${fatRange(tbmi())}</b>Level<div class="seg5">${[1,2,3,4,5].map(i=>`<i class="on"></i>`).join('')}</div></div></div></div>
+ ${planBlock(false)}
+ <h2 style="margin-top:30px">Our users meet their goals</h2>
+ <div class="carousel auto rv">${rcard('Linda','A Gentle Way to Start Again','Aug. 10th','As someone new to tai chi, I was nervous at first. But this Tai Chi Plan made it so easy! The instructions are clear, the pace is gentle, and I never felt overwhelmed. Now I look forward to my daily practice—it’s truly beginner-friendly!')}
+ ${rcard('Patricia','A Little Less Sitting, a Little More Moving','Nov. 17th','Most evenings, I’d end up on the sofa, telling myself I’d exercise tomorrow. Starting at home made it easier to finally give Tai Chi walking a go. I’m still learning, but I don’t feel rushed to keep up. It’s become a little part of my day that helps me unwind and feel good about doing something for myself.')}
+ ${rcard('Richard','Moving Feels Good Again','Oct. 1st','I used to wake up feeling stiff and take a while to get going. I wanted a gentle way to be more active, so I gave beginner Tai Chi walking a try. The slower pace suits me, and I like being able to ease into it. These days, I feel less stiff and more willing to get outside and move.','before/after: man ~55, grey henley and jeans vs black tee and shorts, beige hallway')}</div><div class="dots"></div>
+ <h2 style="margin-top:28px">people often ask</h2><div class="faq">
+ <div><span><b>How is my plan created?</b><p>We use the answers you provided and our unique algorithms to target your program specifically to your individual needs and goals. Our programs are verified by experts, so you can rest assured that your program will work for you.</p></span></div>
+ <div><span><b>How do I see my program?</b><p>Every plan is personalized and our fitness experts work hard to make sure you will love them. It normally takes a few hours to get access to your plan via email.</p></span></div>
+ <div><span><b>Are there any device requirements?</b><p>To be able to access and use your plan, you need an iPhone with iOS 14.0 or later.</p></span></div></div>
+ <h2 style="margin-top:28px">Maximize your results using our Easy-to-Use mobile app</h2>
+ <div class="phwrap"><div class="carousel auto ph5">${['phone: workout list — “TaiChi: Awakening Vital Energy 54 kcal/7 min/Beginner”, “TaiChi: Harmonizing Mind and Body 46 kcal/6 min/Beginner”','phone: “Homeworkout” list','phone: “Activity” — Results, AVG. STEPS 2450, AVG. CALORIES 130','phone: “TaiChi: Stabilizing Energy Flow 54 kcal/7 min/Beginner”','phone: “TaiChi: Cultivating Lifeforce 54 kcal/7 min/Beginner”'].map((t,i)=>`<div style="flex:0 0 calc(.95*(100cqw + 48px));scroll-snap-align:center">${ph(t,'min-height:300px;margin:0 auto',`P0${5+i}`)}</div>`).join('')}</div></div><div class="dots"></div>
+ <h2 style="margin-top:28px">Our users love our plan</h2>
+ ${trev('🥰','Margaret Collins','I’ve tried many fitness apps, but the Tai Chi Plan stands out for its emphasis on mindfulness. The slow, deliberate movements help me sync my breath with motion—something I never mastered in other workouts. After a stressful day, 20 minutes of this plan leaves me centered and refreshed. It’s like meditation in motion!')}
+ ${trev('🤩','Susan Whitaker','As a retiree with knee issues, I worried about finding a workout I could stick to. The Tai Chi Plan’s seated modifications are a blessing! The instructor explains every detail, and I can adjust the intensity. Now, my grandkids join me—it’s become our bonding time!')}
+ ${trev('🥰','Carol','My doctor recommended Tai Chi for balance, and this plan delivers. The step-by-step breakdowns (like ‘weight shift drills’) made it easy to learn. Within weeks, I noticed fewer stumbles and better posture. Even my physical therapist approved!')}
+ <div class="laurel">🌿 15+ million 🌿</div><p>started their walking journey with us</p>
+ <div class="rate"><div class="stars">★★★★★</div><b>4.8 out of 5</b><a class="store" href="${APP_URL}" target="_blank" rel="noopener">${APPLE}<span>App Store</span></a><p class="fine" style="text-align:center;margin:0">over 22.2K 5-star ratings</p></div>
+ <h2 style="margin-top:24px">What you will get</h2><p class="left" style="margin-bottom:8px">Our program combines AI-powered insights with fitness science to make every walk count. Designed by movement experts and data scientists, ${BRAND} ensures your walking routine is effective, enjoyable, and tailored to you.</p>
+ <div class="devpill">💡 Mobile phone📱 + Pad + PC 💻 All Available</div>${ph('devices mock-up: monitor + tablet + phone with the Depfit app','min-height:180px','P10')}
+ <ul class="list"><li><b>Smart Step Tracking:</b> Precision step counting with real-time feedback, so you never miss progress.</li><li><b>AI Music Sync:</b> Automatically matches music tempo to your walking pace, keeping you motivated and in rhythm.</li><li><b>Personalized Plans:</b> Adapts to your fitness level, goals (weight loss, endurance, recovery), and even weather conditions.</li><li><b>Data-Driven Coaching:</b> Analyzes your walking patterns (speed, distance, calories) to optimize future sessions.</li><li><b>50+ Guided Walks:</b> From scenic virtual routes to power-walking challenges, all with expert audio guidance.</li></ul>
+ ${weekTable(true)}
+ ${planBlock(true)}
+ <h2 style="margin-top:30px">100% Money-Back Guarantee</h2><div class="seal big"><i>30 DAY MONEY-BACK</i></div>
+ <p class="left" style="font-size:15px">We are confident that our program will deliver for you, promising noticeable outcomes within a month! If you don't experience the desired results and can demonstrate compliance with our guidelines, we're committed to offering a full refund. Be sure to review our <u>Refund Policy</u> for all the necessary details.</p>
+ <div class="foot"><p><a href="#">Privacy Policy</a>, <a href="#">Terms of Service</a>, <a href="#">Refund Policy</a></p><p><a href="#">Manage Privacy Preferences</a></p>${payLogos}<p class="co">[Company name, City, Country]</p></div></div>`}
+/* автокарусель как у WalkUp: листается сама каждые 3,5 с, точки под каруселью, после касания пауза 8 с; у телефонов центральная картинка 95% ширины (сам телефон около 70–75%), боковые уменьшены до 80% и придвинуты к центру */
+function autoCarousel(c){
+ const items=[...c.children],box=c.closest('.phwrap')||c,dots=box.nextElementSibling,center=c.classList.contains('ph5');let idx=0,hold=0;
+ dots.innerHTML=(center?'<button class="arr l" aria-label="Previous">‹</button>':'')+items.map((_,i)=>`<i data-i="${i}"></i>`).join('')+(center?'<button class="arr r" aria-label="Next">›</button>':'');
+ const cur=i=>center&&items.forEach((it,k)=>{it.classList.toggle('cur',k===i);it.classList.toggle('bl',k<i);it.classList.toggle('br',k>i)});
+ const mark=i=>{idx=i;cur(i);dots.querySelectorAll('i').forEach((d,k)=>d.classList.toggle('on',k===i))};
+ const rel=it=>c.scrollLeft+it.getBoundingClientRect().left-c.getBoundingClientRect().left;
+ const to=i=>{i=(i+items.length)%items.length;const it=items[i];c.scrollTo({left:center?rel(it)-(c.clientWidth-it.offsetWidth)/2:rel(it)-parseFloat(getComputedStyle(c).paddingLeft),behavior:'smooth'});mark(i)};
+ mark(0);
+ dots.onclick=e=>{const d=e.target.closest('i');if(d){hold=Date.now();to(+d.dataset.i)}};
+ dots.querySelectorAll('.arr').forEach(b=>b.onclick=()=>{hold=Date.now();to(idx+(b.classList.contains('l')?-1:1))});
+ c.addEventListener('pointerdown',()=>hold=Date.now());c.addEventListener('touchstart',()=>hold=Date.now(),{passive:true});
+ c.addEventListener('scroll',()=>{const mid=c.scrollLeft+c.clientWidth/2;let b=0,bd=1e9;items.forEach((it,i)=>{const d=Math.abs(rel(it)+it.offsetWidth/2-mid);if(d<bd){bd=d;b=i}});cur(b);if(Date.now()-hold<8000)mark(b)},{passive:true});
+ const iv=setInterval(()=>{if(!c.isConnected)return clearInterval(iv);if(Date.now()-hold<8000||document.querySelector('.modal'))return;to(idx+1)},3500);
+}
+function bindPaywall(m){
+ startTimer();
+ m.querySelectorAll('.buy').forEach(b=>b.onclick=checkout);
+ m.querySelectorAll('.more').forEach(b=>b.onclick=()=>{const c=b.closest('.rcard');c.classList.toggle('open');b.textContent=c.classList.contains('open')?'Show Less ⌃':'Show All ⌄'});
+ m.querySelectorAll('.carousel.auto').forEach(autoCarousel);
+ m.querySelectorAll('.pl').forEach(c=>c.onclick=()=>{S.plan=c.dataset.p;m.querySelectorAll('.pl').forEach(x=>x.classList.toggle('sel',x.dataset.p===S.plan));m.querySelectorAll('.bill').forEach(x=>x.textContent=BILL[S.plan])});
+}
+function comp(t,files){const p=document.querySelector('#main .src');if(!p)return;p.querySelector('.srct').textContent=t;p.querySelector('.srci').innerHTML=files.map(f=>`<img src="${ORIG+f}" alt="">`).join('');p.scrollTop=0}
+const COMP_PW=()=>comp(S.exitShown?'WalkUp 050. Пейволл после exit-offer: у WalkUp скидка не растёт — те же 83% и те же цены (прогон 10 ноября 2026, кадры 054–056).':'WalkUp 036–050. Пейволл целиком.',['050-paywall-full.jpg']);
+function checkout(){
+ comp(S.exitShown?'WalkUp 055–056. Чекаут после exit-offer — тот же, цены не изменились.':'WalkUp 051–052. Чекаут — шторка поверх пейволла.',S.exitShown?['055-checkout-exit-offer.jpg','056-checkout-exit-offer.jpg']:['051-checkout.jpg','052-checkout.jpg']);
+ const p=cur(),full=+p.full,pr=+p.price,off=full-pr,pct=Math.round(off/full*100);
+ const d=document.createElement('div');d.className='modal';
+ d.innerHTML=`<div class="sheet chk chkx"><button class="x" id="cl" aria-label="Close" style="left:auto;right:16px">×</button><h2>Checkout</h2>
+ <div class="rowkv"><span>${p.label}</span><b>$${p.full}</b></div><div class="rowkv"><span>${pct}% Introductory price discount</span><b class="red">-$${off.toFixed(2)}</b></div>
+ ${p.bonus?'<div class="rowkv"><span>Additional fat-burning walking classes</span><b class="green">FREE</b></div>':''}
+ <div class="rowkv"><b>Total today:</b><b>$${p.price} <span style="font-weight:400;color:var(--muted)">for ${p.per}</span></b></div><p class="red" style="font-size:14px;text-align:right">🔥 You just saved $${off.toFixed(2)} (${pct}% off)</p>
+ <h3 style="margin:18px 0 2px;font-size:17px">Select your payment method</h3><p class="fine" style="margin-top:0">✓ All transactions are secure and encrypted</p>
+ <div class="pm" data-m="pp"><span class="rb"></span>One-click payment <span class="pmlogos"><span><svg viewBox="0 0 24 24" width="18" height="18"><path fill="#003087" d="M7.3 21.5H3.6c-.3 0-.5-.3-.4-.5L5.9 3.4c.1-.4.4-.7.8-.7h6.6c3.3 0 5.4 1.7 4.9 4.9-.6 3.8-3.2 5.6-6.7 5.6H9.6c-.4 0-.7.3-.8.7z"/><path fill="#009CDE" d="M19.4 8.1c-.6 3.6-3.1 5.4-6.6 5.4h-1.5c-.4 0-.7.3-.8.7l-1 6.5-.3 1.6c0 .3.2.5.4.5h2.9c.4 0 .7-.3.7-.6l.6-3.8c.1-.4.4-.6.7-.6h.5c3 0 5.3-1.2 6-4.8.3-1.6.1-2.9-.6-3.8z"/></svg></span><span><svg viewBox="0 0 40 16" width="38" height="16"><text x="0" y="13" font-family="Arial,Helvetica,sans-serif" font-size="14" font-weight="700"><tspan fill="#4285F4">G</tspan><tspan fill="#5F6368" dx="2">Pay</tspan></text></svg></span></span></div>
+ <div class="pm sel" data-m="card"><span class="rb"></span>Credit card <span class="pmlogos"><span><svg viewBox="0 0 40 14" width="36" height="13"><text x="20" y="12" text-anchor="middle" font-family="Arial,Helvetica,sans-serif" font-size="14" font-style="italic" font-weight="900" fill="#1A1F71">VISA</text></svg></span><span><svg viewBox="0 0 32 20" width="28" height="18"><circle cx="12" cy="10" r="8" fill="#EB001B"/><circle cx="20" cy="10" r="8" fill="#F79E1B"/><path d="M16 3.6a8 8 0 0 1 0 12.8 8 8 0 0 1 0-12.8z" fill="#FF5F00"/></svg></span><span><svg viewBox="0 0 32 20" width="28" height="18"><circle cx="12" cy="10" r="8" fill="#EB001B"/><circle cx="20" cy="10" r="8" fill="#00A2E5"/><path d="M16 3.6a8 8 0 0 1 0 12.8 8 8 0 0 1 0-12.8z" fill="#7375CF"/></svg></span></span></div>
+ <div class="cardf"><div>Card number</div><div>Expiry date<br><small>Front of card in MM/YY format</small></div><div>Security code<br><small>3 digits on back of card</small></div></div>
+ <button class="btn" id="paid">CONTINUE</button><p class="fine" style="text-align:center">Payment form placeholder (prototype)</p></div>`;
+ document.body.appendChild(d);
+ d.querySelectorAll('.pm').forEach(x=>x.onclick=()=>d.querySelectorAll('.pm').forEach(y=>y.classList.toggle('sel',y===x)));
+ d.querySelector('#paid').onclick=()=>{d.remove();go('success')};
+ d.querySelector('#cl').onclick=()=>{d.remove();if(!S.exitShown)exitModal();else COMP_PW()};
+}
+function exitModal(){
+ S.exitShown=true;comp('WalkUp 053. Exit-offer при закрытии чекаута.',['053-paywall-exit-offer.jpg']);
+ const d=document.createElement('div');d.className='modal';
+ d.innerHTML=`<div class="sheet" style="position:relative"><button class="x" id="ex" style="position:absolute;left:16px;top:14px;border:0;background:none;font-size:26px;color:var(--idle);cursor:pointer">×</button><h2>Did you know?</h2>
+ <p class="sub">A research conducted at AMA (American Medical Association) revealed that <b class="red">72.5%</b> of individuals who embarked on a weight loss journey have experienced <b class="red">regaining the weight</b> they initially shed at least one time.</p>
+ <p style="font-size:13px;font-weight:700;color:var(--ink)">Weight Loss, Mobility, Heart Health, Longevity</p>
+ <div class="ebars"><div><div style="height:60px;background:var(--coral-soft)"></div><small>ON YOUR OWN</small></div><div><div style="height:140px;background:var(--accent)">2X 🎉</div><small>WITH ${BRAND.toUpperCase()}</small></div></div>
+ <p class="fine" style="text-align:center">*Based on a 12-week study of ${BRAND} membership activity data</p>
+ <div class="note" style="text-align:center">We're committed to helping you achieve and sustain your ideal weight, which is why we're providing an <b class="red">exclusive discount</b> on your program.</div><button class="btn" id="got">GOT IT</button></div>`;
+ document.body.appendChild(d);
+ d.querySelector('.ebars').querySelectorAll(':scope>div').forEach(x=>{x.style.width='84px';x.style.background='none';x.style.display='block';x.style.padding='0'});
+ d.querySelector('#got').onclick=d.querySelector('#ex').onclick=()=>{d.remove();COMP_PW()};
+}
+
+// ---------- engine ----------
+let idx=0,LOOP=null,timerIv;const hist=[];
+const $=s=>document.querySelector(s);
+function seg(k,o){return `<div class="seg">${o.map(([v,l])=>`<button data-k="${k}" data-u="${v}" class="${S[k]===v?'on':''}">${l}</button>`).join('')}</div>`}
+function numField(k,unit,demo,val){return `<div class="field big"><input inputmode="decimal" id="${k}" data-demo="${demo}" placeholder="0" value="${val??S[k]??''}"><label>${unit}</label></div>`}
+function bindSeg(m){m.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{const kk=b.dataset.k,u=b.dataset.u;if(S[kk]===u)return;
+  if(kk==='wu'){const f=u==='lbs'?2.2046:1/2.2046;['w','goal'].forEach(x=>{if(S[x])S[x]=Math.round(S[x]*f)})}
+  if(kk==='hu'&&S.h){S.h=Math.round(u==='ft'?S.h/2.54:S.h*2.54)}S[kk]=u;render()})}
+function bindNum(m,k,rng){
+ bindSeg(m);
+ const e=m.querySelector('#'+k),b=$('#cta'),er=m.querySelector('#err');
+ const v=()=>{const x=+e.value.replace(',','.'),[lo,hi,u]=rng();const ok=e.value!==''&&x>=lo&&x<=hi;S[k]=e.value===''?null:x;b.disabled=!ok;er.innerHTML=`Please enter a value from <b>${lo}${u}</b> to <b>${hi}${u}</b>`;er.classList.toggle('bad',e.value!==''&&!ok)};
+ e.oninput=v;v();
+}
+function bindFt(m){
+ bindSeg(m);
+ const f=m.querySelector('#hft'),i=m.querySelector('#hin'),b=$('#cta'),er=m.querySelector('#err');
+ const v=()=>{const a=+f.value,c=+(i.value||0),tot=a*12+c,ok=f.value!==''&&a>=3&&a<=7&&c>=0&&c<12&&tot>=36&&tot<=96;S.h=f.value===''?null:tot;b.disabled=!ok;er.innerHTML='Please enter a value from <b>3ft</b> to <b>7ft 11in</b>';er.classList.toggle('bad',f.value!==''&&!ok)};
+ f.oninput=i.oninput=v;v();
+}
+function startTimer(){clearInterval(timerIv);if(!S.deadline)S.deadline=Date.now()+600000;
+ const upd=()=>{const r=Math.max(0,S.deadline-Date.now()),mm=String(Math.floor(r/60000)).padStart(2,'0'),ss=String(Math.floor(r/1000)%60).padStart(2,'0'),ms=String(r%1000).padStart(3,'0');
+  document.querySelectorAll('.tm').forEach(x=>x.textContent=mm+':'+ss);document.querySelectorAll('.tmm').forEach(x=>x.textContent=mm);document.querySelectorAll('.tms').forEach(x=>x.textContent=ss);document.querySelectorAll('.tmx').forEach(x=>x.textContent=ms)};
+ upd();timerIv=setInterval(upd,47)}
+function go(id){hist.push(idx);idx=SCREENS.findIndex(s=>s.id===id);render()}
+function next(){if(idx<SCREENS.length-1){hist.push(idx);idx++;render()}}
+function back(){if(hist.length){idx=hist.pop();render()}}
+function optHTML(o,multi,sel){const [l,ic,sub]=Array.isArray(o)?o:[o];
+ return `<button class="opt${sel?' sel':''}" data-v="${l.replace(/"/g,'&quot;')}">${multi?'<span class="box"></span>':''}<span class="lbl">${l}${sub?`<small>${sub}</small>`:''}</span>${icon(ic)}</button>`}
+const GLOW={Arms:[[22,33],[78,33]],Chest:[[50,26]],Abs:[[50,40]],Butt:[[50,51]],Legs:[[40,72],[60,72]]};
+function render(){
+ clearInterval(timerIv);clearInterval(LOOP);clearTimeout(LOOP);document.querySelectorAll('body>.modal').forEach(x=>x.remove());
+ const s=SCREENS[idx],m=$('#main');CUR=s.n;window.scrollTo(0,0);
+ $('#back').hidden=!s.p;$('#logo').innerHTML=s.sec<0?'':`<img class="ic" src="${ICON}" alt=""><img src="${LOGO}" alt="${BRAND}">`;
+ $('#count').textContent=s.p?`${s.p}/${TOTAL}`:'';
+ $('#barw').style.display=s.p?'':'none';$('#bar').style.width=s.p?Math.round(s.p/TOTAL*100)+'%':'0';
+ document.querySelector('header').style.display=s.sec<0?'none':'';
+ let h='',cta=null;
+ if(s.type==='q'){h=`<h2>${s.q}</h2>${s.sub?`<p class="sub">${s.sub}</p>`:'<div style="height:12px"></div>'}<div class="opts${s.layout?' '+s.layout:''}">${s.opts.map(o=>optHTML(o,false,S.answers[s.id]===(Array.isArray(o)?o[0]:o))).join('')}</div>${s.below?s.below():''}`}
+ else if(s.type==='m'){const c=S.answers[s.id]||[];const os=s.opts.map(o=>optHTML(o,true,c.includes(Array.isArray(o)?o[0]:o))).join('');
+  const glows=c.includes('Full Body')?'<i class="glow all"></i>':c.filter(z=>GLOW[z]).flatMap(z=>GLOW[z].map(([l,t])=>`<i class="glow" style="left:${l}%;top:${t}%"></i>`)).join('');
+  h=`<h2>${s.q}</h2>${s.sub?`<p class="sub">${s.sub}</p>`:'<div style="height:12px"></div>'}`+(s.layout==='zones'?`<div class="zones"><div class="zb">${ph(s.img)}${glows}</div><div class="opts">${os}</div></div>`:`<div class="opts multi">${os}</div>`);cta=s.cta||'CONTINUE'}
+ else if(s.type==='info'){h=s.html();cta=s.cta||'CONTINUE'}
+ else {h=s.render();cta=s.noCta?null:(s.cta||'CONTINUE')}
+ const file=s.file||(s.n&&s.n<=35?pad(s.n)+'-screen.jpg':null);
+ const srcTxt=`${s.n?`WalkUp ${pad(s.n)}. `:''}${s.src||''}`;
+ const logicH=s.logic?`<div class="logic"><b>Логика экрана</b><br>${s.logic}</div>`:'';
+ m.innerHTML=h+logicH+`<div class="src"><b>Источник:</b> <span class="srct">${srcTxt}</span><span class="srci">${file?`<img src="${ORIG+file}" alt="">`:''}</span></div>`+(cta?`<div class="cta"><button class="btn" id="cta">${cta}</button>${s.after||''}</div>`:'');
+ if(s.type==='q')m.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const v=b.dataset.v;S.answers[s.id]=v;b.classList.add('sel');setTimeout(()=>{const k=s.skip&&s.skip(v);k?go(k):next()},180)});
+ if(s.type==='m'){const btn=$('#cta');btn.disabled=!(S.answers[s.id]||[]).length;m.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const v=b.dataset.v;let c=S.answers[s.id]||[];if(s.none&&v===s.none)c=c.includes(v)?[]:[v];else{c=c.filter(x=>x!==s.none);c=c.includes(v)?c.filter(x=>x!==v):[...c,v]}S.answers[s.id]=c;render()})}
+ if(cta)$('#cta').addEventListener('click',()=>{if(!$('#cta').disabled)next()});
+ if(s.bind)s.bind(m);
+ $('#jump').value=s.id;history.replaceState(null,'','#'+s.id);
+}
+$('#back').onclick=back;
+$('#tg').onclick=()=>document.body.classList.toggle('showsrc');
+$('#jump').innerHTML=SCREENS.map(s=>`<option value="${s.id}">${s.n?pad(s.n):'—'} · ${s.id}</option>`).join('');
+$('#jump').onchange=e=>go(e.target.value);
+const start=SCREENS.findIndex(s=>s.id===location.hash.slice(1));if(start>0)idx=start;
+if(new URLSearchParams(location.search).has('src'))document.body.classList.add('showsrc');
+window.addEventListener('hashchange',()=>{const i=SCREENS.findIndex(s=>s.id===location.hash.slice(1));if(i>=0&&i!==idx){hist.push(idx);idx=i;render()}});
+render();
+/* бенчмарк справа: прокрутка панели вслед за экраном */
+addEventListener('scroll',()=>{const p=document.querySelector('body.showsrc .src');if(!p||innerWidth<920)return;const k=scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight);p.scrollTop=k*(p.scrollHeight-p.clientHeight)},{passive:true});
+</script>
+</body>
+</html>

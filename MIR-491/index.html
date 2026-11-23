@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <title>MIR-491 — Шильдики допродаж</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+      }
+      body {
+        min-height: 100vh;
+        background: #f2f2f7;
+        font-family: -apple-system, 'SF Pro Text', BlinkMacSystemFont,
+          'Helvetica Neue', sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 24px 12px 40px;
+        color: #111827;
+      }
+      h1 {
+        font-size: 20px;
+        font-weight: 700;
+        margin-bottom: 4px;
+        text-align: center;
+      }
+      .subtitle {
+        font-size: 13px;
+        color: #6b7280;
+        margin-bottom: 20px;
+        text-align: center;
+        max-width: 460px;
+      }
+      .col {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        max-width: 360px;
+      }
+      .col-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #4b5563;
+        margin-bottom: 8px;
+      }
+      .phone {
+        border-radius: 24px;
+        background: #ffffff;
+        padding: 14px 14px 18px;
+        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.25);
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        position: relative;
+        overflow: hidden;
+      }
+      .status-header {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin-bottom: 4px;
+      }
+      .status-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: #111827;
+      }
+      .status-sub {
+        font-size: 12px;
+        color: #9ca3af;
+      }
+      .badge {
+        border-radius: 16px;
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        cursor: default;
+      }
+      .badge::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        opacity: 0.8;
+        pointer-events: none;
+      }
+      .badge-content {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        max-width: 65%;
+      }
+      .badge-tag {
+        font-size: 11px;
+        font-weight: 500;
+        opacity: 0.9;
+      }
+      .badge-title {
+        font-size: 14px;
+        font-weight: 700;
+        line-height: 1.3;
+      }
+      .badge-desc {
+        font-size: 11px;
+        line-height: 1.4;
+        opacity: 0.9;
+      }
+      .badge-cta {
+        position: relative;
+        z-index: 1;
+        flex-shrink: 0;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: none;
+        font-size: 13px;
+        font-weight: 600;
+        color: #111827;
+        background: rgba(255, 255, 255, 0.96);
+        cursor: pointer;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.24);
+        white-space: nowrap;
+      }
+      .badge-note {
+        font-size: 11px;
+        color: #9ca3af;
+        margin-top: 2px;
+      }
+
+      .badge--grocery {
+        background: linear-gradient(135deg, #1f7a3b 0%, #0e4d28 100%);
+      }
+      .badge--grocery::before {
+        background: radial-gradient(
+          circle at 0 0,
+          rgba(255, 255, 255, 0.26),
+          transparent 55%
+        );
+      }
+
+      /* Продуктовый шильдик — расширенные состояния */
+      .phone--grocery {
+        transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+      }
+      .phone--grocery[data-state='open-list'],
+      .phone--grocery[data-state='product-card'],
+      .phone--grocery[data-state='partner-card'] {
+        box-shadow: 0 22px 48px rgba(15, 23, 42, 0.32);
+        transform: translateY(-2px);
+      }
+
+      .badge-screen {
+        display: none;
+      }
+      .phone--grocery[data-state='collapsed'] .badge-screen--collapsed {
+        display: block;
+      }
+      .phone--grocery[data-state='open-list'] .badge-screen--open-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .phone--grocery[data-state='product-card'] .badge-screen--product-card {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .phone--grocery[data-state='partner-card'] .badge-screen--partner-card {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .panel {
+        border-radius: 18px;
+        background: #f9fafb;
+        padding: 10px 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        overflow: hidden;
+      }
+      .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+      .panel-title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .panel-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111827;
+      }
+      .panel-sub {
+        font-size: 12px;
+        color: #6b7280;
+      }
+      .panel-close {
+        border-radius: 999px;
+        width: 24px;
+        height: 24px;
+        border: none;
+        background: rgba(17, 24, 39, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        cursor: pointer;
+        color: #4b5563;
+      }
+      .panel-list {
+        margin-top: 4px;
+        border-radius: 14px;
+        background: #ffffff;
+        max-height: 220px;
+        overflow-y: auto;
+      }
+      .panel-list-item {
+        display: flex;
+        gap: 10px;
+        padding: 10px 12px;
+        border-bottom: 1px solid #f3f4f6;
+      }
+      .panel-list-item:last-child {
+        border-bottom: none;
+      }
+      .panel-list-item--clickable {
+        cursor: pointer;
+      }
+      .panel-list-thumb {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: #e5f3ea;
+        flex-shrink: 0;
+      }
+      .panel-list-body {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        flex: 1;
+      }
+      .panel-list-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #111827;
+      }
+      .panel-list-meta {
+        font-size: 11px;
+        color: #6b7280;
+      }
+      .panel-list-price {
+        font-size: 13px;
+        font-weight: 600;
+        color: #047857;
+      }
+
+      .panel-footer {
+        margin-top: 6px;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .panel-footer-btn {
+        font-size: 13px;
+        font-weight: 600;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: none;
+        background: #111827;
+        color: #f9fafb;
+        cursor: pointer;
+      }
+
+      .card {
+        border-radius: 18px;
+        background: #f9fafb;
+        padding: 10px 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+      .card-title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .card-title {
+        font-size: 14px;
+        font-weight: 600;
+      }
+      .card-sub {
+        font-size: 12px;
+        color: #6b7280;
+      }
+      .card-badge {
+        font-size: 11px;
+        border-radius: 999px;
+        padding: 4px 10px;
+        background: rgba(4, 120, 87, 0.1);
+        color: #047857;
+      }
+      .card-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: #111827;
+      }
+      .card-row + .card-row {
+        margin-top: 4px;
+      }
+      .card-label {
+        color: #6b7280;
+      }
+      .card-price {
+        font-weight: 600;
+      }
+      .card-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 8px;
+      }
+      .btn {
+        flex: 1;
+        border-radius: 999px;
+        padding: 8px 10px;
+        font-size: 13px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background: #047857;
+        color: #ecfdf3;
+      }
+      .btn-secondary {
+        background: rgba(17, 24, 39, 0.06);
+        color: #111827;
+      }
+
+      .partner-card {
+        border-radius: 18px;
+        background: #f9fafb;
+        padding: 10px 10px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .partner-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+      }
+      .partner-title-block {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .partner-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111827;
+      }
+      .partner-sub {
+        font-size: 12px;
+        color: #6b7280;
+      }
+      .partner-logo {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        background: #e5f3ea;
+      }
+      .partner-body {
+        font-size: 12px;
+        color: #4b5563;
+      }
+      .partner-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .partner-link {
+        font-size: 12px;
+        color: #047857;
+      }
+      .partner-back {
+        font-size: 12px;
+        color: #6b7280;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>MIR-491 · Шильдики допродаж</h1>
+    <p class="subtitle">
+      Продуктовый шильдик с интерактивными состояниями: свернутый баннер, список
+      товаров, карточка товара и карточка партнёра.
+    </p>
+
+    <div class="col">
+      <div class="col-title">Продуктовый шильдик</div>
+      <div class="phone phone--grocery" data-state="collapsed">
+        <div class="status-header">
+          <div class="status-title">Заказ у курьера</div>
+          <div class="status-sub">Доставим к 16:40–16:50</div>
+        </div>
+
+        <!-- Свернутый шильдик -->
+        <div class="badge-screen badge-screen--collapsed">
+          <div class="badge badge--grocery" data-role="badge-grocery">
+            <div class="badge-content">
+              <div class="badge-tag">Продукты и магазины</div>
+              <div class="badge-title">Заканчиваются продукты?</div>
+              <div class="badge-desc">
+                Подберём товары из ближайших магазинов и доставим к вам.
+              </div>
+            </div>
+            <button class="badge-cta" type="button">Заказать</button>
+          </div>
+          <div class="badge-note">
+            Свернутый баннер с допродажей продуктовых товаров.
+          </div>
+        </div>
+
+        <!-- Открытый шильдик со списком товаров (скролл) -->
+        <div class="badge-screen badge-screen--open-list">
+          <div class="panel">
+            <div class="panel-header">
+              <div class="panel-title-block">
+                <div class="panel-title">Продукты и магазины</div>
+                <div class="panel-sub">
+                  Подберём товары из ближайших магазинов.
+                </div>
+              </div>
+              <button
+                class="panel-close"
+                type="button"
+                data-action="close-to-collapsed"
+                aria-label="Свернуть"
+              >
+                ×
+              </button>
+            </div>
+
+            <div class="panel-list">
+              <div class="panel-list-item">
+                <div class="panel-list-thumb"></div>
+                <div class="panel-list-body">
+                  <div class="panel-list-title">Молоко 2,5% 1&nbsp;л</div>
+                  <div class="panel-list-meta">Из ближайшего супермаркета</div>
+                  <div class="panel-list-price">89&nbsp;₽</div>
+                </div>
+              </div>
+
+              <div
+                class="panel-list-item panel-list-item--clickable"
+                data-action="open-product-card"
+              >
+                <div class="panel-list-thumb"></div>
+                <div class="panel-list-body">
+                  <div class="panel-list-title">
+                    Хлеб цельнозерновой, нарезка
+                  </div>
+                  <div class="panel-list-meta">
+                    Рекомендуем к вашему заказу
+                  </div>
+                  <div class="panel-list-price">129&nbsp;₽</div>
+                </div>
+              </div>
+
+              <div class="panel-list-item">
+                <div class="panel-list-thumb"></div>
+                <div class="panel-list-body">
+                  <div class="panel-list-title">Яйца С1, 10&nbsp;шт.</div>
+                  <div class="panel-list-meta">Свежие из ближайшего магазина</div>
+                  <div class="panel-list-price">119&nbsp;₽</div>
+                </div>
+              </div>
+
+              <div class="panel-list-item">
+                <div class="panel-list-thumb"></div>
+                <div class="panel-list-body">
+                  <div class="panel-list-title">Сыр твёрдый, 200&nbsp;г</div>
+                  <div class="panel-list-meta">Классический, 45% жирности</div>
+                  <div class="panel-list-price">239&nbsp;₽</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel-footer">
+              <button
+                class="panel-footer-btn"
+                type="button"
+                data-action="open-product-card"
+              >
+                Подобрать товары
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Карточка конкретного товара -->
+        <div class="badge-screen badge-screen--product-card">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-block">
+                <div class="card-title">
+                  Хлеб цельнозерновой, нарезка 350&nbsp;г
+                </div>
+                <div class="card-sub">
+                  Из ближайшего магазина, доставим вместе с заказом.
+                </div>
+              </div>
+              <div class="card-badge">Рекомендуем</div>
+            </div>
+
+            <div class="card-row">
+              <span class="card-label">Цена</span>
+              <span class="card-price">129&nbsp;₽</span>
+            </div>
+            <div class="card-row">
+              <span class="card-label">Доставка</span>
+              <span>вместе с текущим заказом</span>
+            </div>
+
+            <div class="card-actions">
+              <button
+                class="btn btn-secondary"
+                type="button"
+                data-action="to-partner-card"
+              >
+                Закрыть
+              </button>
+              <button
+                class="btn btn-primary"
+                type="button"
+                data-action="to-partner-card"
+              >
+                Добавить к заказу
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Карточка партнёра -->
+        <div class="badge-screen badge-screen--partner-card">
+          <div class="partner-card">
+            <div class="partner-header">
+              <div class="partner-title-block">
+                <div class="partner-title">Магазин «Продукты у дома»</div>
+                <div class="partner-sub">
+                  Доставим выбранные товары вместе с заказом.
+                </div>
+              </div>
+              <div class="partner-logo"></div>
+            </div>
+            <div class="partner-body">
+              Вы подобрали товары в ближайшем магазине. Мы соберём и
+              привезём их одним заказом, без лишних ожиданий.
+            </div>
+            <div class="partner-footer">
+              <div class="partner-link">Перейти в магазин</div>
+              <button
+                type="button"
+                class="partner-back"
+                data-action="back-to-collapsed"
+              >
+                Назад к шильдику
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const phone = document.querySelector('.phone--grocery');
+        if (!phone) return;
+
+        const setState = (state) => {
+          phone.setAttribute('data-state', state);
+        };
+
+        // Переход из свернутого состояния в раскрытый по клику
+        const collapsedBadge = phone.querySelector('[data-role="badge-grocery"]');
+        if (collapsedBadge) {
+          collapsedBadge.addEventListener('click', () => {
+            setState('open-list');
+          });
+        }
+        const collapsedCta = phone.querySelector(
+          '.badge-screen--collapsed .badge-cta'
+        );
+        if (collapsedCta) {
+          collapsedCta.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setState('open-list');
+          });
+        }
+
+        // Кнопка закрытия из раскрытого списка обратно в базовое состояние
+        phone
+          .querySelectorAll('[data-action="close-to-collapsed"]')
+          .forEach((el) => {
+            el.addEventListener('click', () => setState('collapsed'));
+          });
+
+        // Открытие карточки товара
+        phone
+          .querySelectorAll('[data-action="open-product-card"]')
+          .forEach((el) => {
+            el.addEventListener('click', () => setState('product-card'));
+          });
+
+        // Из карточки товара в карточку партнёра (и при добавлении, и при закрытии)
+        phone
+          .querySelectorAll('[data-action="to-partner-card"]')
+          .forEach((el) => {
+            el.addEventListener('click', () => setState('partner-card'));
+          });
+
+        // Назад из карточки партнёра в базовое состояние шильдика
+        phone
+          .querySelectorAll('[data-action="back-to-collapsed"]')
+          .forEach((el) => {
+            el.addEventListener('click', () => setState('collapsed'));
+          });
+
+        // Базовая поддержка свайпа: вверх из свернутого состояния открывает список
+        let touchStartY = null;
+        phone.addEventListener(
+          'touchstart',
+          (e) => {
+            if (e.touches.length === 1) {
+              touchStartY = e.touches[0].clientY;
+            }
+          },
+          { passive: true }
+        );
+        phone.addEventListener(
+          'touchend',
+          (e) => {
+            if (touchStartY == null) return;
+            const endY = e.changedTouches[0].clientY;
+            const deltaY = endY - touchStartY;
+            touchStartY = null;
+            // свайп вверх
+            if (deltaY < -30 && phone.getAttribute('data-state') === 'collapsed') {
+              setState('open-list');
+            }
+          },
+          { passive: true }
+        );
+      })();
+    </script>
+  </body>
+</html>
+

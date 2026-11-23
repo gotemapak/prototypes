@@ -1,0 +1,133 @@
+/* MirCity Design Tokens
+   Источник: Figma-файл «Дизайн», апрель 2026
+   Используется во всех прототипах в mircity-prototypes/
+*/
+
+:root {
+
+  /* ─── ЦВЕТА ─────────────────────────────────────────── */
+
+  /* Основной бренд */
+  --color-primary:        #1F3A60;   /* Blue — кнопки, активные состояния, фильтр-чипы */
+  --color-accent:         #FF7E8A;   /* Coral — акцент, бейджи, Background/Accent */
+
+  /* Текст */
+  --color-text-primary:   #232321;   /* Основной текст, заголовки */
+  --color-text-black:     #000000;   /* Text/Black — жирный текст, цены */
+  --color-text-secondary: #AFAFAF;   /* Text/Third — подписи, метаданные */
+  --color-text-contrast:  #FFFFFF;   /* Text/Contrast — текст на тёмном фоне */
+  --color-text-dark:      #333333;   /* Промежуточный тёмный */
+
+  /* Фон */
+  --color-bg-white:       #FFFFFF;   /* Background/White — карточки, модалки */
+  --color-bg-grey:        #F5F5F5;   /* Background/grey2 — фон экранов */
+  --color-bg-divider:     #E8E8E8;   /* Разделители, бордеры */
+  --color-bg-black:       #232321;   /* Background/Black — тёмные поверхности */
+
+  /* Акцентные фоны */
+  --color-bg-blue-tint:   #F2F8FF;   /* Фон активного состояния (синий) */
+  --color-bg-pink-tint:   #FFF5F6;   /* Фон акцентного блока (розовый) */
+
+  /* Оверлей */
+  --color-overlay:        rgba(31, 58, 96, 0); /* 1F3A60 / 0% — основа для оверлеев */
+
+
+  /* ─── ТИПОГРАФИКА ───────────────────────────────────── */
+
+  --font-family:          'Roboto', sans-serif;
+
+  /* Размеры */
+  --text-xs:    12px;   /* Метки, бейджи */
+  --text-sm:    14px;   /* Подписи, навигация, кнопки */
+  --text-base:  16px;   /* Body */
+  --text-lg:    18px;   /* Заголовок страницы (Рестораны, Магазины) */
+  --text-xl:    20px;   /* Крупные заголовки */
+
+  /* Вес */
+  --font-regular:    400;
+  --font-medium:     500;
+  --font-semibold:   600;   /* Заголовки страниц */
+  --font-bold:       700;
+
+
+  /* ─── СКРУГЛЕНИЯ ────────────────────────────────────── */
+
+  --radius-xs:    2px;
+  --radius-sm:    4px;
+  --radius-md:    8px;
+  --radius-lg:    12px;
+  --radius-xl:    16px;   /* Карточки */
+  --radius-2xl:   24px;   /* Кнопки */
+  --radius-full:  999px;  /* Pill-элементы, аватары */
+
+
+  /* ─── ОТСТУПЫ (Tailwind 4px-модуль) ────────────────── */
+
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;   /* Боковые поля экрана */
+  --space-5:   20px;
+  --space-6:   24px;
+  --space-7:   28px;
+  --space-8:   32px;
+  --space-10:  40px;
+  --space-12:  48px;
+  --space-14:  56px;
+  --space-16:  64px;
+  --space-20:  80px;
+
+
+  /* ─── КОМПОНЕНТЫ ────────────────────────────────────── */
+
+  /* Кнопка */
+  --btn-height-lg:    49px;
+  --btn-height-sm:    40px;
+  --btn-radius:       24px;
+  --btn-padding-x:    16px;
+  --btn-gap:          8px;
+  --btn-font-size:    var(--text-sm);
+  --btn-font-weight:  var(--font-semibold);
+
+  /* Search bar */
+  --search-height:    48px;
+  --search-radius:    var(--radius-full);
+
+  /* Фильтр-чип */
+  --chip-height:      32px;
+  --chip-radius:      var(--radius-full);
+
+  /* Карточка ресторана (большая) */
+  --card-rest-width:  343px;
+  --card-rest-height: 228px;
+  --card-rest-radius: var(--radius-xl);
+
+  /* Карточка магазина */
+  --card-shop-width:  111px;
+  --card-shop-height: 82px;
+  --card-shop-radius: var(--radius-lg);
+
+  /* Карточка ЛП (1/2 ширины) */
+  --card-lp-width:    167px;
+  --card-lp-height:   102px;
+  --card-lp-radius:   var(--radius-lg);
+
+  /* Строка категории */
+  --category-row-height: 60px;
+
+  /* Аватар / иконка категории */
+  --avatar-size:      48px;
+  --avatar-radius:    var(--radius-full);
+
+
+  /* ─── ЛЕЙАУТ ─────────────────────────────────────────── */
+
+  --screen-width:     375px;
+  --content-width:    343px;   /* 375 - 16*2 */
+  --content-padding:  16px;    /* боковые поля */
+
+  --status-bar:       44px;
+  --tabbar-height:    80px;
+  --home-indicator:   21px;
+
+}

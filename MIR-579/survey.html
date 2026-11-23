@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIR-579 — Компонент 3: попапы опроса</title>
+  <link rel="stylesheet" href="../design-system/tokens.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-family);
+      background: #c8c8c8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 24px 0 40px;
+      gap: 12px;
+    }
+
+    /* ── Legend ── */
+    .legend {
+      width: 375px;
+      background: #1e1e1e;
+      color: #ccc;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+    .legend strong { color: #fff; }
+    .legend .tag {
+      display: inline-block;
+      background: #333;
+      border-radius: 4px;
+      padding: 1px 6px;
+      margin: 1px;
+      font-size: 11px;
+    }
+    .legend .new { background: #1F3A60; color: #fff; }
+
+    /* ── Phone shell ── */
+    .phone {
+      width: 375px;
+      background: var(--color-bg-grey);
+      border-radius: 44px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+    }
+
+    /* ── Status bar ── */
+    .status-bar {
+      height: 44px;
+      background: var(--color-bg-white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+    .status-bar .time { font-size: 15px; font-weight: 600; }
+    .status-icons { display: flex; align-items: center; gap: 5px; font-size: 13px; }
+
+    /* ── Nav ── */
+    .nav {
+      height: 44px;
+      background: var(--color-bg-white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      border-bottom: 1px solid var(--color-bg-divider);
+    }
+    .nav .back {
+      position: absolute; left: 16px;
+      font-size: 26px; cursor: pointer;
+      color: var(--color-text-primary);
+      line-height: 1;
+    }
+    .nav h1 { font-size: var(--text-lg); font-weight: var(--font-semibold); }
+    .nav .skip {
+      position: absolute; right: 16px;
+      font-size: 14px; color: var(--color-text-secondary);
+      cursor: pointer;
+    }
+
+    /* ── Progress ── */
+    .progress-section {
+      background: var(--color-bg-white);
+      padding: 10px 16px 14px;
+    }
+    .progress-label {
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      margin-bottom: 8px;
+    }
+    .progress-steps { display: flex; gap: 6px; }
+    .progress-step {
+      flex: 1;
+      height: 4px;
+      background: var(--color-bg-divider);
+      border-radius: 2px;
+    }
+    .progress-step.active { background: var(--color-primary); opacity: 0.5; }
+
+    /* ── Scroll area ── */
+    .scroll {
+      height: 516px;
+      overflow-y: auto;
+      background: var(--color-bg-grey);
+      -webkit-overflow-scrolling: touch;
+      padding: 20px 16px 12px;
+    }
+    .scroll::-webkit-scrollbar { display: none; }
+
+    .q-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      line-height: 1.3;
+      margin-bottom: 18px;
+    }
+
+    /* ── Options ── */
+    .option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      background: var(--color-bg-white);
+      border: 1.5px solid var(--color-bg-divider);
+      border-radius: var(--radius-xl);
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .option:active { opacity: 0.8; }
+    .option.selected {
+      border-color: var(--color-primary);
+      background: var(--color-bg-blue-tint);
+    }
+
+    .opt-radio {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--color-bg-divider);
+      flex-shrink: 0;
+      position: relative;
+      transition: border-color 0.15s;
+    }
+    .option.selected .opt-radio { border-color: var(--color-primary); }
+    .opt-radio::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      background: var(--color-primary);
+      border-radius: 50%;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+    .option.selected .opt-radio::after { opacity: 1; }
+
+    .opt-text {
+      flex: 1;
+      font-size: 15px;
+      color: var(--color-text-primary);
+    }
+
+    /* ── Bottom button ── */
+    .bottom-area {
+      padding: 12px 16px;
+      background: var(--color-bg-white);
+      border-top: 1px solid var(--color-bg-divider);
+    }
+    .btn-next {
+      width: 100%;
+      height: 49px;
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-2xl);
+      font-size: 15px;
+      font-weight: var(--font-semibold);
+      cursor: pointer;
+      font-family: var(--font-family);
+      transition: opacity 0.2s;
+    }
+    .btn-next:disabled { opacity: 0.3; cursor: default; }
+
+    /* ── Home bar ── */
+    .home-bar {
+      height: 21px;
+      background: var(--color-bg-white);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .home-bar::after {
+      content: ''; width: 130px; height: 5px;
+      background: #222; border-radius: 3px; opacity: 0.2;
+    }
+
+    /* ── Popup overlay ── */
+    .popup-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 100;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .popup-overlay.open { display: flex; }
+
+    .popup {
+      width: 100%;
+      background: var(--color-bg-white);
+      border-radius: 24px 24px 0 0;
+      padding: 28px 22px 20px;
+      text-align: center;
+      animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    .popup-icon { font-size: 48px; margin-bottom: 14px; }
+    .popup h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      margin-bottom: 8px;
+    }
+    .popup p {
+      font-size: 14px;
+      color: var(--color-text-secondary);
+      line-height: 1.55;
+      margin-bottom: 22px;
+    }
+    .popup-btn {
+      width: 100%;
+      height: 49px;
+      background: var(--color-primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-2xl);
+      font-size: 15px;
+      font-weight: var(--font-semibold);
+      cursor: pointer;
+      font-family: var(--font-family);
+      margin-bottom: 10px;
+      display: block;
+    }
+    .popup-btn-ghost {
+      width: 100%;
+      height: 49px;
+      background: transparent;
+      color: var(--color-text-secondary);
+      border: 1.5px solid var(--color-bg-divider);
+      border-radius: var(--radius-2xl);
+      font-size: 15px;
+      font-weight: var(--font-medium);
+      cursor: pointer;
+      font-family: var(--font-family);
+      display: block;
+    }
+
+    /* ── Demo controls ── */
+    .demo {
+      width: 375px;
+      background: #1e1e1e;
+      border-radius: 12px;
+      padding: 12px 16px;
+    }
+    .demo-title { font-size: 11px; color: #777; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .demo-row { display: flex; gap: 6px; flex-wrap: wrap; }
+    .demo-btn {
+      background: #333;
+      color: #ccc;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: var(--font-family);
+    }
+    .demo-btn:hover { background: #444; color: #fff; }
+    .demo-btn.accent { background: #1F3A60; color: #fff; }
+  </style>
+</head>
+<body>
+
+<div class="legend">
+  <strong>MIR-579 — Компонент 3: попапы опроса</strong><br>
+  Показан один вопрос (Q1) как пример экрана опроса.<br>
+  <span class="tag new">v1</span> Промежуточный попап → «Ответить сейчас» зацикливает на Q1<br>
+  <span class="tag new">v2</span> Попап завершения → «Отлично» сбрасывает демо
+</div>
+
+<!-- Phone -->
+<div class="phone">
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="status-icons">
+      <span>●●●</span>
+      <span>WiFi</span>
+      <span>🔋</span>
+    </div>
+  </div>
+
+  <!-- Nav -->
+  <div class="nav">
+    <span class="back">‹</span>
+    <h1>Опрос</h1>
+    <span class="skip">Пропустить</span>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-section">
+    <div class="progress-label">Вопрос 1 из 4</div>
+    <div class="progress-steps">
+      <div class="progress-step active"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+      <div class="progress-step"></div>
+    </div>
+  </div>
+
+  <!-- Q1 -->
+  <div class="scroll">
+    <div class="q-title">Вы живёте или работаете в Москва-Сити?</div>
+
+    <div class="option" id="opt1" onclick="pick(this)">
+      <div class="opt-radio"></div>
+      <span class="opt-text">Живу</span>
+    </div>
+    <div class="option" id="opt2" onclick="pick(this)">
+      <div class="opt-radio"></div>
+      <span class="opt-text">Работаю</span>
+    </div>
+    <div class="option" id="opt3" onclick="pick(this)">
+      <div class="opt-radio"></div>
+      <span class="opt-text">Живу и работаю</span>
+    </div>
+    <div class="option" id="opt4" onclick="pick(this)">
+      <div class="opt-radio"></div>
+      <span class="opt-text">Гость</span>
+    </div>
+  </div>
+
+  <!-- Bottom button -->
+  <div class="bottom-area">
+    <button class="btn-next" id="btnNext" disabled onclick="openMid()">Далее</button>
+  </div>
+
+  <!-- Компонент 3 v1 — промежуточный попап -->
+  <div class="popup-overlay" id="popupMid">
+    <div class="popup">
+      <div class="popup-icon">🙌</div>
+      <h2>Спасибо за ответ!</h2>
+      <p>Осталось ещё 3 из 4 вопросов</p>
+      <button class="popup-btn" onclick="answerNow()">Ответить сейчас</button>
+      <button class="popup-btn-ghost" onclick="answerLater()">Позже</button>
+    </div>
+  </div>
+
+  <!-- Компонент 3 v2 — попап завершения -->
+  <div class="popup-overlay" id="popupDone">
+    <div class="popup">
+      <div class="popup-icon">🎉</div>
+      <h2>Спасибо за ответы!</h2>
+      <p>Вы прошли опрос. Ответы помогут нам улучшить ваш опыт в приложении.</p>
+      <button class="popup-btn" onclick="closeDone()">Отлично</button>
+    </div>
+  </div>
+
+  <!-- Home bar -->
+  <div class="home-bar"></div>
+
+</div><!-- /phone -->
+
+<!-- Demo controls -->
+<div class="demo">
+  <div class="demo-title">Демо</div>
+  <div class="demo-row">
+    <button class="demo-btn accent" onclick="showMid()">Попап промежуточный (v1)</button>
+    <button class="demo-btn accent" onclick="showDone()">Попап завершения (v2)</button>
+    <button class="demo-btn" onclick="reset()">Сбросить</button>
+  </div>
+</div>
+
+<script>
+  function pick(el) {
+    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    el.classList.add('selected');
+    document.getElementById('btnNext').disabled = false;
+  }
+
+  function openMid() {
+    document.getElementById('popupMid').classList.add('open');
+  }
+
+  function answerNow() {
+    document.getElementById('popupMid').classList.remove('open');
+    reset();
+  }
+
+  function answerLater() {
+    document.getElementById('popupMid').classList.remove('open');
+  }
+
+  function closeDone() {
+    document.getElementById('popupDone').classList.remove('open');
+    reset();
+  }
+
+  function reset() {
+    document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+    document.getElementById('btnNext').disabled = true;
+  }
+
+  /* demo buttons */
+  function showMid()  { document.getElementById('popupMid').classList.add('open'); }
+  function showDone() { document.getElementById('popupDone').classList.add('open'); }
+</script>
+</body>
+</html>

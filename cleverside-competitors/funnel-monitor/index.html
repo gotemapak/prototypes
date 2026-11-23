@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Конкуренты — веб-воронки</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --card: #ffffff;
+    --text: #1a1d21;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 32px 24px 64px;
+  }
+  header.page { max-width: 1200px; margin: 0 auto 28px; }
+  header.page h1 { font-size: 26px; margin-bottom: 6px; }
+  header.page p { color: var(--muted); font-size: 14px; }
+
+  .competitor {
+    max-width: 1200px;
+    margin: 0 auto 32px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .comp-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin-bottom: 4px; }
+  .comp-head h2 { font-size: 20px; }
+  .comp-head a { color: var(--accent); font-size: 13px; text-decoration: none; word-break: break-all; }
+  .comp-head a:hover { text-decoration: underline; }
+  .meta { color: var(--muted); font-size: 13px; margin-bottom: 14px; }
+  .meta b { color: var(--text); font-weight: 600; }
+
+  .block-title { font-size: 14px; font-weight: 700; margin: 14px 0 8px; }
+  table.plans {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 760px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    background: #fafbfc;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  table.plans th, table.plans td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  table.plans th {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--muted);
+    font-weight: 600;
+    background: #f3f4f6;
+  }
+  table.plans tr:last-child td { border-bottom: none; }
+  table.plans td b { font-size: 15px; }
+  table.plans .sub { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .note { font-size: 12px; color: var(--muted); margin-bottom: 18px; }
+
+  .strip-label { font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--muted); }
+  .strip {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 4px 2px 14px;
+    scroll-snap-type: x proximity;
+  }
+  .strip figure { flex: 0 0 auto; scroll-snap-align: start; text-align: center; }
+  .strip img {
+    height: 380px;
+    width: auto;
+    min-width: 174px; /* пропорция экрана iPhone: держит место до загрузки */
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: zoom-in;
+    /* shimmer-заглушка, пока картинка не загрузилась */
+    background: linear-gradient(110deg, #e9eaee 8%, #f6f7f9 18%, #e9eaee 33%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s linear infinite;
+  }
+  @keyframes shimmer { to { background-position-x: -200%; } }
+  .strip figcaption { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .strip::-webkit-scrollbar { height: 10px; }
+  .strip::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 5px; }
+
+  #lightbox {
+    display: none; position: fixed; inset: 0; z-index: 50;
+    background: rgba(0,0,0,.82);
+    justify-content: center; align-items: flex-start;
+    overflow: auto; padding: 24px; cursor: zoom-out;
+  }
+  #lightbox img { max-width: min(560px, 92vw); height: auto; border-radius: 8px; }
+</style>
+</head>
+<body>
+
+<header class="page">
+  <h1>Конкуренты — веб-воронки</h1>
+  <p>Автоматический мониторинг: проход воронки до пейволла, скриншоты каждого экрана, цены. Пересчёт в $ приблизительный (₺≈40.5/$, €≈1.1$). Цены сняты с не-US IP — валюта зависит от гео-прайсинга конкурента.</p>
+</header>
+
+<!-- ══════════════ TESTORA (lp1) ══════════════ -->
+<section class="competitor" id="testora">
+  <div class="comp-head">
+    <h2>Testora — воронка lp1</h2>
+    <a href="https://funnel.testora.space/en/start-1?cohort=testora_fl_iq_lp1" target="_blank">funnel.testora.space/en/start-1?cohort=testora_fl_iq_lp1</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-19</b> · IQ-тест, 43 вопроса · старт → квиз → email → пейволл → чекаут · один тариф без выбора</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>7 дней → 4 недели</b></td>
+      <td><b>~$1.10</b><span class="sub">интро-оффер на 7 дней (₺44.27, подано как ₺6.29/день)</span></td>
+      <td><b>~$33</b><span class="sub">помесячно (₺1,341.15/мес)</span></td>
+    </tr>
+  </table>
+  <p class="note">Таймер скидки 60% на 10 минут. Результат теста скрыт до оплаты.</p>
+
+  <div class="strip-label">Воронка слева направо: старт → квиз → email → загрузка → пейволл → чекаут</div>
+  <div class="strip" data-shots="testora"></div>
+</section>
+
+<!-- ══════════════ TESTORA (tp1) ══════════════ -->
+<section class="competitor" id="testora-tp1">
+  <div class="comp-head">
+    <h2>Testora — воронка tp1 (мульти-тариф)</h2>
+    <a href="https://funnel.testora.space/en/start-1?cohort=testora_fl_iq_tp1" target="_blank">funnel.testora.space/en/start-1?cohort=testora_fl_iq_tp1</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-19</b> · та же воронка, другая когорта: на пейволле выбор из 3 планов (у lp1 — один) · промокод −50% с таймером 10 мин</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>1 неделя</b></td>
+      <td><b>~$7.65</b><span class="sub">₺309.91 (зачёркнуто ₺1,787.91), ₺44.29/день</span></td>
+      <td><b>~$44 / мес</b><span class="sub">₺1,787.91/мес по полной цене</span></td>
+    </tr>
+    <tr>
+      <td><b>4 недели</b> · Most Popular, предвыбран</td>
+      <td><b>~$22</b><span class="sub">₺893.95 (зачёркнуто ₺1,787.91), ₺29.79/день</span></td>
+      <td><b>~$44 / мес</b><span class="sub">₺1,787.91/мес по полной цене</span></td>
+    </tr>
+    <tr>
+      <td><b>12 недель</b></td>
+      <td><b>~$44</b><span class="sub">₺1,788.35 (зачёркнуто ₺3,576.71), ₺19.89/день</span></td>
+      <td><b>~$44 / мес</b><span class="sub">₺1,787.91/мес по полной цене</span></td>
+    </tr>
+  </table>
+  <p class="note">Якорные цены ×2–5 от фактических; «promocode_jul26» применён автоматически с таймером.</p>
+
+  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip" data-shots="testora-tp1"></div>
+</section>
+
+<!-- ══════════════ IQ BRAIN (.org) ══════════════ -->
+<section class="competitor" id="iqbrain-org">
+  <div class="comp-head">
+    <h2>IQ Brain (iqbrain.org)</h2>
+    <a href="https://iqbrain.org/start/iq/" target="_blank">iqbrain.org/start/iq/</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-19</b> · IQ-тест 18 вопросов · цены в USD (единственный из набора) · чекаут со страницей Order Summary</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>7 дней → месяц</b></td>
+      <td><b>$1.98</b><span class="sub">IQ Score + Report, 7-Day Premium Trial included</span></td>
+      <td><b>$28.80 / мес</b><span class="sub">автопродление после триала</span></td>
+    </tr>
+  </table>
+  <p class="note">Таймер скидки 10 мин. Сеть клонов: iqbrain.org / iqbrainpro.com / iqbrain.app — один шаблон и прайс, разные цвета.</p>
+
+  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip" data-shots="iqbrain-org"></div>
+</section>
+
+<!-- ══════════════ IQ BRAIN PRO ══════════════ -->
+<section class="competitor" id="iqbrainpro">
+  <div class="comp-head">
+    <h2>IQ Brain Pro (iqbrainpro.com)</h2>
+    <a href="https://iqbrainpro.com/" target="_blank">iqbrainpro.com</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-19</b> · клон iqbrain.org (бирюзовый→тот же макет)</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>7 дней → месяц</b></td>
+      <td><b>$1.98</b><span class="sub">7-Day Premium Trial</span></td>
+      <td><b>$28.80 / мес</b><span class="sub">автопродление</span></td>
+    </tr>
+  </table>
+
+  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip" data-shots="iqbrainpro"></div>
+</section>
+
+<!-- ══════════════ IQ BRAIN APP ══════════════ -->
+<section class="competitor" id="iqbrain-app">
+  <div class="comp-head">
+    <h2>IQ Brain (iqbrain.app)</h2>
+    <a href="https://iqbrain.app/" target="_blank">iqbrain.app</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-19</b> · клон iqbrain.org (синяя тема)</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>7 дней → месяц</b></td>
+      <td><b>$1.98</b><span class="sub">7-Day Premium Trial</span></td>
+      <td><b>$28.80 / мес</b><span class="sub">автопродление</span></td>
+    </tr>
+  </table>
+
+  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip" data-shots="iqbrain-app"></div>
+</section>
+
+<!-- ══════════════ IQBOOST ══════════════ -->
+<section class="competitor" id="iqboost">
+  <div class="comp-head">
+    <h2>IQBoost (iqboost.co)</h2>
+    <a href="https://www.iqboost.co/en/iq" target="_blank">iqboost.co/en/iq</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-19</b> · короткая воронка (пейволл на ~14-м экране) · цены в EUR</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>24 часа → месяц</b></td>
+      <td><b>~$0.55</b><span class="sub">€0.50 за 24-часовой триал</span></td>
+      <td><b>~$55 / мес</b><span class="sub">€49.70/мес</span></td>
+    </tr>
+  </table>
+  <p class="note">Самый агрессивный контраст интро/подписка в наборе: триал в 100 раз дешевле месячной цены.</p>
+
+  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip" data-shots="iqboost"></div>
+</section>
+
+<!-- ══════════════ IQTRAINS ══════════════ -->
+<section class="competitor" id="iqtrains">
+  <div class="comp-head">
+    <h2>IQ Trains (iqtrains.com)</h2>
+    <a href="https://iqtrains.com/onboarding/" target="_blank">iqtrains.com/onboarding/</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-19</b> · онбординг-квиз с долгим лоадером расчёта · цены в USD · два плана</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>3 дня → неделя</b></td>
+      <td><b>$0.99</b><span class="sub">3-Day Intro (Start Trial — $0.99 today)</span></td>
+      <td><b>$19.99 / нед</b><span class="sub">еженедельное автопродление</span></td>
+    </tr>
+    <tr>
+      <td><b>3 дня → месяц</b></td>
+      <td><b>$0.99</b><span class="sub">3-Day Intro</span></td>
+      <td><b>$39.99 / мес</b><span class="sub">помесячное автопродление</span></td>
+    </tr>
+  </table>
+
+  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip" data-shots="iqtrains"></div>
+</section>
+
+<!-- ══════════════ IQSCORE ══════════════ -->
+<section class="competitor" id="iqscore">
+  <div class="comp-head">
+    <h2>IQScore (iqscore.me)</h2>
+    <a href="https://iqscore.me/start" target="_blank">iqscore.me/start</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-19</b> · квиз → «See Your Results – Just $1.00» · цены в USD · недельная подписка</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>3 дня → неделя</b></td>
+      <td><b>$1.00</b><span class="sub">3-дневный триал (якорная цена $6.99 зачёркнута)</span></td>
+      <td><b>$14.99 / нед</b><span class="sub">еженедельно до отмены</span></td>
+    </tr>
+  </table>
+
+  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip" data-shots="iqscore"></div>
+</section>
+
+<!-- ══════════════ COGNITIVEGROWTH ══════════════ -->
+<section class="competitor" id="cognitivegrowth">
+  <div class="comp-head">
+    <h2>Cognitive Growth (quiz.cognitivegrowth.net)</h2>
+    <a href="https://quiz.cognitivegrowth.net/#start" target="_blank">quiz.cognitivegrowth.net</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-19</b> · квиз с долгим лоадером расчёта · цены USD, чекаут конвертирует в локальную валюту (TRY 637.03 = $12.99)</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>3 дня → неделя</b></td>
+      <td><b>$0.99</b><span class="sub">3-дневный триал (якорная цена $12.99 зачёркнута)</span></td>
+      <td><b>$12.99 / нед</b><span class="sub">еженедельное автопродление («Clever Plan»)</span></td>
+    </tr>
+  </table>
+
+  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip" data-shots="cognitivegrowth"></div>
+</section>
+
+<!-- ══════════════ MYIQ ══════════════ -->
+<section class="competitor" id="myiq">
+  <div class="comp-head">
+    <h2>MyIQ (myiq.com)</h2>
+    <a href="https://myiq.com/en/start" target="_blank">myiq.com/en/start</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-20</b> · цены раскрыты в дисклеймере прямо на лендинге · полный проход: лендинг → квиз → пейволл (20 экранов)</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>7 дней → месяц</b></td>
+      <td><b>~$1.30</b><span class="sub">₺53.00 за 7-дневный триал (гео-цена)</span></td>
+      <td><b>~$40 / мес</b><span class="sub">₺1,617.99/мес</span></td>
+    </tr>
+  </table>
+
+  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip" data-shots="myiq"></div>
+</section>
+
+<!-- ══════════════ MENTAL IMPULSE (IQ) ══════════════ -->
+<section class="competitor" id="mental-impulse-iq">
+  <div class="comp-head">
+    <h2>Impulse — IQ воронка (iq.mental-impulse.com)</h2>
+    <a href="https://iq.mental-impulse.com/" target="_blank">iq.mental-impulse.com</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-20</b> · лендинг → квиз с мультиселектами → пейволл · цены в USD · три плана, «Save 50%» с таймером 10 мин</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>4 недели</b> · Most Popular</td>
+      <td><b>$19.99</b><span class="sub">якорь $39.98 зачёркнут (Save 50%)</span></td>
+      <td><b>$39.98 / 4 нед</b><span class="sub">автопродление по полной цене</span></td>
+    </tr>
+    <tr>
+      <td><b>12 недель</b></td>
+      <td><b>$39.99</b><span class="sub">якорь $79.98</span></td>
+      <td><b>$79.98 / 12 нед</b></td>
+    </tr>
+    <tr>
+      <td><b>24 недели</b></td>
+      <td><b>$59.99</b><span class="sub">якорь $119.98</span></td>
+      <td><b>$119.98 / 24 нед</b></td>
+    </tr>
+  </table>
+  <p class="note">Тот самый «Импульс» (GMRD Apps, Кипр), на которого равняется Cleverside. Продукт — brain training (35+ игр), IQ-тест как вход.</p>
+
+  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip" data-shots="mental-impulse-iq"></div>
+</section>
+
+<!-- ══════════════ MENTAL IMPULSE (ARCHETYPE) ══════════════ -->
+<section class="competitor" id="mental-impulse-archetype">
+  <div class="comp-head">
+    <h2>Impulse — Archetype воронка (archetype.mental-impulse.com)</h2>
+    <a href="https://archetype.mental-impulse.com/" target="_blank">archetype.mental-impulse.com</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-20</b> · вторая воронка Impulse (архетипы вместо IQ) · пейволл и цены идентичны IQ-воронке</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>4 / 12 / 24 недели</b></td>
+      <td><b>$19.99 / $39.99 / $59.99</b><span class="sub">Save 50%, якоря ×2</span></td>
+      <td><b>$39.98 / $79.98 / $119.98</b><span class="sub">за период соответственно</span></td>
+    </tr>
+  </table>
+
+  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip" data-shots="mental-impulse-archetype"></div>
+</section>
+
+<!-- ══════════════ BRAINBLOOM ══════════════ -->
+<section class="competitor" id="brainbloom">
+  <div class="comp-head">
+    <h2>BrainBloom (iq.brainbloom.me)</h2>
+    <a href="https://iq.brainbloom.me/age" target="_blank">iq.brainbloom.me/age</a>
+  </div>
+  <div class="meta">Дата проверки: <b>2026-07-20</b> · длинная воронка (55 экранов) · цены в USD · интро-планы со скидкой, дальше единая месячная</div>
+
+  <div class="block-title">Тарифные планы</div>
+  <table class="plans">
+    <tr><th>Тариф</th><th>Первое списание</th><th>Последующие списания</th></tr>
+    <tr>
+      <td><b>Интро-план S</b></td>
+      <td><b>$2.99</b><span class="sub">якорь $9.99 (−$7.00)</span></td>
+      <td><b>$49.99 / мес</b><span class="sub">после интро-периода</span></td>
+    </tr>
+    <tr>
+      <td><b>Интро-план M</b></td>
+      <td><b>$15.19</b><span class="sub">якорь $49.99</span></td>
+      <td><b>$49.99 / мес</b></td>
+    </tr>
+    <tr>
+      <td><b>Интро-план L</b></td>
+      <td><b>$25.99</b><span class="sub">якорь $69.99</span></td>
+      <td><b>$49.99 / мес</b></td>
+    </tr>
+  </table>
+
+  <div class="strip-label">Воронка слева направо</div>
+  <div class="strip" data-shots="brainbloom"></div>
+</section>
+
+<div id="lightbox"><img src="" alt=""></div>
+
+<script>window.DATA_ROOT = './data/';</script>
+<script src="shots.js"></script>
+<script>
+  // shots.js генерируется crawler/gen-shots.mjs; dir внутри уже содержит data/...
+  let pwCount = 0;
+  const label = f => {
+    if (f.includes('paywall')) return ++pwCount === 1 ? 'ПЕЙВОЛЛ' : 'пейволл · экран ' + pwCount;
+    if (f.includes('post-cta')) return 'чекаут';
+    return '#' + parseInt(f, 10);
+  };
+
+  for (const strip of document.querySelectorAll('.strip')) {
+    const cfg = window.SHOTS[strip.dataset.shots];
+    if (!cfg) continue;
+    pwCount = 0;
+    const base = window.DATA_ROOT.replace(/data\/$/, '') + cfg.dir;
+    strip.innerHTML = cfg.files.map(f =>
+      `<figure><img loading="lazy" src="${base}${f}" alt="${f}"><figcaption>${label(f)}</figcaption></figure>`
+    ).join('');
+  }
+
+  const lb = document.getElementById('lightbox');
+  document.addEventListener('click', e => {
+    if (e.target.matches('.strip img')) {
+      lb.querySelector('img').src = e.target.src;
+      lb.style.display = 'flex';
+    } else if (e.target.closest('#lightbox')) {
+      lb.style.display = 'none';
+    }
+  });
+</script>
+</body>
+</html>

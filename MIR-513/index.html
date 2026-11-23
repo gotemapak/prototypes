@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MIR-513 — Сторис «Доставка до двери»</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background: #000;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, "SF Pro Text", BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+      color: #fff;
+    }
+
+    /* Оболочка телефона / вьюпорта */
+    .phone {
+      width: min(390px, 100%);
+      height: min(844px, 100%);
+      background: radial-gradient(circle at top left, #374151 0, #111827 38%, #020617 100%);
+      border-radius: 42px;
+      position: relative;
+      overflow: hidden;
+      box-shadow:
+        0 40px 100px rgba(0, 0, 0, 0.75),
+        0 0 0 1px rgba(148, 163, 184, 0.2);
+      display: flex;
+      flex-direction: column;
+    }
+
+    @media (max-width: 430px) {
+      .phone {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+        box-shadow: none;
+      }
+    }
+
+    .status-bar {
+      height: 46px;
+      padding: 0 16px 6px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      font-size: 13px;
+      color: rgba(249, 250, 251, 0.9);
+    }
+
+    .status-bar-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+
+    /* Прогресс сториз */
+    .progress {
+      display: flex;
+      gap: 4px;
+      padding: 0 10px 10px;
+    }
+
+    .progress-segment {
+      flex: 1;
+      height: 3px;
+      background: rgba(148, 163, 184, 0.4);
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      position: absolute;
+      inset: 0;
+      width: 0;
+      background: #facc15;
+      border-radius: inherit;
+      transition: width 0.25s linear;
+    }
+
+    /* Шапка сторис */
+    .story-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 12px 0;
+      z-index: 2;
+    }
+
+    .story-header-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 0, #f97316 0, #ea580c 36%, #7c2d12 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .header-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .header-title {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .header-caption {
+      font-size: 11px;
+      color: rgba(209, 213, 219, 0.9);
+    }
+
+    .close-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      border: none;
+      background: rgba(15, 23, 42, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(249, 250, 251, 0.9);
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    /* Область контента сторис */
+    .story-body {
+      flex: 1;
+      position: relative;
+      padding: 18px 18px 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .story-visual {
+      position: absolute;
+      inset: 0;
+      opacity: 0.25;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 20% -10%, rgba(250, 204, 21, 0.24), transparent 55%),
+        radial-gradient(circle at 90% 90%, rgba(56, 189, 248, 0.24), transparent 60%);
+    }
+
+    .story-card {
+      position: relative;
+      max-width: 270px;
+      padding: 14px 14px 14px 14px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(15, 23, 42, 0.76));
+      box-shadow:
+        0 18px 45px rgba(15, 23, 42, 0.9),
+        0 0 0 1px rgba(148, 163, 184, 0.18);
+      backdrop-filter: blur(16px);
+    }
+
+    .story-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      color: #e5e7eb;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(15, 118, 110, 0.25);
+      border: 1px solid rgba(45, 212, 191, 0.5);
+      margin-bottom: 8px;
+    }
+
+    .story-title {
+      font-size: 18px;
+      line-height: 1.25;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .story-subtitle {
+      font-size: 13px;
+      line-height: 1.4;
+      color: #e5e7eb;
+      margin-bottom: 10px;
+    }
+
+    .story-list {
+      font-size: 12px;
+      line-height: 1.5;
+      color: rgba(209, 213, 219, 0.95);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .story-list-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .story-list-bullet {
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      background: rgba(30, 64, 175, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+
+    .story-list-text {
+      flex: 1;
+    }
+
+    .tagline {
+      font-size: 11px;
+      color: rgba(148, 163, 184, 1);
+      margin-top: 10px;
+    }
+
+    /* Нижняя панель с статусом и стрелкой */
+    .story-footer {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .status-chip {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .status-line {
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot-small {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.25);
+    }
+
+    .status-meta {
+      font-size: 11px;
+      color: rgba(209, 213, 219, 0.9);
+    }
+
+    .cta-small {
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      background: #facc15;
+      color: #1f2933;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(250, 204, 21, 0.4);
+      white-space: nowrap;
+    }
+
+    .cta-small span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cta-arrow {
+      font-size: 14px;
+      transform: translateY(1px);
+    }
+
+    /* Кликабельные зоны для навигации */
+    .tap-zones {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      z-index: 3;
+    }
+
+    .tap-zone {
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .tap-zone--left {
+      /* зона «Назад» */
+    }
+
+    .tap-zone--right {
+      /* зона «Вперёд» */
+    }
+
+    /* Плавающая стрелка, как в структуре сториз */
+    .next-hint {
+      position: absolute;
+      right: 18px;
+      bottom: 26px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.75);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 11px;
+      color: rgba(226, 232, 240, 0.96);
+      backdrop-filter: blur(14px);
+      z-index: 4;
+      pointer-events: none;
+    }
+
+    .next-hint-arrow {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: rgba(15, 118, 110, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone" id="phone">
+    <div class="status-bar">
+      <div class="status-bar-left">
+        <span class="status-dot"></span>
+        <span>MirCity · статус заказа</span>
+      </div>
+      <span id="storyCounter">1 / 3</span>
+    </div>
+
+    <div class="progress" aria-hidden="true">
+      <div class="progress-segment"><div class="progress-fill" id="pg-0"></div></div>
+      <div class="progress-segment"><div class="progress-fill" id="pg-1"></div></div>
+      <div class="progress-segment"><div class="progress-fill" id="pg-2"></div></div>
+    </div>
+
+    <div class="story-header">
+      <div class="story-header-left">
+        <div class="avatar">🚪</div>
+        <div class="header-text">
+          <div class="header-title">Доставка до двери</div>
+          <div class="header-caption">как выглядит для гостя</div>
+        </div>
+      </div>
+      <button class="close-btn" onclick="window.history.back()">✕</button>
+    </div>
+
+    <div class="story-body">
+      <div class="story-visual"></div>
+
+      <article class="story-card" aria-live="polite">
+        <div class="story-pill" id="pill">
+          <span id="pillIcon">📦</span>
+          <span id="pillText">Заказ в пути до вашей двери</span>
+        </div>
+        <h2 class="story-title" id="title">
+          Заказ уже в башне — курьер поднимается к двери
+        </h2>
+        <p class="story-subtitle" id="subtitle">
+          Сторис объясняют, что меняется в статусе заказа, если гость выбирает опцию «Доставка до двери».
+        </p>
+
+        <div class="story-list" id="listContainer">
+          <!-- наполняется из сценария -->
+        </div>
+
+        <p class="tagline" id="tagline">
+          Сторис накладываются на экран статуса заказа и помогают гостю понять, что происходит «за кадром».
+        </p>
+      </article>
+
+      <footer class="story-footer">
+        <div class="status-chip">
+          <div class="status-line">
+            <span class="status-dot-small"></span>
+            <span id="statusLine">Заказ доставляется до двери</span>
+          </div>
+          <span class="status-meta" id="statusMeta">
+            Курьер уже в Москва-Сити, осталось 5–7 минут.
+          </span>
+        </div>
+        <button class="cta-small" type="button" id="ctaButton">
+          <span id="ctaLabel">Показать, что видит гость</span>
+          <span class="cta-arrow">›</span>
+        </button>
+      </footer>
+
+      <!-- кликабельные зоны поверх всего -->
+      <div class="tap-zones" aria-hidden="true">
+        <div class="tap-zone tap-zone--left" onclick="prevStory(event)"></div>
+        <div class="tap-zone tap-zone--right" onclick="nextStory(event)"></div>
+      </div>
+
+      <!-- подсказка со стрелкой, как в текущей структуре сториз -->
+      <div class="next-hint">
+        <span>Нажмите, чтобы перейти к следующей истории</span>
+        <span class="next-hint-arrow">›</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const stories = [
+      {
+        pillIcon: "📦",
+        pill: "Заказ в пути до вашей двери",
+        title: "Заказ уже в башне — курьер поднимается к двери",
+        subtitle: "Рассказываем, что происходит после выбора опции «Доставка до двери» на экране статуса заказа.",
+        bullets: [
+          "Курьер получает точный адрес и инструкции из заказа MirCity.",
+          "В статусе гость видит прогноз времени, пока курьер едет и поднимается в башню.",
+          "Дополнительно подсвечиваем, что не нужно спускаться в лобби или на парковку."
+        ],
+        tagline: "Эта история опирается на текущий экран статуса заказа и объясняет, что происходит «за кадром».",
+        statusLine: "Заказ доставляется до двери",
+        statusMeta: "Курьер уже в Москва-Сити, осталось 5–7 минут.",
+        cta: "Показать, как выглядит статус"
+      },
+      {
+        pillIcon: "🚪",
+        pill: "Как гость понимает, что курьер уже у двери",
+        title: "Когда курьер у двери, статус ведёт гостя покадрово",
+        subtitle: "Сторис дополняют статус: куда смотреть, что нажать и как передать уточнения курьеру.",
+        bullets: [
+          "Статус меняется на «Курьер у двери» — текст сохраняет связку с MirCity и башней.",
+          "В отдельной строке подсвечиваем, что курьер может подождать у двери ограниченное время.",
+          "Через CTA предлагаем сразу уточнить комментарий: «Как лучше вас найти у двери?»."
+        ],
+        tagline: "Во второй истории делаем акцент на моменте встречи — минимизируем потерянные заказы в коридоре.",
+        statusLine: "Курьер у вашей двери",
+        statusMeta: "Курьер позвонил в домофон и ждёт у квартиры.",
+        cta: "Показать момент встречи"
+      },
+      {
+        pillIcon: "✅",
+        pill: "Заказ доставлен до двери",
+        title: "Финальный экран: подтверждаем доставку и возвращаем в MirCity",
+        subtitle: "Закрываем сценарий и аккуратно ведём гостя обратно в привычный интерфейс MirCity.",
+        bullets: [
+          "После отметки «Заказ получен» показываем короткое спасибо и резюме доставки до двери.",
+          "Предлагаем сохранить этот способ доставки по умолчанию для следующих заказов.",
+          "Дальше гость возвращается в знакомый экран истории заказов MirCity."
+        ],
+        tagline: "Третья история связывает опыт доставки до двери с общей экосистемой MirCity, не перегружая экран.",
+        statusLine: "Доставлено до двери",
+        statusMeta: "Курьер отметил доставку, можно оценить заказ.",
+        cta: "Вернуться к заказу в MirCity"
+      }
+    ];
+
+    let currentIndex = 0;
+
+    const pillIconEl = document.getElementById("pillIcon");
+    const pillTextEl = document.getElementById("pillText");
+    const titleEl = document.getElementById("title");
+    const subtitleEl = document.getElementById("subtitle");
+    const listContainer = document.getElementById("listContainer");
+    const taglineEl = document.getElementById("tagline");
+    const statusLineEl = document.getElementById("statusLine");
+    const statusMetaEl = document.getElementById("statusMeta");
+    const ctaButtonEl = document.getElementById("ctaButton");
+    const storyCounterEl = document.getElementById("storyCounter");
+    const progressFills = [
+      document.getElementById("pg-0"),
+      document.getElementById("pg-1"),
+      document.getElementById("pg-2")
+    ];
+
+    function renderStory(index) {
+      const s = stories[index];
+
+      pillIconEl.textContent = s.pillIcon;
+      pillTextEl.textContent = s.pill;
+      titleEl.textContent = s.title;
+      subtitleEl.textContent = s.subtitle;
+
+      listContainer.innerHTML = "";
+      if (s.bullets && s.bullets.length) {
+        s.bullets.forEach((text, i) => {
+          const row = document.createElement("div");
+          row.className = "story-list-row";
+
+          const bullet = document.createElement("div");
+          bullet.className = "story-list-bullet";
+          bullet.textContent = i + 1;
+
+          const copy = document.createElement("div");
+          copy.className = "story-list-text";
+          copy.textContent = text;
+
+          row.appendChild(bullet);
+          row.appendChild(copy);
+          listContainer.appendChild(row);
+        });
+      }
+
+      taglineEl.textContent = s.tagline;
+      statusLineEl.textContent = s.statusLine;
+      statusMetaEl.textContent = s.statusMeta;
+      ctaButtonEl.querySelector("#ctaLabel").textContent = s.cta;
+
+      storyCounterEl.textContent = (index + 1) + " / " + stories.length;
+
+      progressFills.forEach((el, i) => {
+        if (i < index) {
+          el.style.width = "100%";
+        } else if (i === index) {
+          el.style.width = "100%";
+        } else {
+          el.style.width = "0";
+        }
+      });
+    }
+
+    function nextStory(e) {
+      if (e) e.stopPropagation();
+      if (currentIndex < stories.length - 1) {
+        currentIndex += 1;
+        renderStory(currentIndex);
+      }
+    }
+
+    function prevStory(e) {
+      if (e) e.stopPropagation();
+      if (currentIndex > 0) {
+        currentIndex -= 1;
+        renderStory(currentIndex);
+      }
+    }
+
+    // инициализация
+    renderStory(currentIndex);
+  </script>
+</body>
+</html>
+

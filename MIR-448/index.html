@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MIR-448 — Fake door «Мир рубли» в корзине</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        background: #000;
+        width: 100vw;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: -apple-system, 'SF Pro Text', BlinkMacSystemFont,
+          'Helvetica Neue', sans-serif;
+        color: #111827;
+      }
+
+      .phone {
+        width: min(390px, 100%);
+        height: min(844px, 100%);
+        background: #f2f2f7;
+        border-radius: 42px;
+        position: relative;
+        overflow: hidden;
+        box-shadow:
+          0 40px 100px rgba(0, 0, 0, 0.75),
+          0 0 0 1px rgba(148, 163, 184, 0.2);
+        display: flex;
+        flex-direction: column;
+      }
+
+      @media (max-width: 430px) {
+        .phone {
+          width: 100%;
+          height: 100%;
+          border-radius: 0;
+          box-shadow: none;
+        }
+      }
+
+      .status-bar {
+        height: 44px;
+        padding: 8px 16px 4px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 13px;
+        color: #111827;
+      }
+
+      .status-icons {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: #6b7280;
+        font-size: 12px;
+      }
+
+      .cart-header {
+        padding: 0 16px 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 17px;
+        font-weight: 600;
+      }
+
+      .cart-header-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .back-arrow {
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        background: rgba(17, 24, 39, 0.05);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .cart-header-action {
+        font-size: 12px;
+        color: #9ca3af;
+      }
+
+      .cart-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0 16px 16px;
+      }
+
+      .promo-card,
+      .address-card,
+      .payment-card,
+      .summary-card {
+        border-radius: 18px;
+        background: #ffffff;
+        padding: 12px 14px;
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+      }
+
+      .promo-card,
+      .address-card {
+        margin-bottom: 10px;
+      }
+
+      .payment-card {
+        margin-top: 12px;
+        cursor: pointer;
+      }
+
+      .card-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+
+      .card-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111827;
+      }
+
+      .card-subtitle {
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      .badge-payment {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #f3f4f6;
+        font-size: 12px;
+        color: #4b5563;
+      }
+
+      .badge-icon {
+        width: 18px;
+        height: 18px;
+        border-radius: 4px;
+        background: linear-gradient(135deg, #4285f4, #0f9d58);
+      }
+
+      .summary-card {
+        margin-top: 14px;
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        color: #374151;
+      }
+
+      .summary-row + .summary-row {
+        margin-top: 6px;
+      }
+
+      .summary-row.strong {
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .bottom-cta {
+        padding: 8px 16px 20px;
+      }
+
+      .primary-btn {
+        width: 100%;
+        border-radius: 999px;
+        padding: 14px 16px;
+        font-size: 15px;
+        font-weight: 600;
+        border: none;
+        background: #111827;
+        color: #f9fafb;
+        cursor: pointer;
+      }
+
+      /* Затемнение фона при открытом модальном окне */
+      .phone.dimmed::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.38);
+        z-index: 10;
+      }
+
+      /* Bottom sheet «Способ оплаты» */
+      .sheet {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -420px;
+        background: #ffffff;
+        border-radius: 24px 24px 0 0;
+        box-shadow: 0 -18px 40px rgba(15, 23, 42, 0.45);
+        padding: 12px 16px 20px;
+        z-index: 20;
+        transition: transform 0.28s ease-out, bottom 0.28s ease-out;
+      }
+
+      .sheet.visible {
+        bottom: 0;
+      }
+
+      .sheet-handle {
+        width: 40px;
+        height: 4px;
+        border-radius: 999px;
+        background: #e5e7eb;
+        margin: 4px auto 10px;
+      }
+
+      .sheet-title {
+        font-size: 15px;
+        font-weight: 600;
+        margin-bottom: 12px;
+        text-align: left;
+      }
+
+      .method-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .method-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 4px;
+        border-radius: 12px;
+        cursor: pointer;
+      }
+
+      .method-item:hover {
+        background: #f9fafb;
+      }
+
+      .radio {
+        width: 20px;
+        height: 20px;
+        border-radius: 999px;
+        border: 2px solid #d1d5db;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .radio-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #111827;
+        opacity: 0;
+        transform: scale(0.6);
+        transition: opacity 0.12s ease-out, transform 0.12s ease-out;
+      }
+
+      .method-item.selected .radio {
+        border-color: #111827;
+      }
+
+      .method-item.selected .radio-dot {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      .method-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 10px;
+        background: #f3f4f6;
+        flex-shrink: 0;
+      }
+
+      .method-text {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .method-title {
+        font-size: 14px;
+        font-weight: 500;
+        color: #111827;
+      }
+
+      .method-caption {
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      .mir-tag {
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(37, 99, 235, 0.08);
+        color: #1d4ed8;
+      }
+
+      /* Блок номиналов Мир рублей */
+      .mir-amounts {
+        border-radius: 16px;
+        background: #f9fafb;
+        padding: 10px 10px 12px;
+        margin-bottom: 12px;
+        display: none;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .mir-amounts.visible {
+        display: flex;
+      }
+
+      .mir-amounts-title {
+        font-size: 13px;
+        font-weight: 500;
+        color: #111827;
+      }
+
+      .mir-chip-row {
+        display: flex;
+        gap: 8px;
+        margin-top: 4px;
+      }
+
+      .mir-chip {
+        flex: 1;
+        padding: 8px 10px;
+        border-radius: 999px;
+        border: 1px solid #e5e7eb;
+        background: #ffffff;
+        font-size: 13px;
+        text-align: center;
+        cursor: pointer;
+        color: #111827;
+        white-space: nowrap;
+      }
+
+      .mir-chip.small {
+        flex: 0 0 auto;
+        padding-inline: 14px;
+      }
+
+      .mir-chip.selected {
+        border-color: #111827;
+        background: #111827;
+        color: #f9fafb;
+      }
+
+      .mir-custom-row {
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      .mir-custom-row.visible {
+        display: flex;
+      }
+
+      .mir-custom-label {
+        font-size: 12px;
+        color: #6b7280;
+      }
+
+      .mir-custom-input-wrap {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 12px;
+        border: 1px solid #e5e7eb;
+        padding: 8px 10px;
+        background: #ffffff;
+      }
+
+      .mir-custom-prefix {
+        font-size: 14px;
+        color: #6b7280;
+      }
+
+      .mir-custom-input {
+        border: none;
+        outline: none;
+        flex: 1;
+        font-size: 14px;
+        background: transparent;
+      }
+
+      .mir-hint {
+        font-size: 11px;
+        color: #9ca3af;
+      }
+
+      .sheet-actions {
+        margin-top: 4px;
+      }
+
+      .sheet-save-btn {
+        width: 100%;
+        border-radius: 999px;
+        padding: 12px 16px;
+        border: none;
+        background: #111827;
+        color: #f9fafb;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      /* Попап поверх всего */
+      .popup {
+        position: absolute;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 40;
+      }
+
+      .popup.visible {
+        display: flex;
+      }
+
+      .popup-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.4);
+      }
+
+      .popup-card {
+        position: relative;
+        width: 86%;
+        max-width: 320px;
+        border-radius: 20px;
+        background: #ffffff;
+        padding: 20px 18px 14px;
+        box-shadow: 0 22px 60px rgba(15, 23, 42, 0.45);
+        text-align: center;
+        z-index: 1;
+      }
+
+      .popup-icon-wrap {
+        width: 54px;
+        height: 54px;
+        border-radius: 999px;
+        background: #f9fafb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 4px auto 10px;
+        font-size: 26px;
+      }
+
+      .popup-title {
+        font-size: 17px;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #111827;
+      }
+
+      .popup-text {
+        font-size: 13px;
+        color: #4b5563;
+        margin-bottom: 14px;
+      }
+
+      .popup-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .popup-btn-primary,
+      .popup-btn-secondary {
+        width: 100%;
+        border-radius: 999px;
+        padding: 10px 14px;
+        font-size: 15px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+      }
+
+      .popup-btn-primary {
+        background: #111827;
+        color: #f9fafb;
+      }
+
+      .popup-btn-secondary {
+        background: #e5e7eb;
+        color: #111827;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phone" id="phone">
+      <div class="status-bar">
+        <span>13:58</span>
+        <div class="status-icons">
+          <span>◯◯◯</span>
+          <span>100%</span>
+        </div>
+      </div>
+
+      <div class="cart-header">
+        <div class="cart-header-left">
+          <div class="back-arrow">‹</div>
+          <span>Корзина</span>
+        </div>
+        <span class="cart-header-action">Удалить все</span>
+      </div>
+
+      <div class="cart-scroll">
+        <div class="promo-card">
+          <div class="card-title-row">
+            <div class="card-title">Промокод</div>
+          </div>
+          <div class="card-subtitle">Введите промокод, если он у вас есть</div>
+        </div>
+
+        <div class="address-card">
+          <div class="card-title-row">
+            <div class="card-title">Доставим по адресу</div>
+          </div>
+          <div class="card-subtitle">Башня ОКО, подъезд 1, этаж 10, офис 101</div>
+        </div>
+
+        <div
+          class="payment-card"
+          id="paymentCard"
+          role="button"
+          aria-label="Выбрать способ оплаты"
+        >
+          <div class="card-title-row">
+            <div class="card-title">Способ оплаты</div>
+          </div>
+          <div class="badge-payment">
+            <div class="badge-icon" aria-hidden="true"></div>
+            <span>СБП</span>
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <div class="summary-row">
+            <span>Сумма заказа</span>
+            <span>2 200 ₽</span>
+          </div>
+          <div class="summary-row">
+            <span>Доставка</span>
+            <span>199 ₽</span>
+          </div>
+          <div class="summary-row strong">
+            <span>Итого</span>
+            <span>2 399 ₽</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-cta">
+        <button class="primary-btn" type="button">Оформить заказ</button>
+      </div>
+
+      <!-- Bottom sheet «Способ оплаты» -->
+      <section class="sheet" id="sheet">
+        <div class="sheet-handle"></div>
+        <h2 class="sheet-title">Способ оплаты</h2>
+
+        <div class="method-list" id="methodList">
+          <div
+            class="method-item selected"
+            data-method="sbp"
+            tabindex="0"
+          >
+            <div class="radio">
+              <div class="radio-dot"></div>
+            </div>
+            <div class="method-icon" aria-hidden="true"></div>
+            <div class="method-text">
+              <div class="method-title">СБП</div>
+              <div class="method-caption">Оплата через Систему быстрых платежей</div>
+            </div>
+          </div>
+
+          <div class="method-item" data-method="card" tabindex="0">
+            <div class="radio">
+              <div class="radio-dot"></div>
+            </div>
+            <div class="method-icon" aria-hidden="true"></div>
+            <div class="method-text">
+              <div class="method-title">Новая карта</div>
+              <div class="method-caption">Оплата банковской картой</div>
+            </div>
+          </div>
+
+          <div class="method-item" data-method="mir" tabindex="0">
+            <div class="radio">
+              <div class="radio-dot"></div>
+            </div>
+            <div class="method-icon" aria-hidden="true"></div>
+            <div class="method-text">
+              <div class="method-title">Мир рубли</div>
+              <div class="method-caption">
+                Пополните баланс и оплачивайте заказы одним нажатием
+              </div>
+            </div>
+            <span class="mir-tag">Новый</span>
+          </div>
+        </div>
+
+        <!-- Блок номиналов Мир рублей -->
+        <div class="mir-amounts" id="mirAmounts">
+          <div class="mir-amounts-title">Пополнить баланс «Мир рубли»</div>
+          <div class="mir-chip-row">
+            <button
+              class="mir-chip"
+              type="button"
+              data-amount="1000"
+            >
+              1 000 ₽
+            </button>
+            <button
+              class="mir-chip"
+              type="button"
+              data-amount="2000"
+            >
+              2 000 ₽
+            </button>
+            <button
+              class="mir-chip"
+              type="button"
+              data-amount="5000"
+            >
+              5 000 ₽
+            </button>
+            <button
+              class="mir-chip small"
+              type="button"
+              data-amount="custom"
+              id="mirCustomChip"
+            >
+              Другая сумма
+            </button>
+          </div>
+
+          <div class="mir-custom-row" id="mirCustomRow">
+            <div class="mir-custom-label">Введите сумму пополнения</div>
+            <div class="mir-custom-input-wrap">
+              <span class="mir-custom-prefix">₽</span>
+              <input
+                class="mir-custom-input"
+                id="mirCustomInput"
+                type="number"
+                min="1000"
+                step="100"
+                placeholder="от 1 000"
+              />
+            </div>
+            <div class="mir-hint">
+              Для прототипа достаточно ввести любую сумму от 1 000 ₽.
+            </div>
+          </div>
+        </div>
+
+        <div class="sheet-actions">
+          <button class="sheet-save-btn" type="button" id="sheetSaveBtn">
+            Сохранить
+          </button>
+        </div>
+      </section>
+
+      <!-- Попап Fake door -->
+      <div class="popup" id="popup">
+        <div class="popup-backdrop"></div>
+        <div class="popup-card" role="dialog" aria-modal="true">
+          <div class="popup-icon-wrap">💳</div>
+          <div class="popup-title">Способ оплаты «Мир рубли» пока недоступен</div>
+          <div class="popup-text">
+            Сейчас этот способ ещё не работает, но нам важно понять, насколько он
+            вам интересен. Пожалуйста, пройдите короткий опрос — это займёт 1–2
+            минуты.
+          </div>
+          <div class="popup-actions">
+            <button
+              class="popup-btn-primary"
+              type="button"
+              id="popupSurveyBtn"
+            >
+              Пройти опрос
+            </button>
+            <button
+              class="popup-btn-secondary"
+              type="button"
+              id="popupCloseBtn"
+            >
+              Закрыть
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const phoneEl = document.getElementById('phone');
+      const sheetEl = document.getElementById('sheet');
+      const paymentCardEl = document.getElementById('paymentCard');
+      const methodListEl = document.getElementById('methodList');
+      const mirAmountsEl = document.getElementById('mirAmounts');
+      const mirChips = Array.from(
+        document.querySelectorAll('.mir-chip')
+      );
+      const mirCustomRowEl = document.getElementById('mirCustomRow');
+      const mirCustomInputEl = document.getElementById('mirCustomInput');
+      const sheetSaveBtn = document.getElementById('sheetSaveBtn');
+      const popupEl = document.getElementById('popup');
+      const popupSurveyBtn = document.getElementById('popupSurveyBtn');
+      const popupCloseBtn = document.getElementById('popupCloseBtn');
+
+      function openSheet() {
+        sheetEl.classList.add('visible');
+        phoneEl.classList.add('dimmed');
+      }
+
+      function closeSheet() {
+        sheetEl.classList.remove('visible');
+        phoneEl.classList.remove('dimmed');
+      }
+
+      function openPopup() {
+        popupEl.classList.add('visible');
+      }
+
+      function closePopup() {
+        popupEl.classList.remove('visible');
+      }
+
+      paymentCardEl.addEventListener('click', openSheet);
+
+      // Выбор метода оплаты
+      methodListEl.addEventListener('click', (event) => {
+        const item = event.target.closest('.method-item');
+        if (!item) return;
+
+        const method = item.getAttribute('data-method');
+
+        methodListEl
+          .querySelectorAll('.method-item')
+          .forEach((el) => el.classList.remove('selected'));
+        item.classList.add('selected');
+
+        if (method === 'mir') {
+          mirAmountsEl.classList.add('visible');
+        } else {
+          mirAmountsEl.classList.remove('visible');
+        }
+      });
+
+      // Навигация по радиокнопкам через клавиатуру
+      methodListEl.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        const item = event.target.closest('.method-item');
+        if (!item) return;
+        event.preventDefault();
+        item.click();
+      });
+
+      // Выбор номинала Мир рублей
+      mirChips.forEach((chip) => {
+        chip.addEventListener('click', () => {
+          mirChips.forEach((c) => c.classList.remove('selected'));
+          chip.classList.add('selected');
+
+          const amount = chip.getAttribute('data-amount');
+          if (amount === 'custom') {
+            mirCustomRowEl.classList.add('visible');
+            mirCustomInputEl.focus();
+          } else {
+            mirCustomRowEl.classList.remove('visible');
+            mirCustomInputEl.value = amount;
+          }
+        });
+      });
+
+      // Кнопка «Сохранить» — показываем Fake door попап
+      sheetSaveBtn.addEventListener('click', () => {
+        const selectedMethod = methodListEl.querySelector(
+          '.method-item.selected'
+        );
+        const method = selectedMethod
+          ? selectedMethod.getAttribute('data-method')
+          : 'sbp';
+
+        // Fake door срабатывает только при выборе «Мир рубли»
+        if (method === 'mir') {
+          openPopup();
+        } else {
+          closeSheet();
+        }
+      });
+
+      popupCloseBtn.addEventListener('click', () => {
+        closePopup();
+        closeSheet();
+      });
+
+      popupSurveyBtn.addEventListener('click', () => {
+        // В проде здесь будет ссылка на промо-страницу с опросом.
+        window.open('https://ya.ru', '_blank');
+      });
+
+      popupEl.addEventListener('click', (event) => {
+        if (event.target === popupEl) {
+          closePopup();
+        }
+      });
+    </script>
+  </body>
+</html>
+

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Personality Report — 16 types</title>
+<style>
+:root{--bg:#edf3fe;--card:#fff;--ink:#131a35;--mute:#5b6480;--acc:#2168ff;--line:#dde5f3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11141c;--card:#1b1f2b;--ink:#e8ebf3;--mute:#9aa3bb;--acc:#7fa4ff;--line:#2b3142}}
+:root[data-theme="dark"]{--bg:#11141c;--card:#1b1f2b;--ink:#e8ebf3;--mute:#9aa3bb;--acc:#7fa4ff;--line:#2b3142}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.4 Inter,-apple-system,sans-serif;display:grid;grid-template-columns:240px 1fr;height:100vh}
+aside{border-right:1px solid var(--line);overflow-y:auto;padding:14px 10px;background:var(--card)}
+aside h1{font-size:15px;margin:0 6px 4px}
+aside p{margin:0 6px 12px;color:var(--mute);font-size:12px}
+aside button{display:block;width:100%;text-align:left;font:inherit;border:0;background:none;color:var(--ink);padding:7px 8px;border-radius:8px;cursor:pointer}
+aside button small{color:var(--mute);display:block;font-size:11.5px}
+aside button.on{background:var(--acc);color:#fff}aside button.on small{color:#dfe7ff}
+main{display:flex;flex-direction:column;min-width:0}
+.bar{display:flex;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line)}
+.bar b{font-size:15px}.bar .sp{flex:1}
+.bar a,.bar button{font:inherit;font-size:13px;color:var(--acc);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:4px 10px;cursor:pointer;text-decoration:none}
+iframe{flex:1;border:0;width:100%;background:#fff}
+@media (max-width:700px){body{grid-template-columns:1fr;grid-template-rows:auto 1fr}aside{max-height:30vh}}
+</style>
+</head>
+<body>
+<aside>
+<h1>Personality Report — 16 типов (прототип)</h1>
+<p>Клик — открыть. Стрелки ↑ ↓ — следующий тип.</p>
+<div id="list"></div>
+</aside>
+<main>
+<div class="bar"><b id="cur"></b><span class="sp"></span><button id="prev">← пред.</button><button id="next">след. →</button><a id="dl" target="_blank">Открыть PDF отдельно</a></div>
+<iframe id="pdf" title="Отчёт"></iframe>
+</main>
+<script>
+const T = [
+ ['the-strategist','The Strategist','Quiet · Visionary · Logic · Planner'],
+ ['the-inventor','The Inventor','Quiet · Visionary · Logic · Flexible'],
+ ['the-captain','The Captain','Social · Visionary · Logic · Planner'],
+ ['the-innovator','The Innovator','Social · Visionary · Logic · Flexible'],
+ ['the-guide','The Guide','Quiet · Visionary · Heart · Planner'],
+ ['the-dreamer','The Dreamer','Quiet · Visionary · Heart · Flexible'],
+ ['the-mentor','The Mentor','Social · Visionary · Heart · Planner'],
+ ['the-spark','The Spark','Social · Visionary · Heart · Flexible'],
+ ['the-anchor','The Anchor','Quiet · Grounded · Logic · Planner'],
+ ['the-keeper','The Keeper','Quiet · Grounded · Heart · Planner'],
+ ['the-organizer','The Organizer','Social · Grounded · Logic · Planner'],
+ ['the-host','The Host','Social · Grounded · Heart · Planner'],
+ ['the-problem-solver','The Problem-Solver','Quiet · Grounded · Logic · Flexible'],
+ ['the-artist','The Artist','Quiet · Grounded · Heart · Flexible'],
+ ['the-go-getter','The Go-Getter','Social · Grounded · Logic · Flexible'],
+ ['the-charmer','The Charmer','Social · Grounded · Heart · Flexible']];
+let i = Math.max(0, T.findIndex(t => t[0] === location.hash.slice(1)));
+const list = document.getElementById('list');
+list.innerHTML = T.map((t, k) => `<button data-k="${k}">${t[1]}<small>${t[2]}</small></button>`).join('');
+function show(k) {
+  i = (k + T.length) % T.length;
+  const [slug, name] = T[i], src = 'pdf/' + slug + '.pdf';
+  document.getElementById('pdf').src = src + '#view=FitH';
+  document.getElementById('dl').href = src;
+  document.getElementById('cur').textContent = name;
+  history.replaceState(null, '', '#' + slug);
+  list.querySelectorAll('button').forEach((b, n) => b.classList.toggle('on', n === i));
+}
+list.addEventListener('click', e => { const b = e.target.closest('button'); if (b) show(+b.dataset.k); });
+document.getElementById('prev').onclick = () => show(i - 1);
+document.getElementById('next').onclick = () => show(i + 1);
+document.addEventListener('keydown', e => { if (e.key === 'ArrowDown') { e.preventDefault(); show(i + 1); } if (e.key === 'ArrowUp') { e.preventDefault(); show(i - 1); } });
+show(i);
+</script>
+</body>
+</html>
