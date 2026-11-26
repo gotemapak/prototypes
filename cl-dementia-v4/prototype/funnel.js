@@ -1,6 +1,6 @@
 /* Воронка «Деменция» v4 — прототип на kit (../../DRAFT-personality/kit).
    Квиз — веб-тест «Check In On Dementia Risk» (MAR-3933), пейволл — структура живого v3 (WEB-305/306) со шкалой из v2.
-   Предпросмотр: index.html?level=low|mild|moderate|elevated&gender=female|male&age=70-79&screen=paywall */
+   Предпросмотр: index.html?level=low|mild|high&gender=female|male&age=70-79&screen=paywall */
 (function (root) {
   var D = root.DEM;
   var K = '../kit/';

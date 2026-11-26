@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<!-- Отчёт v4. Параметры: ?level=low|mild|moderate|elevated&gender=female|male&age=70-79 или ?a=<JSON ответов из прототипа>. Тексты и подсчёт — ../prototype/scoring.js -->
+<!-- Отчёт v4. Параметры: ?level=low|mild|high&gender=female|male&age=70-79 или ?a=<JSON ответов из прототипа>. Тексты и подсчёт — ../prototype/scoring.js -->
 <style>
   :root {
     --accent: #2168ff; --accent-soft: #eaf1ff; --accent-soft-2: #f4f8ff;
@@ -146,13 +146,13 @@
   var TOTAL = 6, foot = function (n) { return '<div class="foot"><span>[Company] · Dementia Risk Report</span><span>' + n + ' / ' + TOTAL + '</span></div>'; };
 
   // Шкала без числа: заполнение по середине уровня, в центре — название уровня
-  var FILL = { low: 2, mild: 4.5, moderate: 6.5, elevated: 9 };
+  var FILL = { low: 2, mild: 5, high: 8 };  // как шкала на пейволле WEB-384: цвет уровня, остальное #e0ebfe
   function gauge() {
     var segs = 28, out = '', v = FILL[r.level];
     for (var k = 0; k < segs; k++) {
       var a = Math.PI * (1 - k / (segs - 1)) * 1.2 - Math.PI * 0.1, cx = 130, cy = 130;
       var x1 = cx + 92 * Math.cos(a), y1 = cy - 92 * Math.sin(a), x2 = cx + 116 * Math.cos(a), y2 = cy - 116 * Math.sin(a);
-      var t = k / (segs - 1), col = t <= v / 10 ? 'hsl(' + Math.round(220 - t * 175) + ',85%,55%)' : '#dfe6f5';
+      var t = k / (segs - 1), col = t <= v / 10 ? L.color : '#e0ebfe';
       out += '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '" stroke="' + col + '" stroke-width="8" stroke-linecap="round"/>';
     }
     return '<div class="gauge"><svg viewBox="0 0 260 175">' + out + '</svg><div class="v lv">' + L.label.replace(' risk', '<br><small>risk</small>') + '</div></div>';
@@ -166,8 +166,8 @@
     '<p class="verdict">' + T.title + '</p><p class="intro">' + fill(T.intro) + '</p>' +
     '<div class="row duo"><div class="card"><h3>Your strongest area</h3><b>' + r.topArea + '</b></div>' +
     '<div class="card"><h3>2 areas to strengthen</h3><b>' + r.focusAreas + '</b></div></div>' +
-    '<p class="small" style="margin-top:2mm">Your result today, on 4 levels:</p>' +
-    '<div class="levels">' + [['low', 'Low'], ['mild', 'Mild'], ['moderate', 'Moderate'], ['elevated', 'Elevated']].map(function (x) {
+    '<p class="small" style="margin-top:2mm">Your result today, on 3 levels:</p>' +
+    '<div class="levels">' + [['low', 'Low'], ['mild', 'Mild'], ['high', 'High']].map(function (x) {
       return '<div class="' + (x[0] === r.level ? 'on' : '') + '"><b>' + x[1] + '</b>' + (x[0] === r.level ? 'You are here' : '&nbsp;') + '</div>'; }).join('') + '</div>' +
     '</div>' + foot(1) + '</section>';
 

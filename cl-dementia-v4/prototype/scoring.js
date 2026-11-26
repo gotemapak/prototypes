@@ -20,12 +20,12 @@
   ];
 
   var LEVELS = {
-    low:      { id: 'low', label: 'Low risk', color: '#1e9e6a', soft: '#e6f6ee', ink: '#0f6b45' },
-    mild:     { id: 'mild', label: 'Mild risk', color: '#8bbf2a', soft: '#f1f8e2', ink: '#4f7310' },
-    moderate: { id: 'moderate', label: 'Moderate risk', color: '#f0a020', soft: '#fff4e0', ink: '#8a5600' },
-    elevated: { id: 'elevated', label: 'Elevated risk', color: '#e8603c', soft: '#fdece6', ink: '#a33a1b' }
+    // 3 уровня, цвета плашек — из макета пейволла WEB-384
+    low:  { id: 'low', label: 'Low risk', color: '#2d82ff', soft: '#e2f1ff', ink: '#2d82ff' },
+    mild: { id: 'mild', label: 'Mild risk', color: '#7dc043', soft: '#e7ffcf', ink: '#4f8a1f' },
+    high: { id: 'high', label: 'High risk', color: '#ff594b', soft: '#ffe2df', ink: '#d93a2d' }
   };
-  function levelFor(risk) { return risk <= 3 ? 'low' : risk <= 5 ? 'mild' : risk <= 7 ? 'moderate' : 'elevated'; }
+  function levelFor(risk) { return risk <= 3 ? 'low' : risk <= 5 ? 'mild' : 'high'; }
 
   function weight(id) { return WEIGHT[id] || 1; }
   function correct(answers, id) { return answers[id] != null && String(answers[id]) === KEY[id]; }
@@ -70,11 +70,11 @@
     };
   }
 
-  // Синтетические ответы для предпросмотра каждого уровня (проверено: low 2, mild 4, moderate 6, elevated 8)
-  var MISS = { low: ['q12'], mild: ['q7', 'q2'], moderate: ['q7', 'q8', 'q2', 'q11'], elevated: ['q7', 'q8', 'q2', 'q12', 'q3', 'q5', 'q11'] };
-  var HAB = { low: [4, 4, 3], mild: [2, 4, 3], moderate: [2, 3, 2], elevated: [1, 1, 1] };
-  var HOBBY_SAMPLE = { low: ['reading', 'gardening'], mild: ['music'], moderate: ['none'], elevated: ['none'] };
-  var ROUTINE_SAMPLE = { low: ['puzzles', 'reading'], mild: ['reading'], moderate: ['supplements'], elevated: ['nothing'] };
+  // Синтетические ответы для предпросмотра каждого уровня (проверено: low 2, mild 4, high 8)
+  var MISS = { low: ['q12'], mild: ['q7', 'q2'], high: ['q7', 'q8', 'q2', 'q12', 'q3', 'q5', 'q11'] };
+  var HAB = { low: [4, 4, 3], mild: [2, 4, 3], high: [1, 1, 1] };
+  var HOBBY_SAMPLE = { low: ['reading', 'gardening'], mild: ['music'], high: ['none'] };
+  var ROUTINE_SAMPLE = { low: ['puzzles', 'reading'], mild: ['reading'], high: ['nothing'] };
   function answersForLevel(level, gender, age) {
     var a = { gender: gender || 'female', age: age || '70-79' };
     Object.keys(KEY).forEach(function (id) { a[id] = (MISS[level] || []).indexOf(id) > -1 ? 'wrong' : KEY[id]; });
@@ -99,15 +99,10 @@
       intro: 'Most of your answers were strong. A few slips in {focus} are common and often come from tiredness, stress, or rushing. Small daily practice is the easiest way to keep these areas sharp.',
       steps: [STEP_APP, STEP_RETAKE, 'Notice your everyday moments: names, keys, following a conversation. Write down anything that feels harder than usual.']
     },
-    moderate: {
+    high: {
       title: 'Some areas need more attention.',
-      intro: 'Your answers show that some areas — especially {focus} — were harder for you today. A single check-in can be affected by sleep, stress, or simply a busy day, so this is a signal to keep an eye on, not a conclusion.',
-      steps: [STEP_APP, STEP_RETAKE, 'If you or your family have noticed changes in memory or everyday tasks, it’s a good idea to mention it at your next doctor’s visit.']
-    },
-    elevated: {
-      title: 'This check-in was harder for you today.',
-      intro: 'Many of today’s questions were difficult, especially in {focus}. This can happen for many reasons — poor sleep, stress, medication, or not feeling well. This check-in is not a diagnosis, but your result is worth taking seriously.',
-      steps: [STEP_APP, STEP_RETAKE, 'We recommend talking to your doctor about your memory and thinking, and sharing this report with them.']
+      intro: 'Many of today’s questions were harder for you, especially in {focus}. This can happen for many reasons — poor sleep, stress, medication, or not feeling well. This check-in is not a diagnosis, but your result is worth paying attention to.',
+      steps: [STEP_APP, STEP_RETAKE, 'It’s a good idea to talk to your doctor about your memory and thinking, and to bring this report with you.']
     }
   };
   var AREA_TEXT = {
@@ -170,9 +165,7 @@
       days: ['f1', 'f2', 'top', 'lang', 'f1', 'mix', { task: 'Rest day', text: 'Take a walk and call a friend.' }] },
     mild: { title: 'Build up your weaker areas', minutes: '5 minutes a day', intro: 'Most days go to {focus}, the areas with the most room to grow.',
       days: ['f1', 'f2', 'f1', 'f2', 'mix', 'f1', { task: 'Look back', text: 'Write down 3 moments this week when your memory worked well.' }] },
-    moderate: { title: 'Steady daily practice', minutes: '10 minutes a day — two short sessions', intro: 'Short, regular practice for {focus}. Two 5-minute sessions are easier than one long one.',
-      days: ['f1', 'f2', 'f1', 'f2', 'f1', 'mix', { task: 'Look back together', text: 'Ask someone close: has anything felt easier or harder this week?' }] },
-    elevated: { title: 'Gentle daily practice', minutes: '5 minutes a day', intro: 'Start gently with {focus}, and take care of the most important step first.',
+    high: { title: 'Gentle daily practice', minutes: '5 minutes a day', intro: 'Start gently with {focus}, and take care of the most important step first.',
       days: [{ task: 'Talk to your doctor', text: 'Book a visit and bring this report with you.' }, 'f1', 'f2', 'f1', 'f2', 'mix', { task: 'Share your report', text: 'Show this report to someone you trust.' }] }
   };
   function planDays(r) {
