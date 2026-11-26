@@ -230,12 +230,12 @@
   root.FUNNEL.screens.forEach(function (sc) { sc.back = false; });
 
   /* ---------- шкала и полосы — генерируем тем же видом, что в kit (дуга v2) ---------- */
-  function gauge(v, max, label) {
+  function gauge(v, max, label, color) {  // как в макете WEB-384: заполнение цветом уровня
     var segs = 28, out = '';
     for (var k = 0; k < segs; k++) {
       var a = Math.PI * (1 - k / (segs - 1)) * 1.2 - Math.PI * 0.1, cx = 130, cy = 130;
       var x1 = cx + 92 * Math.cos(a), y1 = cy - 92 * Math.sin(a), x2 = cx + 116 * Math.cos(a), y2 = cy - 116 * Math.sin(a);
-      var t = k / (segs - 1), col = t <= v / max ? 'hsl(' + Math.round(220 - t * 175) + ',85%,55%)' : '#dfe6f5';
+      var t = k / (segs - 1), col = t <= v / max ? color : '#e0ebfe';
       out += '<line x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) + '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '" stroke="' + col + '" stroke-width="7" stroke-linecap="round"/>';
     }
     return '<div class="kit-gauge"><svg viewBox="0 0 260 175">' + out + '</svg><div class="kit-gauge__value">' + v + '/' + max + '</div><div class="kit-gauge__label">' + label + '</div></div>';
@@ -243,7 +243,7 @@
   var baseScoring = scoring;
   root.FUNNEL.scoring = function (a) {
     var r = baseScoring(a);
-    r.gaugeHtml = gauge(r.risk, 10, 'Dementia Risk Score');
+    r.gaugeHtml = gauge(r.risk, 10, 'Dementia Risk Score', r.levelColor);
     r.bubbleCls = r.good ? '' : 'dm-bubble--neutral';
     r.rowsHtml = '<div class="kit-rows">' + r.areas.map(function (x) {
       return '<div class="kit-row"><span class="kit-row__icon">' + x.icon + '</span><span class="kit-row__label">' + x.name + ':</span><span class="kit-row__bar"></span><span class="kit-row__value kit-blur">' + x.pct + '%</span></div>';
